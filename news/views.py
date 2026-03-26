@@ -15,8 +15,7 @@ def send_sms(number, message):
         fail_silently=False,
     )
 
-# Usage
-send_sms('5551234567', 'Hello! Your database just updated.')
+
 def index(request):
     return render(request,'news/index.html')
 
