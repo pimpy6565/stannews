@@ -23,7 +23,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')      # your Gmail address
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # Gmail App Password
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = 'stanNews <noreply@example.com>'
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -34,7 +34,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SECRET_KEY = 'django-insecure-*fjd$int7k0$q3-vd=y7vwtw5konr8!-&urwn8js^ar&la!iq+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 #ill turn this on to see what it looks like on phone
 ALLOWED_HOSTS = ['*']
 
