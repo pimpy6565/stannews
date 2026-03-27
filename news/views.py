@@ -3,14 +3,14 @@ from django.http import HttpResponse,JsonResponse
 from .models import chats
 # Create your views here.
 from django.core.mail import send_mail
-import asyncio 
+
 def send_sms(number, message):
     # For Metro/T-Mobile
     recipient = f"{number}@tmomail.net"
     send_mail(
         subject='stanNews message',  # SMS ignores this
         message=message,
-        from_email=None,
+        from_email='you@example.com',
         recipient_list=[recipient],
         fail_silently=False,
     )
