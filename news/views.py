@@ -10,7 +10,7 @@ def send_sms(number, message):
     send_mail(
         subject='stanNews message',  # SMS ignores this
         message=message,
-        from_email='your@gmail.com',
+        from_email=None,
         recipient_list=[recipient],
         fail_silently=False,
     )
