@@ -87,7 +87,7 @@
   </div>
 </div>
 
-<!-- ====================== CLEAN SINGLE-PAGE PRINT SHEET (NOW FITS AT 100%) ====================== -->
+<!-- ====================== CLEAN SINGLE-PAGE PRINT SHEET ====================== -->
 <div id="printSheet" class="hidden">
   <div style="width: 100%; padding: 25px 35px; font-family: system-ui, -apple-system, sans-serif; background: white; color: #111827; line-height: 1.1;">
     
@@ -132,10 +132,8 @@
   .table-row { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
   .table-row:hover { background-color: #f8fbff; transform: translateX(4px); }
 
-  /* Hide print sheet on screen */
   #printSheet { display: none !important; }
 
-  /* Only show print sheet when printing */
   @media print {
     body * { visibility: hidden; }
     #printSheet, #printSheet * { visibility: visible; }
@@ -190,9 +188,32 @@ function addDays(baseDate, days) {
   return date;
 }
 
-// ====================== SINGLE-PAGE PRINT (NOW FITS PERFECTLY AT 100%) ======================
+// ====================== UPDATED HJ CODE (now mmddy format) ======================
+function getJulianDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  
+  // Julian date stays the same (MM DDD Y)
+  const startOfYear = new Date(year, 0, 0);
+  const diff = now - startOfYear;
+  const oneDay = 1000 * 60 * 60 * 24;
+  let dayOfYear = Math.floor(diff / oneDay);
+  
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const julianDay = String(dayOfYear).padStart(3, '0');
+  const lastDigitYear = String(year).slice(-1);
+  
+  const julianStr = `${month} ${julianDay} ${lastDigitYear}`;
+  
+  // NEW: HJ code is now mmddy format (MM + DD + Y)
+  const dayOfMonth = String(now.getDate()).padStart(2, '0');
+  const hjCode = `HJ${month}${dayOfMonth}${lastDigitYear}`;
+  
+  return { julianStr, hjCode };
+}
+
+// ====================== SINGLE-PAGE PRINT ======================
 function printPage() {
-  // Monday
   const options = { weekday:'long', month:'long', day:'numeric', year:'numeric' };
   let str = currentMonday.toLocaleDateString('en-US', options);
   document.getElementById('printMondayDate').innerHTML = `
@@ -200,7 +221,6 @@ function printPage() {
     ${str.split(',')[1].trim()}
   `;
 
-  // Table
   const tbody = document.getElementById('printTableBody');
   tbody.innerHTML = '';
   products.forEach(product => {
@@ -214,7 +234,6 @@ function printPage() {
     tbody.appendChild(row);
   });
 
-  // Julian
   const { julianStr, hjCode } = getJulianDate();
   document.getElementById('printJulianFooter').innerHTML = `
     TODAY'S JULIAN DATE: <span style="font-family: monospace; font-size: 18px;">${julianStr}</span><br>
@@ -222,23 +241,6 @@ function printPage() {
   `;
 
   window.print();
-}
-
-function getJulianDate() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const startOfYear = new Date(year, 0, 0);
-  const diff = now - startOfYear;
-  const oneDay = 1000 * 60 * 60 * 24;
-  let dayOfYear = Math.floor(diff / oneDay);
-  
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const julianDay = String(dayOfYear).padStart(3, '0');
-  const lastDigitYear = String(year).slice(-1);
-  
-  const julianStr = `${month} ${julianDay} ${lastDigitYear}`;
-  const hjCode = `HJ${month}${julianDay}${lastDigitYear}`;
-  return { julianStr, hjCode };
 }
 
 // ====================== REST OF YOUR ORIGINAL CODE (UNCHANGED) ======================
@@ -321,7 +323,7 @@ function initializeLabExpirations() {
   updateJulianFooter();
   setInterval(updateLastUpdated, 30000);
   setInterval(updateJulianFooter, 86400000);
-  console.log('%c✅ Lab Expirations - Single Page Print Now Fits at 100%!', 'color:#0066ff;font-weight:700');
+  console.log('%c✅ Lab Expirations - HJ code now in mmddy format!', 'color:#0066ff;font-weight:700');
 }
 
 window.onload = initializeLabExpirations;
