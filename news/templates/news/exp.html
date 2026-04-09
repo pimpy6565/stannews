@@ -17,7 +17,7 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-x-4">
+      <div class="flex items-center gap-x-3">
         <!-- Auto Update Toggle -->
         <div class="flex items-center gap-x-2">
           <span class="text-xs sm:text-sm font-medium text-zinc-500">Auto Update</span>
@@ -26,6 +26,14 @@
             <div class="w-9 h-5 bg-zinc-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
           </label>
         </div>
+
+        <!-- Full Screen Button -->
+        <button onclick="toggleFullScreen()" 
+                id="fullScreenBtn"
+                class="group flex items-center gap-x-2 sm:gap-x-3 bg-white hover:bg-violet-50 border border-zinc-200 hover:border-violet-200 text-zinc-700 hover:text-violet-600 px-4 sm:px-8 py-2 sm:py-4 rounded-3xl text-sm sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95">
+          <i id="fullscreenIcon" class="fa-solid fa-expand"></i>
+          <span id="fullscreenText">Full Screen</span>
+        </button>
 
         <button onclick="printPage()" 
                 class="group flex items-center gap-x-2 sm:gap-x-3 bg-white hover:bg-amber-50 border border-zinc-200 hover:border-amber-200 text-zinc-700 hover:text-amber-600 px-4 sm:px-8 py-2 sm:py-4 rounded-3xl text-sm sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95">
@@ -110,14 +118,6 @@
   .date-cell:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 20px 25px -5px rgba(0,102,255,0.25); background-color: #0066ff; color: white; }
   .table-row { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
   .table-row:hover { background-color: #f8fbff; transform: translateX(4px); }
-
-  /* Print styles (unchanged) */
-  @media print {
-    @page { size: letter portrait; margin: 0.35in; }
-    body * { visibility: hidden; }
-    #printSheet, #printSheet * { visibility: visible; }
-    #printSheet { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
-  }
 </style>
 {% endblock %}
 
@@ -145,7 +145,7 @@ const products = [
 
 let currentMonday = null;
 let autoUpdateInterval = null;
-const AUTO_UPDATE_INTERVAL_MS = 300000; // 5 minutes
+const AUTO_UPDATE_INTERVAL_MS = 300000;
 
 function getCurrentMonday() {
   const today = new Date();
@@ -185,6 +185,40 @@ function copyDate(text, el) {
   });
 }
 
+// ====================== FULL SCREEN MODE ======================
+function toggleFullScreen() {
+  const btn = document.getElementById('fullScreenBtn');
+  const icon = document.getElementById('fullscreenIcon');
+  const text = document.getElementById('fullscreenText');
+
+  if (!document.fullscreenElement) {
+    // Enter full screen
+    document.documentElement.requestFullscreen().then(() => {
+      icon.classList.remove('fa-expand');
+      icon.classList.add('fa-compress');
+      text.textContent = 'Exit Full Screen';
+    });
+  } else {
+    // Exit full screen
+    document.exitFullscreen().then(() => {
+      icon.classList.remove('fa-compress');
+      icon.classList.add('fa-expand');
+      text.textContent = 'Full Screen';
+    });
+  }
+}
+
+// Listen for fullscreen changes (ESC key, etc.)
+document.addEventListener('fullscreenchange', () => {
+  const icon = document.getElementById('fullscreenIcon');
+  const text = document.getElementById('fullscreenText');
+  if (!document.fullscreenElement) {
+    icon.classList.remove('fa-compress');
+    icon.classList.add('fa-expand');
+    text.textContent = 'Full Screen';
+  }
+});
+
 // ====================== AUTO UPDATE TOGGLE ======================
 function toggleAutoUpdate() {
   const enabled = document.getElementById('autoUpdateToggle').checked;
@@ -192,9 +226,7 @@ function toggleAutoUpdate() {
 
   if (enabled) {
     if (!autoUpdateInterval) {
-      autoUpdateInterval = setInterval(() => {
-        refreshWeek();
-      }, AUTO_UPDATE_INTERVAL_MS);
+      autoUpdateInterval = setInterval(() => refreshWeek(), AUTO_UPDATE_INTERVAL_MS);
     }
   } else {
     if (autoUpdateInterval) {
@@ -204,6 +236,7 @@ function toggleAutoUpdate() {
   }
 }
 
+// ====================== PRINT ======================
 function printPage() {
   const originalTitle = document.title;
   document.title = `Lab Expirations - Week of ${formatDate(currentMonday)}`;
@@ -211,6 +244,7 @@ function printPage() {
   setTimeout(() => { document.title = originalTitle; }, 500);
 }
 
+// ====================== JULIAN DATE (mmddy HJ code) ======================
 function getJulianDate() {
   const now = new Date();
   const year = now.getFullYear();
@@ -247,6 +281,7 @@ function updateJulianFooter() {
   `;
 }
 
+// ====================== EXISTING FUNCTIONS ======================
 function renderTable() {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
@@ -294,21 +329,17 @@ function initializeLabExpirations() {
   updateLastUpdated();
   updateJulianFooter();
 
-  // Load saved toggle state
-  const savedState = localStorage.getItem('autoUpdateEnabled');
+  // Auto-update toggle
   const toggle = document.getElementById('autoUpdateToggle');
-  if (savedState !== null) {
-    toggle.checked = savedState === 'true';
-  }
-  toggleAutoUpdate(); // apply saved state
-
-  // Listen for toggle changes
+  const savedState = localStorage.getItem('autoUpdateEnabled');
+  if (savedState !== null) toggle.checked = savedState === 'true';
   toggle.addEventListener('change', toggleAutoUpdate);
+  toggleAutoUpdate();
 
   setInterval(updateLastUpdated, 30000);
   setInterval(updateJulianFooter, 86400000);
 
-  console.log('%c✅ Lab Expirations with Auto Update Toggle Ready!', 'color:#0066ff;font-weight:700');
+  console.log('%c✅ Lab Expirations with Full Screen Mode + Auto Update Ready!', 'color:#0066ff;font-weight:700');
 }
 
 window.onload = initializeLabExpirations;
