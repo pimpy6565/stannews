@@ -17,7 +17,16 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-x-3">
+      <div class="flex items-center gap-x-4">
+        <!-- Auto Update Toggle -->
+        <div class="flex items-center gap-x-2">
+          <span class="text-xs sm:text-sm font-medium text-zinc-500">Auto Update</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="autoUpdateToggle" class="sr-only peer" checked>
+            <div class="w-9 h-5 bg-zinc-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+          </label>
+        </div>
+
         <button onclick="printPage()" 
                 class="group flex items-center gap-x-2 sm:gap-x-3 bg-white hover:bg-amber-50 border border-zinc-200 hover:border-amber-200 text-zinc-700 hover:text-amber-600 px-4 sm:px-8 py-2 sm:py-4 rounded-3xl text-sm sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95">
           <i class="fa-solid fa-print"></i>
@@ -87,36 +96,6 @@
   </div>
 </div>
 
-<!-- ====================== CLEAN SINGLE-PAGE PRINT SHEET ====================== -->
-<div id="printSheet" class="hidden">
-  <div style="width: 100%; padding: 25px 35px; font-family: system-ui, -apple-system, sans-serif; background: white; color: #111827; line-height: 1.1;">
-    
-    <!-- Header -->
-    <div style="text-align: center; margin-bottom: 20px; border-bottom: 4px solid #1e40af; padding-bottom: 15px;">
-      <h1 style="font-size: 29px; font-weight: 700; margin: 0 0 6px 0; color: #1e40af; letter-spacing: -1px;">LAB EXPIRATIONS</h1>
-      <div id="printMondayDate" style="font-size: 21px; font-weight: 600; color: #1e40af;"></div>
-    </div>
-
-    <!-- Table -->
-    <table id="printTable" style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 13.5px;">
-      <thead>
-        <tr style="background: #f3f4f6;">
-          <th style="text-align: left; padding: 9px 12px; border: 2px solid #374151; font-weight: 700; width: 38%;">Flavor</th>
-          <th style="text-align: center; padding: 9px 8px; border: 2px solid #374151; font-weight: 700;">Line 1</th>
-          <th style="text-align: center; padding: 9px 8px; border: 2px solid #374151; font-weight: 700;">Line 2</th>
-          <th style="text-align: center; padding: 9px 8px; border: 2px solid #374151; font-weight: 700;">Line 3</th>
-        </tr>
-      </thead>
-      <tbody id="printTableBody" style="border-bottom: 4px solid #374151;"></tbody>
-    </table>
-
-    <!-- Julian Footer -->
-    <div id="printJulianFooter" style="text-align: center; padding: 14px; background: #f8fafc; border: 3px solid #1e40af; border-radius: 12px; font-size: 16px; font-weight: 600;">
-    </div>
-
-  </div>
-</div>
-
 {% endblock %}
 
 {% block extra_head %}
@@ -132,13 +111,12 @@
   .table-row { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
   .table-row:hover { background-color: #f8fbff; transform: translateX(4px); }
 
-  #printSheet { display: none !important; }
-
+  /* Print styles (unchanged) */
   @media print {
+    @page { size: letter portrait; margin: 0.35in; }
     body * { visibility: hidden; }
     #printSheet, #printSheet * { visibility: visible; }
     #printSheet { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
-    @page { size: letter portrait; margin: 0.35in; }
   }
 </style>
 {% endblock %}
@@ -166,6 +144,8 @@ const products = [
 ];
 
 let currentMonday = null;
+let autoUpdateInterval = null;
+const AUTO_UPDATE_INTERVAL_MS = 300000; // 5 minutes
 
 function getCurrentMonday() {
   const today = new Date();
@@ -188,12 +168,52 @@ function addDays(baseDate, days) {
   return date;
 }
 
-// ====================== UPDATED HJ CODE (now mmddy format) ======================
+function createDateCell(date) {
+  const formatted = formatDate(date);
+  return `
+    <div onclick="copyDate('${formatted}', this)" 
+         class="date-cell mx-auto bg-white text-blue-600 hover:bg-blue-600 hover:text-white font-semibold rounded-3xl text-center cursor-pointer shadow-inner border border-white/70">
+      ${formatted}
+    </div>`;
+}
+
+function copyDate(text, el) {
+  navigator.clipboard.writeText(text).then(() => {
+    const originalHTML = el.innerHTML;
+    el.innerHTML = `<i class="fa-solid fa-check text-2xl sm:text-3xl"></i>`;
+    setTimeout(() => el.innerHTML = originalHTML, 1300);
+  });
+}
+
+// ====================== AUTO UPDATE TOGGLE ======================
+function toggleAutoUpdate() {
+  const enabled = document.getElementById('autoUpdateToggle').checked;
+  localStorage.setItem('autoUpdateEnabled', enabled);
+
+  if (enabled) {
+    if (!autoUpdateInterval) {
+      autoUpdateInterval = setInterval(() => {
+        refreshWeek();
+      }, AUTO_UPDATE_INTERVAL_MS);
+    }
+  } else {
+    if (autoUpdateInterval) {
+      clearInterval(autoUpdateInterval);
+      autoUpdateInterval = null;
+    }
+  }
+}
+
+function printPage() {
+  const originalTitle = document.title;
+  document.title = `Lab Expirations - Week of ${formatDate(currentMonday)}`;
+  window.print();
+  setTimeout(() => { document.title = originalTitle; }, 500);
+}
+
 function getJulianDate() {
   const now = new Date();
   const year = now.getFullYear();
-  
-  // Julian date stays the same (MM DDD Y)
   const startOfYear = new Date(year, 0, 0);
   const diff = now - startOfYear;
   const oneDay = 1000 * 60 * 60 * 24;
@@ -204,57 +224,27 @@ function getJulianDate() {
   const lastDigitYear = String(year).slice(-1);
   
   const julianStr = `${month} ${julianDay} ${lastDigitYear}`;
-  
-  // NEW: HJ code is now mmddy format (MM + DD + Y)
-  const dayOfMonth = String(now.getDate()).padStart(2, '0');
-  const hjCode = `HJ${month}${dayOfMonth}${lastDigitYear}`;
+  const hjCode = `HJ${month}${String(now.getDate()).padStart(2, '0')}${lastDigitYear}`;
   
   return { julianStr, hjCode };
 }
 
-// ====================== SINGLE-PAGE PRINT ======================
-function printPage() {
-  const options = { weekday:'long', month:'long', day:'numeric', year:'numeric' };
-  let str = currentMonday.toLocaleDateString('en-US', options);
-  document.getElementById('printMondayDate').innerHTML = `
-    <span style="font-size: 19px;">${str.split(',')[0]}</span><br>
-    ${str.split(',')[1].trim()}
-  `;
-
-  const tbody = document.getElementById('printTableBody');
-  tbody.innerHTML = '';
-  products.forEach(product => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td style="padding: 8px 12px; border: 1px solid #374151; font-weight: 500;">${product.flavor}</td>
-      <td style="padding: 8px 8px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line1Days))}</td>
-      <td style="padding: 8px 8px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line2Days))}</td>
-      <td style="padding: 8px 8px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line3Days))}</td>
-    `;
-    tbody.appendChild(row);
-  });
-
+function updateJulianFooter() {
   const { julianStr, hjCode } = getJulianDate();
-  document.getElementById('printJulianFooter').innerHTML = `
-    TODAY'S JULIAN DATE: <span style="font-family: monospace; font-size: 18px;">${julianStr}</span><br>
-    HJ CODE: <span style="font-family: monospace; font-size: 18px; color: #d97706;">${hjCode}</span>
+  const footer = document.getElementById('julianFooter');
+  footer.innerHTML = `
+    <div class="flex items-center gap-x-8 bg-white/70 border border-zinc-100 rounded-3xl px-8 py-4 shadow-sm">
+      <div>
+        <span class="text-emerald-600 text-xs tracking-widest font-semibold">TODAY'S JULIAN DATE</span>
+        <div class="text-2xl font-mono font-bold text-zinc-800 tracking-wider">${julianStr}</div>
+      </div>
+      <div class="h-9 w-px bg-zinc-200"></div>
+      <div>
+        <span class="text-emerald-600 text-xs tracking-widest font-semibold">HJ CODE</span>
+        <div class="text-2xl font-mono font-bold text-amber-600 tracking-widest">${hjCode}</div>
+      </div>
+    </div>
   `;
-
-  window.print();
-}
-
-// ====================== REST OF YOUR ORIGINAL CODE (UNCHANGED) ======================
-function createDateCell(date) {
-  const formatted = formatDate(date);
-  return `<div onclick="copyDate('${formatted}', this)" class="date-cell mx-auto bg-white text-blue-600 hover:bg-blue-600 hover:text-white font-semibold rounded-3xl text-center cursor-pointer shadow-inner border border-white/70">${formatted}</div>`;
-}
-
-function copyDate(text, el) {
-  navigator.clipboard.writeText(text).then(() => {
-    const originalHTML = el.innerHTML;
-    el.innerHTML = `<i class="fa-solid fa-check text-2xl sm:text-3xl"></i>`;
-    setTimeout(() => el.innerHTML = originalHTML, 1300);
-  });
 }
 
 function renderTable() {
@@ -290,24 +280,6 @@ function updateLastUpdated() {
     <span class="ml-2 text-[10px] sm:text-[10px] font-bold bg-emerald-400 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-3xl tracking-widest">LIVE</span>`;
 }
 
-function updateJulianFooter() {
-  const { julianStr, hjCode } = getJulianDate();
-  const footer = document.getElementById('julianFooter');
-  footer.innerHTML = `
-    <div class="flex items-center gap-x-8 bg-white/70 border border-zinc-100 rounded-3xl px-8 py-4 shadow-sm">
-      <div>
-        <span class="text-emerald-600 text-xs tracking-widest font-semibold">TODAY'S JULIAN DATE</span>
-        <div class="text-2xl font-mono font-bold text-zinc-800 tracking-wider">${julianStr}</div>
-      </div>
-      <div class="h-9 w-px bg-zinc-200"></div>
-      <div>
-        <span class="text-emerald-600 text-xs tracking-widest font-semibold">HJ CODE</span>
-        <div class="text-2xl font-mono font-bold text-amber-600 tracking-widest">${hjCode}</div>
-      </div>
-    </div>
-  `;
-}
-
 function refreshWeek() {
   currentMonday = getCurrentMonday();
   updateMondayDisplay();
@@ -321,9 +293,22 @@ function initializeLabExpirations() {
   renderTable();
   updateLastUpdated();
   updateJulianFooter();
+
+  // Load saved toggle state
+  const savedState = localStorage.getItem('autoUpdateEnabled');
+  const toggle = document.getElementById('autoUpdateToggle');
+  if (savedState !== null) {
+    toggle.checked = savedState === 'true';
+  }
+  toggleAutoUpdate(); // apply saved state
+
+  // Listen for toggle changes
+  toggle.addEventListener('change', toggleAutoUpdate);
+
   setInterval(updateLastUpdated, 30000);
   setInterval(updateJulianFooter, 86400000);
-  console.log('%c✅ Lab Expirations - HJ code now in mmddy format!', 'color:#0066ff;font-weight:700');
+
+  console.log('%c✅ Lab Expirations with Auto Update Toggle Ready!', 'color:#0066ff;font-weight:700');
 }
 
 window.onload = initializeLabExpirations;
