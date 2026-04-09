@@ -32,33 +32,33 @@
       </div>
     </div>
 
-    <!-- PDF Content Wrapper (used for clean, high-quality PDF export) -->
-    <div id="pdfContent">
+    <!-- PDF Content Wrapper (optimized for clean single-page PDF) -->
+    <div id="pdfContent" class="max-w-4xl mx-auto">
 
       <!-- Week Starting Hero -->
-      <div class="glass rounded-3xl shadow-2xl border border-white/60 p-6 sm:p-10 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+      <div class="glass rounded-3xl shadow-2xl border border-white/60 p-6 mb-8 flex flex-col md:flex-row items-center justify-between">
         <div class="flex-1 w-full">
-          <div class="uppercase text-blue-600 font-semibold tracking-[2px] sm:tracking-[3px] text-xs sm:text-sm mb-2 flex items-center gap-x-2">
+          <div class="uppercase text-blue-600 font-semibold tracking-[2px] text-xs mb-2 flex items-center gap-x-2">
             WEEK STARTING (MONDAY-LOCKED)
           </div>
-          <div id="mondayDatePDF" class="text-3xl sm:text-5xl md:text-6xl font-bold text-zinc-900 leading-none tracking-tighter"></div>
+          <div id="mondayDatePDF" class="text-4xl font-bold text-zinc-900 leading-none tracking-tighter"></div>
         </div>
       </div>
 
       <!-- Main Expiration Table -->
       <div class="glass rounded-3xl shadow-2xl border border-white/60 overflow-hidden">
-        <div class="px-4 sm:px-8 py-4 sm:py-7 border-b flex flex-col sm:flex-row items-start sm:items-center bg-white/70 gap-2 sm:gap-0">
-          <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold text-zinc-900 flex-1">Expiration Dates</h2>
+        <div class="px-6 py-5 border-b flex items-center bg-white/70">
+          <h2 class="text-2xl font-semibold text-zinc-900 flex-1">Expiration Dates</h2>
         </div>
 
         <div class="overflow-x-auto">
-          <table id="expirationTable" class="w-full min-w-[500px]">
+          <table id="expirationTable" class="w-full">
             <thead>
               <tr class="border-b border-zinc-100 bg-white/70">
-                <th class="text-left pl-4 sm:pl-8 md:pl-10 py-3 sm:py-7 font-semibold text-zinc-500 text-xs sm:text-base uppercase tracking-widest w-2/5">Flavor</th>
-                <th class="text-center px-2 py-2 sm:px-6 sm:py-7 font-semibold text-zinc-500 text-xs sm:text-base uppercase tracking-widest">Line 1</th>
-                <th class="text-center px-2 py-2 sm:px-6 sm:py-7 font-semibold text-zinc-500 text-xs sm:text-base uppercase tracking-widest">Line 2</th>
-                <th class="text-center px-2 py-2 sm:px-6 sm:py-7 font-semibold text-zinc-500 text-xs sm:text-base uppercase tracking-widest pr-4 sm:pr-8">Line 3</th>
+                <th class="text-left pl-6 py-4 font-semibold text-zinc-500 text-sm uppercase tracking-widest w-2/5">Flavor</th>
+                <th class="text-center px-4 py-4 font-semibold text-zinc-500 text-sm uppercase tracking-widest">Line 1</th>
+                <th class="text-center px-4 py-4 font-semibold text-zinc-500 text-sm uppercase tracking-widest">Line 2</th>
+                <th class="text-center px-4 py-4 font-semibold text-zinc-500 text-sm uppercase tracking-widest pr-6">Line 3</th>
               </tr>
             </thead>
             <tbody id="tableBody" class="divide-y divide-zinc-100"></tbody>
@@ -68,7 +68,7 @@
 
       <!-- Julian Date Footer -->
       <div id="julianFooter" 
-           class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 text-center text-zinc-500 text-sm font-medium"></div>
+           class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 text-center text-zinc-500 text-sm font-medium"></div>
 
     </div>
 
@@ -122,6 +122,44 @@
   .table-row:hover {
     background-color: #f8fbff;
     transform: translateX(4px);
+  }
+
+  /* ====================== COMPACT SINGLE-PAGE PDF OPTIMIZATION ====================== */
+  #pdfContent {
+    max-width: 100% !important;
+  }
+
+  #pdfContent .glass {
+    padding: 1.25rem !important;
+  }
+
+  #pdfContent #mondayDatePDF {
+    font-size: 2.75rem !important;
+    line-height: 1.1 !important;
+  }
+
+  #pdfContent th {
+    padding: 14px 8px !important;
+    font-size: 0.95rem !important;
+  }
+
+  #pdfContent td {
+    padding: 11px 8px !important;
+  }
+
+  #pdfContent .date-cell {
+    font-size: 0.82rem !important;
+    padding: 0.65rem 0.4rem !important;
+    min-width: 95px !important;
+  }
+
+  #pdfContent #julianFooter {
+    margin-top: 1.5rem !important;
+  }
+
+  #pdfContent #julianFooter > div {
+    padding: 1rem 1.5rem !important;
+    font-size: 1.05rem !important;
   }
 </style>
 {% endblock %}
@@ -188,16 +226,16 @@ function copyDate(text, el) {
   });
 }
 
-// ====================== BEAUTIFUL PDF DOWNLOAD ======================
+// ====================== BEAUTIFUL SINGLE-PAGE PDF DOWNLOAD ======================
 async function downloadPDF() {
   const element = document.getElementById('pdfContent');
   
   const opt = {
-    margin: [0.4, 0.4, 0.4, 0.4],
+    margin: [0.35, 0.35, 0.35, 0.35],     // Tight margins for maximum content space
     filename: `Lab-Expirations-${formatDate(currentMonday)}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { 
-      scale: 3,
+      scale: 3,                           // Ultra-sharp resolution
       useCORS: true,
       letterRendering: true
     },
@@ -206,7 +244,7 @@ async function downloadPDF() {
       format: 'letter', 
       orientation: 'portrait' 
     },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }   // Force everything on one page
   };
 
   const originalTitle = document.title;
@@ -216,7 +254,7 @@ async function downloadPDF() {
 
   setTimeout(() => { document.title = originalTitle; }, 800);
   
-  console.log('%c✅ Beautiful PDF generated and downloaded!', 'color:#10b981;font-weight:700');
+  console.log('%c✅ Beautiful single-page PDF generated!', 'color:#10b981;font-weight:700');
 }
 
 // ====================== JULIAN DATE ======================
@@ -265,10 +303,10 @@ function renderTable() {
     const row = document.createElement('tr');
     row.className = 'table-row';
     row.innerHTML = `
-      <td class="pl-2 sm:pl-8 md:pl-10 py-3 sm:py-8 font-medium text-sm sm:text-xl text-zinc-800">${product.flavor}</td>
-      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(addDays(currentMonday, product.line1Days))}</td>
-      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(addDays(currentMonday, product.line2Days))}</td>
-      <td class="px-1 sm:px-6 py-2 sm:py-8 pr-2 sm:pr-8">${createDateCell(addDays(currentMonday, product.line3Days))}</td>
+      <td class="pl-6 py-4 font-medium text-base text-zinc-800">${product.flavor}</td>
+      <td class="px-4 py-4">${createDateCell(addDays(currentMonday, product.line1Days))}</td>
+      <td class="px-4 py-4">${createDateCell(addDays(currentMonday, product.line2Days))}</td>
+      <td class="px-4 py-4 pr-6">${createDateCell(addDays(currentMonday, product.line3Days))}</td>
     `;
     tbody.appendChild(row);
   });
@@ -278,14 +316,10 @@ function updateMondayDisplay() {
   const options = { weekday:'long', month:'long', day:'numeric', year:'numeric' };
   let str = currentMonday.toLocaleDateString('en-US', options);
   const displayHTML = `
-    <span class="text-blue-600 text-sm sm:text-base md:text-lg">${str.split(',')[0]}</span><br>
-    <span class="text-3xl sm:text-5xl md:text-6xl font-bold">${str.split(',')[1].trim()}</span>`;
+    <span class="text-blue-600 text-base">${str.split(',')[0]}</span><br>
+    <span class="text-4xl font-bold">${str.split(',')[1].trim()}</span>`;
   
   document.getElementById('mondayDatePDF').innerHTML = displayHTML;
-}
-
-function updateLastUpdated() {
-  // Not used in PDF version (kept for compatibility if you add it back)
 }
 
 function refreshWeek() {
@@ -301,7 +335,7 @@ function initializeLabExpirations() {
   renderTable();
   updateJulianFooter();
   setInterval(updateJulianFooter, 86400000);
-  console.log('%c✅ Lab Expirations with Beautiful PDF Download Ready!', 'color:#10b981;font-weight:700');
+  console.log('%c✅ Lab Expirations - Single-Page PDF Optimized!', 'color:#10b981;font-weight:700');
 }
 
 window.onload = initializeLabExpirations;
