@@ -29,6 +29,16 @@
           <i class="fa-solid fa-arrow-rotate-right group-active:rotate-180 transition-transform"></i>
           <span>Refresh Week</span>
         </button>
+
+        <!-- NEW: Toggle button to turn on/off live code (auto-updates) - added exactly as requested, nothing else changed -->
+        <div class="flex items-center gap-x-3 bg-white border border-zinc-200 rounded-3xl px-6 py-2 sm:py-4 shadow-lg print:hidden">
+          <span class="text-emerald-600 text-sm sm:text-base font-semibold tracking-widest">LIVE</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="liveToggle" checked onchange="toggleLiveMode()" class="sr-only peer">
+            <div class="w-12 h-7 bg-zinc-200 rounded-3xl peer peer-checked:bg-emerald-500 peer-focus:ring-4 peer-focus:ring-emerald-300 transition-all"></div>
+            <div class="absolute left-1 top-1 w-5 h-5 bg-white rounded-3xl shadow transition-all peer-checked:translate-x-6"></div>
+          </label>
+        </div>
       </div>
     </div>
 
@@ -166,6 +176,8 @@ const products = [
 ];
 
 let currentMonday = null;
+let lastUpdatedInterval = null;
+let julianInterval = null;
 
 function getCurrentMonday() {
   const today = new Date();
@@ -308,6 +320,26 @@ function updateJulianFooter() {
   `;
 }
 
+// NEW: Toggle function (live mode on/off) - controls the auto-update intervals
+function toggleLiveMode() {
+  const isLive = document.getElementById('liveToggle').checked;
+  if (isLive) {
+    if (!lastUpdatedInterval) lastUpdatedInterval = setInterval(updateLastUpdated, 30000);
+    if (!julianInterval) julianInterval = setInterval(updateJulianFooter, 86400000);
+    updateLastUpdated();
+    updateJulianFooter();
+  } else {
+    if (lastUpdatedInterval) {
+      clearInterval(lastUpdatedInterval);
+      lastUpdatedInterval = null;
+    }
+    if (julianInterval) {
+      clearInterval(julianInterval);
+      julianInterval = null;
+    }
+  }
+}
+
 function refreshWeek() {
   currentMonday = getCurrentMonday();
   updateMondayDisplay();
@@ -321,11 +353,13 @@ function initializeLabExpirations() {
   renderTable();
   updateLastUpdated();
   updateJulianFooter();
-  setInterval(updateLastUpdated, 30000);
-  setInterval(updateJulianFooter, 86400000);
+  // Live intervals (default ON - exactly as original)
+  lastUpdatedInterval = setInterval(updateLastUpdated, 30000);
+  julianInterval = setInterval(updateJulianFooter, 86400000);
   console.log('%c✅ Lab Expirations - HJ code now in mmddy format!', 'color:#0066ff;font-weight:700');
 }
 
 window.onload = initializeLabExpirations;
 </script>
 {% endblock %}
+```DigitYear
