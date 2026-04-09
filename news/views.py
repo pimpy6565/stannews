@@ -35,3 +35,6 @@ def msg(request):
     if request.method == "GET":
         messages = chats.objects.all().values("text")
         return JsonResponse({"msg": list(messages)})
+    
+def lab_exp(request):
+    return render(request,"news/exp.html")

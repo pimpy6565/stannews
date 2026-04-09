@@ -9,6 +9,7 @@ Home Page
 {% block body %}  
 
 
+    
     <div style="background-color: aqua;padding-top: 20px;">
         <h1 style="text-align: center;margin: 0px; height: 60px;">News Feed</h1>
     </div>
@@ -16,6 +17,22 @@ Home Page
     <div style="display: flex;justify-content: center;align-items: center;">
         <img width="850px" style="max-width: 100%;max-height: 100%;" src="https://image.cnbcfm.com/api/v1/image/107321806-1698085688191-gettyimages-1747142684-bb7_6575_4q8cx1ie.jpeg?v=1698089503&w=1858&h=1045&ffmt=webp&vtcrop=y">
     </div>
+<!--start here-->
+    <div style="text-align:center;">
+        <h1>Need to know this weeks Expirations...<br> <a>Click Here</a></h1>
+        
+            <a href="{% url 'exp' %}">
+                <iframe 
+                    src="{% url 'exp' %}" 
+                    width="80%" 
+                    height="300px"
+                    style="border-radius:10px; border:1px solid #333; pointer-events:none;">
+                </iframe>
+            </a>
+       
+    </div>
+
+    
     <div style="text-align: center;">
         <h1 style="text-align: center;margin: 10px;">Comming Soon New Site Under-Construction</h1>
         <a style="color: red;font-size: x-large;" href="http://union-member-portal-2026.s3-website-us-east-1.amazonaws.com">Click Here To See The New Site!</a>
