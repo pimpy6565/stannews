@@ -87,6 +87,34 @@
   </div>
 </div>
 
+<!-- ====================== HIDDEN SINGLE-PAGE PRINT CONTENT ====================== -->
+<div id="printOnlyContent" class="hidden print:block">
+  <div style="max-width: 100%; margin: 0 auto; padding: 20px; font-family: system-ui, -apple-system, sans-serif;">
+    
+    <!-- Print Header -->
+    <div style="text-align: center; margin-bottom: 20px; border-bottom: 3px solid #1e40af; padding-bottom: 15px;">
+      <h1 style="font-size: 28px; font-weight: 700; margin: 0; color: #1e40af;">LAB EXPIRATIONS</h1>
+      <div id="printMonday" style="font-size: 22px; font-weight: 600; margin-top: 8px; color: #111827;"></div>
+    </div>
+
+    <!-- Table -->
+    <table id="printTable" style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 13px;">
+      <thead>
+        <tr style="background-color: #f3f4f6; border-bottom: 3px solid #9ca3af;">
+          <th style="text-align: left; padding: 10px 12px; border: 1px solid #9ca3af; font-weight: 600; width: 38%;">Flavor</th>
+          <th style="text-align: center; padding: 10px 8px; border: 1px solid #9ca3af; font-weight: 600;">Line 1</th>
+          <th style="text-align: center; padding: 10px 8px; border: 1px solid #9ca3af; font-weight: 600;">Line 2</th>
+          <th style="text-align: center; padding: 10px 8px; border: 1px solid #9ca3af; font-weight: 600;">Line 3</th>
+        </tr>
+      </thead>
+      <tbody id="printTableBody" style="border-bottom: 3px solid #9ca3af;"></tbody>
+    </table>
+
+    <!-- Julian Footer -->
+    <div id="printJulian" style="text-align: center; border-top: 3px solid #9ca3af; padding-top: 15px; font-size: 15px; font-weight: 600;"></div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_head %}
@@ -123,83 +151,20 @@
     transform: translateX(4px);
   }
 
-  /* ====================== FIXED SINGLE-PAGE PRINT STYLES ====================== */
+  /* Hide the print-only content on screen */
+  #printOnlyContent { display: none; }
+
+  /* Show ONLY the print content when printing */
   @media print {
-    @page {
-      size: letter portrait;
-      margin: 0.5in;                    /* Tight margins to fit everything on 1 page */
+    body * { visibility: hidden; }
+    #printOnlyContent, #printOnlyContent * { visibility: visible; }
+    #printOnlyContent {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
     }
-
-    body {
-      background: white !important;
-      color: #111827 !important;
-      font-family: system-ui, -apple-system, sans-serif;
-      -webkit-print-color-adjust: exact;
-    }
-
-    .print\\:hidden { display: none !important; }
-
-    .glass, .shadow-2xl, .shadow-xl, .shadow-lg, .border-white\\/60 {
-      background: white !important;
-      border: 1px solid #d1d5db !important;
-      box-shadow: none !important;
-      backdrop-filter: none !important;
-    }
-
-    /* Compact hero */
-    #mondayDate {
-      font-size: 2.8rem !important;
-      line-height: 1.05 !important;
-    }
-
-    /* Compact table - fits all 17 rows on one page */
-    th, td {
-      padding: 9px 6px !important;
-      font-size: 0.9rem !important;
-      border: 1px solid #9ca3af !important;
-    }
-
-    .date-cell {
-      background: white !important;
-      color: #1e40af !important;
-      border: 2px solid #1e40af !important;
-      box-shadow: none !important;
-      font-weight: 700;
-      font-size: 0.82rem !important;
-      padding: 8px 6px !important;
-      min-width: 98px !important;
-      border-radius: 9999px !important;
-    }
-
-    .table-row:hover {
-      background: transparent !important;
-      transform: none !important;
-    }
-
-    thead tr {
-      background-color: #f3f4f6 !important;
-    }
-
-    #expirationTable {
-      border-collapse: collapse;
-      width: 100% !important;
-    }
-
-    /* Julian footer - compact */
-    #julianFooter {
-      margin-top: 1.25rem !important;
-      border-top: 2px solid #9ca3af;
-      padding-top: 1rem;
-    }
-
-    #julianFooter > div {
-      padding: 0.75rem 1.25rem !important;
-      font-size: 1.05rem !important;
-    }
-
-    h1, h2, .text-emerald-600, .text-blue-600 {
-      color: #1e40af !important;
-    }
+    @page { size: letter portrait; margin: 0.4in; }
   }
 </style>
 {% endblock %}
@@ -266,20 +231,44 @@ function copyDate(text, el) {
   });
 }
 
+// ====================== SINGLE-PAGE PRINT FUNCTION ======================
 function printPage() {
-  const originalTitle = document.title;
-  document.title = `Lab Expirations - Week of ${formatDate(currentMonday)}`;
+  const printContent = document.getElementById('printOnlyContent');
   
-  // Small delay so browser finishes rendering the compact layout
-  setTimeout(() => {
-    window.print();
-  }, 120);
-  
-  setTimeout(() => {
-    document.title = originalTitle;
-  }, 1000);
+  // Populate Monday
+  const options = { weekday:'long', month:'long', day:'numeric', year:'numeric' };
+  let str = currentMonday.toLocaleDateString('en-US', options);
+  document.getElementById('printMonday').innerHTML = `
+    <span style="font-size:18px; color:#1e40af;">${str.split(',')[0]}</span><br>
+    ${str.split(',')[1].trim()}
+  `;
+
+  // Populate table
+  const tbody = document.getElementById('printTableBody');
+  tbody.innerHTML = '';
+  products.forEach(product => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td style="padding: 8px 12px; border: 1px solid #9ca3af; font-weight: 500;">${product.flavor}</td>
+      <td style="padding: 8px 8px; border: 1px solid #9ca3af; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line1Days))}</td>
+      <td style="padding: 8px 8px; border: 1px solid #9ca3af; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line2Days))}</td>
+      <td style="padding: 8px 8px; border: 1px solid #9ca3af; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line3Days))}</td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  // Populate Julian
+  const { julianStr, hjCode } = getJulianDate();
+  document.getElementById('printJulian').innerHTML = `
+    TODAY'S JULIAN DATE: <span style="font-family: monospace; font-size: 18px;">${julianStr}</span> &nbsp;&nbsp;&nbsp;&nbsp; 
+    HJ CODE: <span style="font-family: monospace; font-size: 18px; color: #d97706;">${hjCode}</span>
+  `;
+
+  // Print
+  window.print();
 }
 
+// ====================== JULIAN DATE ======================
 function getJulianDate() {
   const now = new Date();
   const year = now.getFullYear();
@@ -317,6 +306,7 @@ function updateJulianFooter() {
   `;
 }
 
+// ====================== EXISTING FUNCTIONS (unchanged) ======================
 function renderTable() {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
