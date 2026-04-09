@@ -87,31 +87,31 @@
   </div>
 </div>
 
-<!-- ====================== CLEAN SINGLE-PAGE PRINT SHEET ====================== -->
+<!-- ====================== CLEAN SINGLE-PAGE PRINT SHEET (NOW FITS AT 100%) ====================== -->
 <div id="printSheet" class="hidden">
-  <div style="width: 100%; max-width: 100%; padding: 30px 40px; font-family: system-ui, -apple-system, sans-serif; background: white; color: #111827;">
+  <div style="width: 100%; padding: 25px 35px; font-family: system-ui, -apple-system, sans-serif; background: white; color: #111827; line-height: 1.1;">
     
     <!-- Header -->
-    <div style="text-align: center; margin-bottom: 25px; border-bottom: 4px solid #1e40af; padding-bottom: 18px;">
-      <h1 style="font-size: 32px; font-weight: 700; margin: 0 0 6px 0; color: #1e40af; letter-spacing: -1px;">LAB EXPIRATIONS</h1>
-      <div id="printMondayDate" style="font-size: 24px; font-weight: 600; color: #1e40af;"></div>
+    <div style="text-align: center; margin-bottom: 20px; border-bottom: 4px solid #1e40af; padding-bottom: 15px;">
+      <h1 style="font-size: 29px; font-weight: 700; margin: 0 0 6px 0; color: #1e40af; letter-spacing: -1px;">LAB EXPIRATIONS</h1>
+      <div id="printMondayDate" style="font-size: 21px; font-weight: 600; color: #1e40af;"></div>
     </div>
 
     <!-- Table -->
-    <table id="printTable" style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px;">
+    <table id="printTable" style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 13.5px;">
       <thead>
         <tr style="background: #f3f4f6;">
-          <th style="text-align: left; padding: 12px 14px; border: 2px solid #374151; font-weight: 700; width: 38%;">Flavor</th>
-          <th style="text-align: center; padding: 12px 10px; border: 2px solid #374151; font-weight: 700;">Line 1</th>
-          <th style="text-align: center; padding: 12px 10px; border: 2px solid #374151; font-weight: 700;">Line 2</th>
-          <th style="text-align: center; padding: 12px 10px; border: 2px solid #374151; font-weight: 700;">Line 3</th>
+          <th style="text-align: left; padding: 9px 12px; border: 2px solid #374151; font-weight: 700; width: 38%;">Flavor</th>
+          <th style="text-align: center; padding: 9px 8px; border: 2px solid #374151; font-weight: 700;">Line 1</th>
+          <th style="text-align: center; padding: 9px 8px; border: 2px solid #374151; font-weight: 700;">Line 2</th>
+          <th style="text-align: center; padding: 9px 8px; border: 2px solid #374151; font-weight: 700;">Line 3</th>
         </tr>
       </thead>
       <tbody id="printTableBody" style="border-bottom: 4px solid #374151;"></tbody>
     </table>
 
     <!-- Julian Footer -->
-    <div id="printJulianFooter" style="text-align: center; padding: 18px; background: #f8fafc; border: 3px solid #1e40af; border-radius: 12px; font-size: 17px; font-weight: 600;">
+    <div id="printJulianFooter" style="text-align: center; padding: 14px; background: #f8fafc; border: 3px solid #1e40af; border-radius: 12px; font-size: 16px; font-weight: 600;">
     </div>
 
   </div>
@@ -140,7 +140,7 @@
     body * { visibility: hidden; }
     #printSheet, #printSheet * { visibility: visible; }
     #printSheet { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
-    @page { size: letter portrait; margin: 0.4in; }
+    @page { size: letter portrait; margin: 0.35in; }
   }
 </style>
 {% endblock %}
@@ -190,9 +190,9 @@ function addDays(baseDate, days) {
   return date;
 }
 
-// ====================== CLEAN SINGLE-PAGE PRINT ======================
+// ====================== SINGLE-PAGE PRINT (NOW FITS PERFECTLY AT 100%) ======================
 function printPage() {
-  // Populate Monday
+  // Monday
   const options = { weekday:'long', month:'long', day:'numeric', year:'numeric' };
   let str = currentMonday.toLocaleDateString('en-US', options);
   document.getElementById('printMondayDate').innerHTML = `
@@ -200,28 +200,27 @@ function printPage() {
     ${str.split(',')[1].trim()}
   `;
 
-  // Populate table
+  // Table
   const tbody = document.getElementById('printTableBody');
   tbody.innerHTML = '';
   products.forEach(product => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td style="padding: 10px 14px; border: 1px solid #374151; font-weight: 500;">${product.flavor}</td>
-      <td style="padding: 10px 10px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line1Days))}</td>
-      <td style="padding: 10px 10px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line2Days))}</td>
-      <td style="padding: 10px 10px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line3Days))}</td>
+      <td style="padding: 8px 12px; border: 1px solid #374151; font-weight: 500;">${product.flavor}</td>
+      <td style="padding: 8px 8px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line1Days))}</td>
+      <td style="padding: 8px 8px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line2Days))}</td>
+      <td style="padding: 8px 8px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line3Days))}</td>
     `;
     tbody.appendChild(row);
   });
 
-  // Populate Julian
+  // Julian
   const { julianStr, hjCode } = getJulianDate();
   document.getElementById('printJulianFooter').innerHTML = `
-    TODAY'S JULIAN DATE: <span style="font-family: monospace; font-size: 19px;">${julianStr}</span><br>
-    HJ CODE: <span style="font-family: monospace; font-size: 19px; color: #d97706;">${hjCode}</span>
+    TODAY'S JULIAN DATE: <span style="font-family: monospace; font-size: 18px;">${julianStr}</span><br>
+    HJ CODE: <span style="font-family: monospace; font-size: 18px; color: #d97706;">${hjCode}</span>
   `;
 
-  // Print the clean sheet
   window.print();
 }
 
@@ -322,7 +321,7 @@ function initializeLabExpirations() {
   updateJulianFooter();
   setInterval(updateLastUpdated, 30000);
   setInterval(updateJulianFooter, 86400000);
-  console.log('%c✅ Lab Expirations - Clean Single-Page Print Sheet Ready!', 'color:#0066ff;font-weight:700');
+  console.log('%c✅ Lab Expirations - Single Page Print Now Fits at 100%!', 'color:#0066ff;font-weight:700');
 }
 
 window.onload = initializeLabExpirations;
