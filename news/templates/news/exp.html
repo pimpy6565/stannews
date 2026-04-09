@@ -17,7 +17,7 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-x-3">
+      <div class="flex items-center gap-x-4">
         <!-- Auto Update Toggle -->
         <div class="flex items-center gap-x-2">
           <span class="text-xs sm:text-sm font-medium text-zinc-500">Auto Update</span>
@@ -26,14 +26,6 @@
             <div class="w-9 h-5 bg-zinc-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
           </label>
         </div>
-
-        <!-- Fit to Screen Toggle -->
-        <button onclick="toggleFitToScreen()" 
-                id="fitBtn"
-                class="group flex items-center gap-x-2 sm:gap-x-3 bg-white hover:bg-violet-50 border border-zinc-200 hover:border-violet-200 text-zinc-700 hover:text-violet-600 px-4 sm:px-8 py-2 sm:py-4 rounded-3xl text-sm sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95">
-          <i id="fitIcon" class="fa-solid fa-compress"></i>
-          <span id="fitText">Fit to Screen</span>
-        </button>
 
         <button onclick="printPage()" 
                 class="group flex items-center gap-x-2 sm:gap-x-3 bg-white hover:bg-amber-50 border border-zinc-200 hover:border-amber-200 text-zinc-700 hover:text-amber-600 px-4 sm:px-8 py-2 sm:py-4 rounded-3xl text-sm sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95">
@@ -50,7 +42,7 @@
     </div>
 
     <!-- Week Starting Hero -->
-    <div id="mainContent" class="glass rounded-3xl shadow-2xl border border-white/60 p-6 sm:p-10 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 print:shadow-none print:border-zinc-300 print:bg-white print:p-6">
+    <div class="glass rounded-3xl shadow-2xl border border-white/60 p-6 sm:p-10 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 print:shadow-none print:border-zinc-300 print:bg-white print:p-6">
       <div class="flex-1 w-full">
         <div class="uppercase text-blue-600 font-semibold tracking-[2px] sm:tracking-[3px] text-xs sm:text-sm mb-2 flex items-center gap-x-2 print:text-zinc-500">
           <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse print:hidden"></div>
@@ -62,7 +54,7 @@
     </div>
 
     <!-- Main Expiration Table -->
-    <div id="mainContent" class="glass rounded-3xl shadow-2xl border border-white/60 overflow-hidden print:shadow-none print:border-zinc-300 print:rounded-none print:bg-white">
+    <div class="glass rounded-3xl shadow-2xl border border-white/60 overflow-hidden print:shadow-none print:border-zinc-300 print:rounded-none print:bg-white">
       <div class="px-4 sm:px-8 py-4 sm:py-7 border-b flex flex-col sm:flex-row items-start sm:items-center bg-white/70 gap-2 sm:gap-0 print:bg-white print:border-zinc-300">
         <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold text-zinc-900 flex-1 print:text-2xl">Expiration Dates</h2>
         <div class="px-3 sm:px-5 py-1 sm:py-2 bg-emerald-100 text-emerald-700 text-xs sm:text-sm font-medium rounded-2xl flex items-center gap-x-2 print:hidden">
@@ -119,20 +111,19 @@
   .table-row { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
   .table-row:hover { background-color: #f8fbff; transform: translateX(4px); }
 
-  /* Compact / Fit-to-Screen Mode */
-  .compact-mode .glass { padding: 1rem !important; }
-  .compact-mode #mondayDate { font-size: 2.4rem !important; }
-  .compact-mode th, .compact-mode td { padding: 8px 6px !important; font-size: 0.95rem !important; }
-  .compact-mode .date-cell { font-size: 0.8rem !important; padding: 0.55rem 0.4rem !important; }
-  .compact-mode .table-row { height: auto !important; }
-  .compact-mode #julianFooter { margin-top: 1.5rem !important; }
-  .compact-mode .mt-10 { margin-top: 1.5rem !important; }
+  /* Print styles (unchanged) */
+  @media print {
+    @page { size: letter portrait; margin: 0.35in; }
+    body * { visibility: hidden; }
+    #printSheet, #printSheet * { visibility: visible; }
+    #printSheet { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+  }
 </style>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-const products = [ /* your full product list remains unchanged */ 
+const products = [
   { flavor: "Pepsi", line1Days: 91, line2Days: 98, line3Days: 280 },
   { flavor: "Pepsi Diet", line1Days: 91, line2Days: 98, line3Days: 154 },
   { flavor: "Pepsi Max/Zero cherry zero", line1Days: 91, line2Days: 98, line3Days: 105 },
@@ -154,10 +145,9 @@ const products = [ /* your full product list remains unchanged */
 
 let currentMonday = null;
 let autoUpdateInterval = null;
-const AUTO_UPDATE_INTERVAL_MS = 300000;
-let isCompact = false;
+const AUTO_UPDATE_INTERVAL_MS = 300000; // 5 minutes
 
-function getCurrentMonday() { /* unchanged */ 
+function getCurrentMonday() {
   const today = new Date();
   const day = today.getDay();
   const diff = today.getDate() - day + (day === 0 ? -6 : 1);
@@ -167,23 +157,27 @@ function getCurrentMonday() { /* unchanged */
   return monday;
 }
 
-function formatDate(date) { /* unchanged */ 
+function formatDate(date) {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   return `${months[date.getMonth()]} ${String(date.getDate()).padStart(2,'0')} ${String(date.getFullYear()).slice(-2)}`;
 }
 
-function addDays(baseDate, days) { /* unchanged */ 
+function addDays(baseDate, days) {
   const date = new Date(baseDate);
   date.setDate(date.getDate() + days);
   return date;
 }
 
-function createDateCell(date) { /* unchanged */ 
+function createDateCell(date) {
   const formatted = formatDate(date);
-  return `<div onclick="copyDate('${formatted}', this)" class="date-cell mx-auto bg-white text-blue-600 hover:bg-blue-600 hover:text-white font-semibold rounded-3xl text-center cursor-pointer shadow-inner border border-white/70">${formatted}</div>`;
+  return `
+    <div onclick="copyDate('${formatted}', this)" 
+         class="date-cell mx-auto bg-white text-blue-600 hover:bg-blue-600 hover:text-white font-semibold rounded-3xl text-center cursor-pointer shadow-inner border border-white/70">
+      ${formatted}
+    </div>`;
 }
 
-function copyDate(text, el) { /* unchanged */ 
+function copyDate(text, el) {
   navigator.clipboard.writeText(text).then(() => {
     const originalHTML = el.innerHTML;
     el.innerHTML = `<i class="fa-solid fa-check text-2xl sm:text-3xl"></i>`;
@@ -191,29 +185,33 @@ function copyDate(text, el) { /* unchanged */
   });
 }
 
-// ====================== FIT TO SCREEN TOGGLE ======================
-function toggleFitToScreen() {
-  isCompact = !isCompact;
-  if (isCompact) {
-    document.documentElement.classList.add('compact-mode');
-    document.getElementById('fitIcon').classList.replace('fa-compress', 'fa-expand');
-    document.getElementById('fitText').textContent = 'Normal View';
+// ====================== AUTO UPDATE TOGGLE ======================
+function toggleAutoUpdate() {
+  const enabled = document.getElementById('autoUpdateToggle').checked;
+  localStorage.setItem('autoUpdateEnabled', enabled);
+
+  if (enabled) {
+    if (!autoUpdateInterval) {
+      autoUpdateInterval = setInterval(() => {
+        refreshWeek();
+      }, AUTO_UPDATE_INTERVAL_MS);
+    }
   } else {
-    document.documentElement.classList.remove('compact-mode');
-    document.getElementById('fitIcon').classList.replace('fa-expand', 'fa-compress');
-    document.getElementById('fitText').textContent = 'Fit to Screen';
+    if (autoUpdateInterval) {
+      clearInterval(autoUpdateInterval);
+      autoUpdateInterval = null;
+    }
   }
 }
 
-// ====================== REST OF YOUR CODE (unchanged) ======================
-function printPage() { /* unchanged */ 
+function printPage() {
   const originalTitle = document.title;
   document.title = `Lab Expirations - Week of ${formatDate(currentMonday)}`;
   window.print();
   setTimeout(() => { document.title = originalTitle; }, 500);
 }
 
-function getJulianDate() { /* unchanged */ 
+function getJulianDate() {
   const now = new Date();
   const year = now.getFullYear();
   const startOfYear = new Date(year, 0, 0);
@@ -227,46 +225,62 @@ function getJulianDate() { /* unchanged */
   
   const julianStr = `${month} ${julianDay} ${lastDigitYear}`;
   const hjCode = `HJ${month}${String(now.getDate()).padStart(2, '0')}${lastDigitYear}`;
+  
   return { julianStr, hjCode };
 }
 
-function updateJulianFooter() { /* unchanged */ 
+function updateJulianFooter() {
   const { julianStr, hjCode } = getJulianDate();
   const footer = document.getElementById('julianFooter');
-  footer.innerHTML = `<div class="flex items-center gap-x-8 bg-white/70 border border-zinc-100 rounded-3xl px-8 py-4 shadow-sm">
-    <div><span class="text-emerald-600 text-xs tracking-widest font-semibold">TODAY'S JULIAN DATE</span><div class="text-2xl font-mono font-bold text-zinc-800 tracking-wider">${julianStr}</div></div>
-    <div class="h-9 w-px bg-zinc-200"></div>
-    <div><span class="text-emerald-600 text-xs tracking-widest font-semibold">HJ CODE</span><div class="text-2xl font-mono font-bold text-amber-600 tracking-widest">${hjCode}</div></div>
-  </div>`;
+  footer.innerHTML = `
+    <div class="flex items-center gap-x-8 bg-white/70 border border-zinc-100 rounded-3xl px-8 py-4 shadow-sm">
+      <div>
+        <span class="text-emerald-600 text-xs tracking-widest font-semibold">TODAY'S JULIAN DATE</span>
+        <div class="text-2xl font-mono font-bold text-zinc-800 tracking-wider">${julianStr}</div>
+      </div>
+      <div class="h-9 w-px bg-zinc-200"></div>
+      <div>
+        <span class="text-emerald-600 text-xs tracking-widest font-semibold">HJ CODE</span>
+        <div class="text-2xl font-mono font-bold text-amber-600 tracking-widest">${hjCode}</div>
+      </div>
+    </div>
+  `;
 }
 
-function renderTable() { /* unchanged */ 
+function renderTable() {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = '';
   products.forEach(product => {
     const row = document.createElement('tr');
     row.className = 'table-row';
-    row.innerHTML = `<td class="pl-2 sm:pl-8 md:pl-10 py-3 sm:py-8 font-medium text-sm sm:text-xl text-zinc-800">${product.flavor}</td>
+    row.innerHTML = `
+      <td class="pl-2 sm:pl-8 md:pl-10 py-3 sm:py-8 font-medium text-sm sm:text-xl text-zinc-800">${product.flavor}</td>
       <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(addDays(currentMonday, product.line1Days))}</td>
       <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(addDays(currentMonday, product.line2Days))}</td>
-      <td class="px-1 sm:px-6 py-2 sm:py-8 pr-2 sm:pr-8">${createDateCell(addDays(currentMonday, product.line3Days))}</td>`;
+      <td class="px-1 sm:px-6 py-2 sm:py-8 pr-2 sm:pr-8">${createDateCell(addDays(currentMonday, product.line3Days))}</td>
+    `;
     tbody.appendChild(row);
   });
 }
 
-function updateMondayDisplay() { /* unchanged */ 
+function updateMondayDisplay() {
   const options = { weekday:'long', month:'long', day:'numeric', year:'numeric' };
   let str = currentMonday.toLocaleDateString('en-US', options);
-  document.getElementById('mondayDate').innerHTML = `<span class="text-blue-600 text-sm sm:text-base md:text-lg">${str.split(',')[0]}</span><br><span class="text-3xl sm:text-5xl md:text-6xl font-bold">${str.split(',')[1].trim()}</span>`;
+  document.getElementById('mondayDate').innerHTML = `
+    <span class="text-blue-600 text-sm sm:text-base md:text-lg">${str.split(',')[0]}</span><br>
+    <span class="text-3xl sm:text-5xl md:text-6xl font-bold">${str.split(',')[1].trim()}</span>`;
 }
 
-function updateLastUpdated() { /* unchanged */ 
+function updateLastUpdated() {
   const now = new Date();
   const time = now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}).toUpperCase();
-  document.getElementById('lastUpdated').innerHTML = `<span class="text-zinc-400 text-xs sm:text-sm font-medium">Last updated</span><span class="font-semibold text-zinc-700 text-sm sm:text-2xl ml-1 sm:ml-2">${time}</span><span class="ml-2 text-[10px] sm:text-[10px] font-bold bg-emerald-400 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-3xl tracking-widest">LIVE</span>`;
+  document.getElementById('lastUpdated').innerHTML = `
+    <span class="text-zinc-400 text-xs sm:text-sm font-medium">Last updated</span>
+    <span class="font-semibold text-zinc-700 text-sm sm:text-2xl ml-1 sm:ml-2">${time}</span>
+    <span class="ml-2 text-[10px] sm:text-[10px] font-bold bg-emerald-400 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-3xl tracking-widest">LIVE</span>`;
 }
 
-function refreshWeek() { /* unchanged */ 
+function refreshWeek() {
   currentMonday = getCurrentMonday();
   updateMondayDisplay();
   renderTable();
@@ -280,23 +294,23 @@ function initializeLabExpirations() {
   updateLastUpdated();
   updateJulianFooter();
 
+  // Load saved toggle state
+  const savedState = localStorage.getItem('autoUpdateEnabled');
   const toggle = document.getElementById('autoUpdateToggle');
-  const saved = localStorage.getItem('autoUpdateEnabled');
-  if (saved !== null) toggle.checked = saved === 'true';
-  toggle.addEventListener('change', () => {
-    const enabled = toggle.checked;
-    localStorage.setItem('autoUpdateEnabled', enabled);
-    if (enabled) autoUpdateInterval = setInterval(refreshWeek, AUTO_UPDATE_INTERVAL_MS);
-    else clearInterval(autoUpdateInterval);
-  });
-  if (toggle.checked) autoUpdateInterval = setInterval(refreshWeek, AUTO_UPDATE_INTERVAL_MS);
+  if (savedState !== null) {
+    toggle.checked = savedState === 'true';
+  }
+  toggleAutoUpdate(); // apply saved state
+
+  // Listen for toggle changes
+  toggle.addEventListener('change', toggleAutoUpdate);
 
   setInterval(updateLastUpdated, 30000);
   setInterval(updateJulianFooter, 86400000);
 
-  console.log('%c✅ Lab Expirations with Fit to Screen Mode Ready!', 'color:#0066ff;font-weight:700');
+  console.log('%c✅ Lab Expirations with Auto Update Toggle Ready!', 'color:#0066ff;font-weight:700');
 }
 
 window.onload = initializeLabExpirations;
 </script>
-{% endblock %} 
+{% endblock %}
