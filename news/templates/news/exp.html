@@ -5,55 +5,55 @@
 {% block body %}
 
 <div class="pt-4 pb-16 bg-gradient-to-br from-zinc-50 to-white min-h-screen">
-  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
     <!-- Top Navigation (inside the page) -->
-    <div class="flex items-center justify-between mb-10">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-4 md:gap-0">
       <div class="flex items-center gap-x-4">
         <div class="w-11 h-11 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-3xl flex items-center justify-center text-3xl shadow-inner">🧪</div>
         <div>
-          <h1 class="text-5xl font-semibold tracking-tighter text-zinc-900" style="font-family: 'Space Grotesk', sans-serif;">Lab Expirations</h1>
-          <p class="text-emerald-600 text-sm font-medium tracking-widest -mt-1">PRODUCTION • REAL-TIME • MONDAY LOCKED</p>
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tighter text-zinc-900" style="font-family: 'Space Grotesk', sans-serif;">Lab Expirations</h1>
+          <p class="text-emerald-600 text-xs sm:text-sm font-medium tracking-widest -mt-1">PRODUCTION • REAL-TIME • MONDAY LOCKED</p>
         </div>
       </div>
 
       <button onclick="refreshWeek()" 
-              class="group flex items-center gap-x-3 bg-white hover:bg-blue-50 border border-zinc-200 hover:border-blue-200 text-zinc-700 hover:text-blue-600 px-8 py-4 rounded-3xl text-xl font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95">
+              class="group flex items-center gap-x-2 sm:gap-x-3 bg-white hover:bg-blue-50 border border-zinc-200 hover:border-blue-200 text-zinc-700 hover:text-blue-600 px-4 sm:px-8 py-2 sm:py-4 rounded-3xl text-sm sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95 mt-3 md:mt-0">
         <i class="fa-solid fa-arrow-rotate-right group-active:rotate-180 transition-transform"></i>
         <span>Refresh Week</span>
       </button>
     </div>
 
     <!-- Week Starting Hero -->
-    <div class="glass rounded-3xl shadow-2xl border border-white/60 p-10 mb-12 flex flex-col md:flex-row items-center justify-between gap-6">
-      <div class="flex-1">
-        <div class="uppercase text-blue-600 font-semibold tracking-[3px] text-sm mb-3 flex items-center gap-x-2">
+    <div class="glass rounded-3xl shadow-2xl border border-white/60 p-6 sm:p-10 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+      <div class="flex-1 w-full">
+        <div class="uppercase text-blue-600 font-semibold tracking-[2px] sm:tracking-[3px] text-xs sm:text-sm mb-2 flex items-center gap-x-2">
           <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
           WEEK STARTING (MONDAY-LOCKED)
         </div>
-        <div id="mondayDate" class="text-5xl md:text-6xl font-bold text-zinc-900 leading-none tracking-tighter"></div>
+        <div id="mondayDate" class="text-3xl sm:text-5xl md:text-6xl font-bold text-zinc-900 leading-none tracking-tighter"></div>
       </div>
-      <div id="lastUpdated" class="flex items-center gap-x-3 text-zinc-500 text-sm font-medium"></div>
+      <div id="lastUpdated" class="flex items-center gap-x-2 sm:gap-x-3 text-zinc-500 text-xs sm:text-sm font-medium mt-3 md:mt-0"></div>
     </div>
 
     <!-- Main Expiration Table -->
     <div class="glass rounded-3xl shadow-2xl border border-white/60 overflow-hidden">
-      <div class="px-8 md:px-10 py-7 border-b flex items-center bg-white/70">
-        <h2 class="text-3xl font-semibold text-zinc-900 flex-1">Expiration Dates</h2>
-        <div class="px-5 py-2 bg-emerald-100 text-emerald-700 text-sm font-medium rounded-2xl flex items-center gap-x-2">
+      <div class="px-4 sm:px-8 py-4 sm:py-7 border-b flex flex-col sm:flex-row items-start sm:items-center bg-white/70 gap-2 sm:gap-0">
+        <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold text-zinc-900 flex-1">Expiration Dates</h2>
+        <div class="px-3 sm:px-5 py-1 sm:py-2 bg-emerald-100 text-emerald-700 text-xs sm:text-sm font-medium rounded-2xl flex items-center gap-x-2">
           <i class="fa-solid fa-circle-check"></i>
           Exact rules from Blank 6.numbers
         </div>
       </div>
 
       <div class="overflow-x-auto">
-        <table class="w-full">
+        <table class="w-full min-w-[500px]">
           <thead>
             <tr class="border-b border-zinc-100 bg-white/70">
-              <th class="text-left pl-8 md:pl-10 py-7 font-semibold text-zinc-500 text-base uppercase tracking-widest w-2/5">Flavor</th>
-              <th class="text-center py-7 font-semibold text-zinc-500 text-base uppercase tracking-widest">Line 1</th>
-              <th class="text-center py-7 font-semibold text-zinc-500 text-base uppercase tracking-widest">Line 2</th>
-              <th class="text-center py-7 font-semibold text-zinc-500 text-base uppercase tracking-widest pr-8">Line 3</th>
+              <th class="text-left pl-4 sm:pl-8 md:pl-10 py-3 sm:py-7 font-semibold text-zinc-500 text-xs sm:text-base uppercase tracking-widest w-2/5">Flavor</th>
+              <th class="text-center px-2 py-2 sm:px-6 sm:py-7 font-semibold text-zinc-500 text-xs sm:text-base uppercase tracking-widest">Line 1</th>
+              <th class="text-center px-2 py-2 sm:px-6 sm:py-7 font-semibold text-zinc-500 text-xs sm:text-base uppercase tracking-widest">Line 2</th>
+              <th class="text-center px-2 py-2 sm:px-6 sm:py-7 font-semibold text-zinc-500 text-xs sm:text-base uppercase tracking-widest pr-4 sm:pr-8">Line 3</th>
             </tr>
           </thead>
           <tbody id="tableBody" class="divide-y divide-zinc-100"></tbody>
@@ -61,7 +61,7 @@
       </div>
     </div>
 
-    <div class="mt-10 text-center text-xs text-zinc-400 flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+    <div class="mt-8 text-center text-[10px] sm:text-xs text-zinc-400 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
       <div class="flex items-center gap-x-1.5">
         <i class="fa-solid fa-mobile-screen-button"></i>
         <span>Tap any date to copy • Works offline</span>
@@ -78,29 +78,33 @@
 {% endblock %}
 
 {% block extra_head %}
-<!-- Tailwind + Custom Styles (added to your base template head) -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&display=swap');
   :root { --primary: #0066ff; }
+
   .glass {
     background: rgba(255,255,255,0.95);
     backdrop-filter: blur(20px);
   }
-  .hero-date { font-size: 3.75rem; line-height: 1.05; letter-spacing: -0.04em; font-weight: 700; }
   .date-cell {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px -2px rgba(0, 102, 255, 0.15);
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 4px 12px -2px rgba(0,102,255,0.15);
+    min-width: 80px;
+    max-width: 140px;
+    width: 100%;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
   }
   .date-cell:hover {
     transform: translateY(-3px) scale(1.04);
-    box-shadow: 0 20px 25px -5px rgb(0 102 255 / 0.25);
+    box-shadow: 0 20px 25px -5px rgba(0,102,255,0.25);
     background-color: #0066ff;
     color: white;
   }
   .table-row {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
   }
   .table-row:hover {
     background-color: #f8fbff;
@@ -111,7 +115,6 @@
 
 {% block extra_scripts %}
 <script>
-// === LAB EXPIRATIONS FULL FUNCTIONALITY (Starry Line 2 fixed to 98) ===
 const products = [
   { flavor: "Pepsi", line1Days: 91, line2Days: 98, line3Days: 280 },
   { flavor: "Pepsi Diet", line1Days: 91, line2Days: 98, line3Days: 154 },
@@ -140,13 +143,13 @@ function getCurrentMonday() {
   const diff = today.getDate() - day + (day === 0 ? -6 : 1);
   const monday = new Date(today);
   monday.setDate(diff);
-  monday.setHours(0, 0, 0, 0);
+  monday.setHours(0,0,0,0);
   return monday;
 }
 
 function formatDate(date) {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  return `${months[date.getMonth()]} ${String(date.getDate()).padStart(2, '0')} ${String(date.getFullYear()).slice(-2)}`;
+  return `${months[date.getMonth()]} ${String(date.getDate()).padStart(2,'0')} ${String(date.getFullYear()).slice(-2)}`;
 }
 
 function addDays(baseDate, days) {
@@ -159,7 +162,7 @@ function createDateCell(date) {
   const formatted = formatDate(date);
   return `
     <div onclick="copyDate('${formatted}', this)" 
-         class="date-cell mx-auto w-32 bg-white text-blue-600 hover:bg-blue-600 hover:text-white font-semibold text-xl py-5 rounded-3xl text-center cursor-pointer shadow-inner border border-white/70">
+         class="date-cell mx-auto bg-white text-blue-600 hover:bg-blue-600 hover:text-white font-semibold rounded-3xl text-center cursor-pointer shadow-inner border border-white/70">
       ${formatted}
     </div>`;
 }
@@ -167,7 +170,7 @@ function createDateCell(date) {
 function copyDate(text, el) {
   navigator.clipboard.writeText(text).then(() => {
     const originalHTML = el.innerHTML;
-    el.innerHTML = `<i class="fa-solid fa-check text-3xl"></i>`;
+    el.innerHTML = `<i class="fa-solid fa-check text-2xl sm:text-3xl"></i>`;
     setTimeout(() => el.innerHTML = originalHTML, 1300);
   });
 }
@@ -179,30 +182,30 @@ function renderTable() {
     const row = document.createElement('tr');
     row.className = 'table-row';
     row.innerHTML = `
-      <td class="pl-8 md:pl-10 py-8 font-medium text-xl text-zinc-800">${product.flavor}</td>
-      <td class="px-6 py-8">${createDateCell(addDays(currentMonday, product.line1Days))}</td>
-      <td class="px-6 py-8">${createDateCell(addDays(currentMonday, product.line2Days))}</td>
-      <td class="px-6 py-8 pr-8">${createDateCell(addDays(currentMonday, product.line3Days))}</td>
+      <td class="pl-2 sm:pl-8 md:pl-10 py-3 sm:py-8 font-medium text-sm sm:text-xl text-zinc-800">${product.flavor}</td>
+      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(addDays(currentMonday, product.line1Days))}</td>
+      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(addDays(currentMonday, product.line2Days))}</td>
+      <td class="px-1 sm:px-6 py-2 sm:py-8 pr-2 sm:pr-8">${createDateCell(addDays(currentMonday, product.line3Days))}</td>
     `;
     tbody.appendChild(row);
   });
 }
 
 function updateMondayDisplay() {
-  const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+  const options = { weekday:'long', month:'long', day:'numeric', year:'numeric' };
   let str = currentMonday.toLocaleDateString('en-US', options);
   document.getElementById('mondayDate').innerHTML = `
-    <span class="text-blue-600">${str.split(',')[0]}</span><br>
-    <span class="text-6xl md:text-7xl">${str.split(',')[1].trim()}</span>`;
+    <span class="text-blue-600 text-sm sm:text-base md:text-lg">${str.split(',')[0]}</span><br>
+    <span class="text-3xl sm:text-5xl md:text-6xl font-bold">${str.split(',')[1].trim()}</span>`;
 }
 
 function updateLastUpdated() {
   const now = new Date();
-  const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }).toUpperCase();
+  const time = now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}).toUpperCase();
   document.getElementById('lastUpdated').innerHTML = `
-    <span class="text-zinc-400 text-sm font-medium">Last updated</span>
-    <span class="font-semibold text-zinc-700 text-2xl">${time}</span>
-    <span class="ml-3 text-[10px] font-bold bg-emerald-400 text-white px-3 py-1 rounded-3xl tracking-widest">LIVE</span>`;
+    <span class="text-zinc-400 text-xs sm:text-sm font-medium">Last updated</span>
+    <span class="font-semibold text-zinc-700 text-sm sm:text-2xl ml-1 sm:ml-2">${time}</span>
+    <span class="ml-2 text-[10px] sm:text-[10px] font-bold bg-emerald-400 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-3xl tracking-widest">LIVE</span>`;
 }
 
 function refreshWeek() {
@@ -218,10 +221,9 @@ function initializeLabExpirations() {
   renderTable();
   updateLastUpdated();
   setInterval(updateLastUpdated, 30000);
-  console.log('%c✅ Lab Expirations fully integrated into Pepsi Pennsauken News site!', 'color:#0066ff; font-weight:700');
+  console.log('%c✅ Lab Expirations fully integrated!', 'color:#0066ff;font-weight:700');
 }
 
-// Initialize when page loads
 window.onload = initializeLabExpirations;
 </script>
 {% endblock %}
