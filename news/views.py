@@ -38,3 +38,6 @@ def msg(request):
     
 def lab_exp(request):
     return render(request,"news/exp.html")
+
+def lab(request):
+    return render(request,"news/lab.html")
