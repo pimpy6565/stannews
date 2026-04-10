@@ -1,0 +1,27 @@
+{% extends 'news/layout.html' %}
+
+{% block body %}
+<ul class="nav nav-tabs">
+    
+    <li class="nav-item">
+   <button id="line1" class="nav-link active" aria-current="page">Blender 1</button>
+    </li>
+    <li class="nav-item">
+        <button id="line2" class="nav-link active" aria-current="page">Blender 2</button>
+    </li>
+
+ 
+  </ul>
+
+<div style="height: 600px;">
+    <iframe width="100%" style="border:none;height:100vh;"></iframe>
+</div>
+
+<script>
+    function openUp(ip){
+        document.querySelector('iframe').src = `${ip}`;
+    }
+    document.querySelector("#line1").addEventListener('click',()=>openUp("http://10.120.120.101:5050"));
+    document.querySelector("#line2").addEventListener('click',()=>openUp("http://10.120.120.249:5050"));
+</script>
+{% endblock %}
