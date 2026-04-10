@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pepsi Syrup Fixer • Mobile Ready</title>
+    <title>Pepsi Syrup Fixer • Mobile + Desktop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -11,63 +11,69 @@
         .result-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .result-card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
         
-        /* Mobile optimizations + benzoate selector fix */
+        /* Mobile-first + beautiful desktop */
         @media (max-width: 640px) {
-            .input-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
-            .card { padding: 20px !important; }
-            input[type="number"] { font-size: 1.25rem !important; padding: 14px !important; }
-            select { font-size: 1.1rem !important; padding: 14px 16px !important; min-height: 52px !important; }
-            .header-text { font-size: 1.75rem !important; }
             .benzoate-row { flex-direction: column !important; gap: 12px !important; }
             .benzoate-row input { width: 100% !important; }
+            input[type="number"] { font-size: 1.25rem !important; padding: 14px !important; }
+            select { font-size: 1.1rem !important; padding: 14px 16px !important; min-height: 52px !important; }
+        }
+        
+        /* Desktop polish */
+        @media (min-width: 1024px) {
+            .main-container { max-width: 1280px !important; }
+            .input-panel { padding: 2.5rem !important; }
+            .result-panel { padding: 2.5rem !important; }
+            .card { padding: 2rem !important; }
+            .header-text { font-size: 2.5rem !important; }
         }
     </style>
 </head>
 <body class="bg-zinc-950 text-white min-h-screen pb-12">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+    <div class="main-container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
-        <div class="flex items-center justify-between mb-8 border-b border-zinc-800 pb-6">
-            <div class="flex items-center gap-x-3">
-                <div class="w-11 h-11 bg-red-600 rounded-3xl flex items-center justify-center text-4xl flex-shrink-0">🥤</div>
+        <div class="flex items-center justify-between mb-10 border-b border-zinc-800 pb-8">
+            <div class="flex items-center gap-x-4">
+                <div class="w-12 h-12 bg-red-600 rounded-3xl flex items-center justify-center text-4xl flex-shrink-0">🥤</div>
                 <div>
-                    <h1 class="header-text text-3xl sm:text-4xl font-semibold tracking-tight">Pepsi Syrup Fixer</h1>
-                    <p class="text-zinc-400 text-base sm:text-lg">Benzoate • Caffeine • Aspartame • Citric Acid</p>
+                    <h1 class="header-text text-4xl font-semibold tracking-tighter">Pepsi Syrup Fixer</h1>
+                    <p class="text-zinc-400 text-xl">Benzoate • Caffeine • Aspartame • Citric Acid</p>
                 </div>
             </div>
-            <div class="px-5 py-2 bg-emerald-500/10 text-emerald-400 text-sm font-medium rounded-3xl border border-emerald-500/30 flex items-center gap-x-1">
-                ✅ Very Accurate • Mobile Fixed
+            <div class="px-6 py-3 bg-emerald-500/10 text-emerald-400 text-sm font-medium rounded-3xl border border-emerald-500/30 hidden lg:flex items-center gap-x-2">
+                ✅ Very Accurate • Looks great on phone &amp; desktop
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
             <!-- Input Panel -->
-            <div class="lg:col-span-5 bg-zinc-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-zinc-800">
-                <h2 class="text-2xl font-semibold mb-6 flex items-center gap-x-2">
+            <div class="lg:col-span-5 bg-zinc-900 rounded-3xl input-panel shadow-2xl border border-zinc-800">
+                <h2 class="text-2xl font-semibold mb-6 flex items-center gap-x-3">
                     <span class="text-3xl">🧪</span>
                     Per-Ingredient Fix
                 </h2>
-                <p class="text-zinc-400 mb-6 text-sm sm:text-base">Enter what you already added + lab result + target.<br><span class="text-emerald-400">Benzoate gives you full unit choice (lbs ↔ gallons).</span></p>
+                <p class="text-zinc-400 mb-8 text-base">Enter what you already added + your lab result + target.<br><span class="text-emerald-400">Benzoate lets you choose lbs pure or gallons solution.</span></p>
 
                 <div id="ingredients-list" class="space-y-8">
                     <!-- Populated by JS -->
                 </div>
 
                 <button onclick="calculateFix()" 
-                        class="mt-10 w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold py-6 rounded-3xl text-xl transition-all flex items-center justify-center gap-x-3 shadow-lg shadow-red-600/30">
+                        class="mt-12 w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold py-6 rounded-3xl text-xl transition-all flex items-center justify-center gap-x-3 shadow-lg shadow-red-600/30">
                     🚀 CALCULATE HOW MUCH MORE
                 </button>
 
                 <button onclick="resetAll()" 
-                        class="mt-4 w-full text-zinc-400 hover:text-white font-medium py-4 rounded-3xl transition-colors flex items-center justify-center gap-x-2 text-base">
+                        class="mt-5 w-full text-zinc-400 hover:text-white font-medium py-4 rounded-3xl transition-colors flex items-center justify-center gap-x-2 text-base">
                     ⟳ CLEAR EVERYTHING
                 </button>
             </div>
 
             <!-- Results Panel -->
             <div class="lg:col-span-7">
-                <div id="results-panel" class="hidden bg-zinc-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-zinc-800">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-semibold">✅ How Much MORE to Add</h2>
+                <div id="results-panel" class="hidden bg-zinc-900 rounded-3xl result-panel shadow-2xl border border-zinc-800">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-3xl font-semibold">✅ How Much MORE to Add</h2>
                         <button onclick="copyResults()" class="flex items-center gap-x-2 bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-3xl text-sm font-medium">
                             📋 Copy to clipboard
                         </button>
@@ -77,7 +83,7 @@
                         <!-- Populated by JS -->
                     </div>
 
-                    <div class="mt-8 bg-zinc-950 border border-emerald-500/30 rounded-2xl p-5 text-xs text-emerald-400 leading-relaxed">
+                    <div class="mt-10 bg-zinc-950 border border-emerald-500/30 rounded-2xl p-6 text-xs text-emerald-400 leading-relaxed">
                         <strong>✅ Very accurate math</strong><br>
                         More = Already added (pure lbs) × (target ÷ result − 1)<br>
                         Benzoate supports any combination: lbs pure ↔ gallons solution (input &amp; output).
@@ -85,11 +91,11 @@
                 </div>
 
                 <!-- Empty state -->
-                <div id="empty-state" class="bg-zinc-900/50 border border-dashed border-zinc-700 rounded-3xl h-full flex flex-col items-center justify-center p-8 sm:p-12 text-center">
-                    <div class="text-7xl mb-6">🥤</div>
-                    <h3 class="text-2xl font-medium text-zinc-400">Ready to fix your batch?</h3>
-                    <p class="text-zinc-400 mt-3 text-base">Fill in the numbers on the left.<br>No defaults — enter your own values.</p>
-                    <p class="text-emerald-400 font-semibold mt-8 text-lg">Try switching benzoate units →</p>
+                <div id="empty-state" class="bg-zinc-900/50 border border-dashed border-zinc-700 rounded-3xl h-full flex flex-col items-center justify-center p-12 text-center">
+                    <div class="text-8xl mb-8">🥤</div>
+                    <h3 class="text-3xl font-medium text-zinc-400">Ready to fix your batch?</h3>
+                    <p class="text-zinc-400 mt-4 max-w-md text-lg">Fill in the numbers on the left.<br>No defaults — just your real values.</p>
+                    <p class="text-emerald-400 font-semibold mt-10 text-lg">Works beautifully on phone and desktop</p>
                 </div>
             </div>
         </div>
@@ -114,7 +120,7 @@
                             <div class="font-semibold text-xl">${ing.name}</div>
                         </div>
                         
-                        <div class="space-y-5">
+                        <div class="space-y-6">
                             <!-- Already added row -->
                             <div>
                                 <label class="block text-xs text-zinc-400 mb-2">Already added as</label>
@@ -123,7 +129,7 @@
                                            placeholder="e.g. 250"
                                            class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-4 py-3 text-2xl font-medium outline-none">
                                     <select id="benzoate-input-unit" onchange="handleBenzoateUnitChange()" 
-                                            class="bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-5 py-3 text-base font-medium outline-none sm:w-44 w-full">
+                                            class="bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-5 py-3 text-base font-medium outline-none sm:w-48 w-full">
                                         <option value="lbs">lbs pure</option>
                                         <option value="gal">gallons solution</option>
                                     </select>
@@ -340,7 +346,7 @@
 
         window.onload = () => {
             createIngredientInputs()
-            console.log("%c✅ Pepsi Syrup Fixer • NO default numbers + mobile ready!", "color:#ff0000; font-family:monospace; font-size:14px")
+            console.log("%c✅ Pepsi Syrup Fixer • Now looks great on desktop & mobile!", "color:#ff0000; font-family:monospace; font-size:14px")
         }
     </script>
 </body>
