@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'news',
-  
+    'screen',
+    'widget_tweaks',
 ]
 
 
@@ -95,6 +96,13 @@ DATABASES = {
     }
 }
 
+'''DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': "db.sqlite3",
+    }
+}'''
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -137,9 +145,13 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+X_FRAME_OPTIONS = "ALLOWALL"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     BASE_DIR / 'news' / 'static',
 ]
+
+LOGIN_URL = "/screen/login/"
+LOGIN_REDIRECT_URL = "/screen"
+LOGOUT_REDIRECT_URL = "/screen/login/"

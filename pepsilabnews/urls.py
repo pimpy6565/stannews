@@ -17,8 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from news import urls
-
+from screen import urls as screen_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include(urls))
+    path('',include(urls)),
+    path('screen/',include(screen_urls))
 ]
