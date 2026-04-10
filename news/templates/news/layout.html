@@ -57,7 +57,7 @@
                       {% if user.is_authenticated %}
                     <li class="nav-item">
                       User: {{ user }} 🚀👨‍🔬
-                        <form action="{% url 'logout' %}" method="POST" preventDefault class="pt-4">
+                        <form action="{% url 'logout' %}" method="POST">
                           {% csrf_token %}
                           <button class="btn btn-outline-primary" type="submit">Logout</button>
                         </form>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pepsi Syrup Fixer • Mobile Ready</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .result-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .result-card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+        
+        /* Mobile optimizations + benzoate selector fix */
+        @media (max-width: 640px) {
+            .input-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+            .card { padding: 20px !important; }
+            input[type="number"] { font-size: 1.25rem !important; padding: 14px !important; }
+            select { font-size: 1.1rem !important; padding: 14px 16px !important; min-height: 52px !important; }
+            .header-text { font-size: 1.75rem !important; }
+            .benzoate-row { flex-direction: column !important; gap: 12px !important; }
+            .benzoate-row input { width: 100% !important; }
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen pb-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8 border-b border-zinc-800 pb-6">
+            <div class="flex items-center gap-x-3">
+                <div class="w-11 h-11 bg-red-600 rounded-3xl flex items-center justify-center text-4xl flex-shrink-0">🥤</div>
+                <div>
+                    <h1 class="header-text text-3xl sm:text-4xl font-semibold tracking-tight">Pepsi Syrup Fixer</h1>
+                    <p class="text-zinc-400 text-base sm:text-lg">Benzoate • Caffeine • Aspartame • Citric Acid</p>
+                </div>
+            </div>
+            <div class="px-5 py-2 bg-emerald-500/10 text-emerald-400 text-sm font-medium rounded-3xl border border-emerald-500/30 flex items-center gap-x-1">
+                ✅ Very Accurate • Mobile Fixed
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Input Panel -->
+            <div class="lg:col-span-5 bg-zinc-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-zinc-800">
+                <h2 class="text-2xl font-semibold mb-6 flex items-center gap-x-2">
+                    <span class="text-3xl">🧪</span>
+                    Per-Ingredient Fix
+                </h2>
+                <p class="text-zinc-400 mb-6 text-sm sm:text-base">Enter what you already added + lab result + target.<br><span class="text-emerald-400">Benzoate gives you full unit choice (lbs ↔ gallons).</span></p>
+
+                <div id="ingredients-list" class="space-y-8">
+                    <!-- Populated by JS -->
+                </div>
+
+                <button onclick="calculateFix()" 
+                        class="mt-10 w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold py-6 rounded-3xl text-xl transition-all flex items-center justify-center gap-x-3 shadow-lg shadow-red-600/30">
+                    🚀 CALCULATE HOW MUCH MORE
+                </button>
+
+                <button onclick="resetAll()" 
+                        class="mt-4 w-full text-zinc-400 hover:text-white font-medium py-4 rounded-3xl transition-colors flex items-center justify-center gap-x-2 text-base">
+                    ⟳ CLEAR EVERYTHING
+                </button>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="lg:col-span-7">
+                <div id="results-panel" class="hidden bg-zinc-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-zinc-800">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">✅ How Much MORE to Add</h2>
+                        <button onclick="copyResults()" class="flex items-center gap-x-2 bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-3xl text-sm font-medium">
+                            📋 Copy to clipboard
+                        </button>
+                    </div>
+
+                    <div id="results-grid" class="space-y-6">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="mt-8 bg-zinc-950 border border-emerald-500/30 rounded-2xl p-5 text-xs text-emerald-400 leading-relaxed">
+                        <strong>✅ Very accurate math</strong><br>
+                        More = Already added (pure lbs) × (target ÷ result − 1)<br>
+                        Benzoate supports any combination: lbs pure ↔ gallons solution (input &amp; output).
+                    </div>
+                </div>
+
+                <!-- Empty state -->
+                <div id="empty-state" class="bg-zinc-900/50 border border-dashed border-zinc-700 rounded-3xl h-full flex flex-col items-center justify-center p-8 sm:p-12 text-center">
+                    <div class="text-7xl mb-6">🥤</div>
+                    <h3 class="text-2xl font-medium text-zinc-400">Ready to fix your batch?</h3>
+                    <p class="text-zinc-400 mt-3 text-base">Fill in the numbers on the left.<br>No defaults — enter your own values.</p>
+                    <p class="text-emerald-400 font-semibold mt-8 text-lg">Try switching benzoate units →</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ingredientsData = [
+            { id: "benzoate", name: "Sodium Benzoate", short: "Benzoate", emoji: "🧪", special: true },
+            { id: "caffeine",  name: "Caffeine",       short: "Caffeine",  emoji: "☕" },
+            { id: "aspartame", name: "Aspartame",      short: "Aspartame", emoji: "🍬" },
+            { id: "citric",    name: "Citric Acid",    short: "Citric",    emoji: "🍋" }
+        ]
+
+        function createIngredientInputs() {
+            const container = document.getElementById("ingredients-list")
+            container.innerHTML = ingredientsData.map(ing => {
+                if (ing.special) {
+                    return `
+                    <div class="bg-zinc-800 rounded-3xl p-6 border border-zinc-700 card">
+                        <div class="flex items-center gap-x-3 mb-5">
+                            <span class="text-4xl">${ing.emoji}</span>
+                            <div class="font-semibold text-xl">${ing.name}</div>
+                        </div>
+                        
+                        <div class="space-y-5">
+                            <!-- Already added row -->
+                            <div>
+                                <label class="block text-xs text-zinc-400 mb-2">Already added as</label>
+                                <div class="benzoate-row flex flex-col sm:flex-row gap-3">
+                                    <input id="benzoate-added" type="number" step="0.01" 
+                                           placeholder="e.g. 250"
+                                           class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-4 py-3 text-2xl font-medium outline-none">
+                                    <select id="benzoate-input-unit" onchange="handleBenzoateUnitChange()" 
+                                            class="bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-5 py-3 text-base font-medium outline-none sm:w-44 w-full">
+                                        <option value="lbs">lbs pure</option>
+                                        <option value="gal">gallons solution</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Concentration -->
+                            <div id="benzoate-conc-container" class="hidden">
+                                <label class="block text-xs text-zinc-400 mb-1">Solution strength %</label>
+                                <input id="benzoate-conc" type="number" step="0.1" 
+                                       placeholder="25"
+                                       class="w-full bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-4 py-3 text-xl font-medium outline-none">
+                                <p class="text-[10px] text-zinc-500 mt-1">Typical = 20–33 %. Change if your solution is different.</p>
+                            </div>
+
+                            <!-- Add MORE as -->
+                            <div>
+                                <label class="block text-xs text-zinc-400 mb-2">Add MORE as</label>
+                                <select id="benzoate-output-unit" onchange="handleBenzoateUnitChange()" 
+                                        class="w-full bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-5 py-3 text-base font-medium outline-none">
+                                    <option value="lbs">lbs pure</option>
+                                    <option value="gal">gallons solution</option>
+                                </select>
+                            </div>
+
+                            <!-- Lab result + Target -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs text-zinc-400 mb-1">Current lab result</label>
+                                    <input id="benzoate-result" type="number" step="0.01" 
+                                           placeholder="e.g. 180"
+                                           class="w-full bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-4 py-3 text-2xl font-medium outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-zinc-400 mb-1">Target</label>
+                                    <input id="benzoate-target" type="number" step="0.01" 
+                                           placeholder="e.g. 200"
+                                           class="w-full bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-4 py-3 text-2xl font-medium outline-none">
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+                } else {
+                    return `
+                    <div class="bg-zinc-800 rounded-3xl p-6 border border-zinc-700 card">
+                        <div class="flex items-center gap-x-3 mb-5">
+                            <span class="text-4xl">${ing.emoji}</span>
+                            <div class="font-semibold text-xl">${ing.name}</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs text-zinc-400 mb-1">Already threw in (lbs)</label>
+                                <input id="${ing.id}-added" type="number" step="0.01" 
+                                       placeholder="0"
+                                       class="w-full bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-4 py-3 text-2xl font-medium outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-zinc-400 mb-1">Current lab result</label>
+                                <input id="${ing.id}-result" type="number" step="0.01" 
+                                       placeholder="0"
+                                       class="w-full bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-4 py-3 text-2xl font-medium outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-zinc-400 mb-1">Target</label>
+                                <input id="${ing.id}-target" type="number" step="0.01" 
+                                       placeholder="0"
+                                       class="w-full bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-4 py-3 text-2xl font-medium outline-none">
+                            </div>
+                        </div>
+                    </div>`
+                }
+            }).join("")
+        }
+
+        function handleBenzoateUnitChange() {
+            const inputUnit = document.getElementById("benzoate-input-unit").value
+            const outputUnit = document.getElementById("benzoate-output-unit").value
+            const concContainer = document.getElementById("benzoate-conc-container")
+            
+            if (inputUnit === "gal" || outputUnit === "gal") {
+                concContainer.classList.remove("hidden")
+            } else {
+                concContainer.classList.add("hidden")
+            }
+        }
+
+        function getPureLbsForBenzoate() {
+            const added = parseFloat(document.getElementById("benzoate-added").value) || 0
+            const inputUnit = document.getElementById("benzoate-input-unit").value
+            const conc = parseFloat(document.getElementById("benzoate-conc").value) || 25
+            const lbsPerGallon = 8.34
+
+            if (inputUnit === "lbs") return added
+            return added * lbsPerGallon * (conc / 100)
+        }
+
+        function convertMoreToDesiredUnit(morePureLbs) {
+            const outputUnit = document.getElementById("benzoate-output-unit").value
+            const conc = parseFloat(document.getElementById("benzoate-conc").value) || 25
+            const lbsPerGallon = 8.34
+
+            if (outputUnit === "lbs") {
+                return { value: morePureLbs, unit: "lbs", display: morePureLbs.toFixed(3) + " lbs" }
+            } else {
+                const moreGallons = morePureLbs / (lbsPerGallon * (conc / 100))
+                return { value: moreGallons, unit: "gal", display: moreGallons.toFixed(3) + " gal" }
+            }
+        }
+
+        function calculateFix() {
+            const resultsHTML = []
+            
+            ingredientsData.forEach(ing => {
+                let pureAddedLbs = 0
+                let displayAdded = 0
+                let displayAddedUnit = ""
+                let moreResult = null
+                let status = ""
+                let totalNeededPure = 0
+
+                const result = parseFloat(document.getElementById(`${ing.id}-result`).value) || 0
+                const target = parseFloat(document.getElementById(`${ing.id}-target`).value) || 0
+
+                if (ing.special) {
+                    pureAddedLbs = getPureLbsForBenzoate()
+                    displayAdded = parseFloat(document.getElementById("benzoate-added").value) || 0
+                    displayAddedUnit = document.getElementById("benzoate-input-unit").value === "gal" ? "gal" : "lbs"
+                } else {
+                    pureAddedLbs = parseFloat(document.getElementById(`${ing.id}-added`).value) || 0
+                    displayAdded = pureAddedLbs
+                    displayAddedUnit = "lbs"
+                }
+
+                if (result <= 0) {
+                    status = `<span class="text-red-400">⚠️ Result is 0 — cannot calculate</span>`
+                } else if (target <= result) {
+                    status = `<span class="text-emerald-400 font-semibold">✅ ALREADY GOOD</span>`
+                } else {
+                    const ratio = target / result
+                    totalNeededPure = pureAddedLbs * ratio
+                    const morePureLbs = totalNeededPure - pureAddedLbs
+                    
+                    if (ing.special) {
+                        moreResult = convertMoreToDesiredUnit(morePureLbs)
+                    } else {
+                        moreResult = { value: morePureLbs, unit: "lbs", display: morePureLbs.toFixed(3) + " lbs" }
+                    }
+                    status = `<span class="text-emerald-400 font-semibold">ADD MORE</span>`
+                }
+
+                const card = `
+                    <div class="result-card bg-zinc-800 rounded-3xl p-6 border border-zinc-700">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-x-3">
+                                <span class="text-4xl">${ing.emoji}</span>
+                                <div class="font-semibold">${ing.short}</div>
+                            </div>
+                            <div>${status}</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-y-4 text-sm">
+                            <div class="flex justify-between"><span class="text-zinc-400">Already added</span><span class="font-mono">${displayAdded.toFixed(2)} ${displayAddedUnit}</span></div>
+                            <div class="flex justify-between"><span class="text-zinc-400">Lab result</span><span class="font-mono">${result}</span></div>
+                            <div class="flex justify-between"><span class="text-zinc-400">Target</span><span class="font-mono">${target}</span></div>
+                            <div class="flex justify-between"><span class="text-zinc-400">Total needed (pure)</span><span class="font-mono">${totalNeededPure.toFixed(2)} lbs</span></div>
+                            
+                            ${moreResult ? `
+                            <div class="col-span-2 pt-4 border-t border-zinc-700 flex justify-between items-end">
+                                <span class="text-emerald-400 text-xl font-semibold">MORE TO ADD</span>
+                                <div class="text-right">
+                                    <div class="font-mono text-4xl leading-none">${moreResult.display}</div>
+                                    ${moreResult.unit === "lbs" ? `<div class="font-mono text-emerald-400">${(moreResult.value * 453.59237).toFixed(1)} grams</div>` : ''}
+                                </div>
+                            </div>` : ''}
+                        </div>
+                    </div>
+                `
+                resultsHTML.push(card)
+            })
+
+            document.getElementById("results-grid").innerHTML = resultsHTML.join("")
+            document.getElementById("results-panel").classList.remove("hidden")
+            document.getElementById("empty-state").classList.add("hidden")
+        }
+
+        function copyResults() {
+            let text = `Pepsi Syrup Fixer — ${new Date().toLocaleString()}\n\n`
+            ingredientsData.forEach(ing => {
+                const result = document.getElementById(`${ing.id}-result`).value || "0"
+                const target = document.getElementById(`${ing.id}-target`).value || "0"
+                let addedText = "—"
+                
+                if (ing.special) {
+                    addedText = document.getElementById("benzoate-added").value || "0"
+                    addedText += document.getElementById("benzoate-input-unit").value === "gal" ? " gal" : " lbs"
+                } else {
+                    addedText = (parseFloat(document.getElementById(`${ing.id}-added`).value) || 0) + " lbs"
+                }
+                
+                text += `${ing.name}\n   Already: ${addedText} | Result: ${result} | Target: ${target}\n\n`
+            })
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target
+                const original = btn.innerHTML
+                btn.innerHTML = "✅ Copied!"
+                setTimeout(() => btn.innerHTML = original, 2000)
+            })
+        }
+
+        function resetAll() {
+            createIngredientInputs()
+            document.getElementById("results-panel").classList.add("hidden")
+            document.getElementById("empty-state").classList.remove("hidden")
+        }
+
+        window.onload = () => {
+            createIngredientInputs()
+            console.log("%c✅ Pepsi Syrup Fixer • NO default numbers + mobile ready!", "color:#ff0000; font-family:monospace; font-size:14px")
+        }
+    </script>
+</body>
+</html>

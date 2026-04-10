@@ -9,6 +9,9 @@
     <li class="nav-item">
         <button id="line2" class="nav-link active" aria-current="page">Blender 2</button>
     </li>
+    <li class="nav-item">
+        <button id="fix" class="nav-link active" aria-current="page">Fix A Batch</button>
+    </li> 
 
  
   </ul>
@@ -23,5 +26,6 @@
     }
     document.querySelector("#line1").addEventListener('click',()=>openUp("http://10.120.120.101:5050"));
     document.querySelector("#line2").addEventListener('click',()=>openUp("http://10.120.120.249:5050"));
+    document.querySelector("#fix").addEventListener('click',()=>openUp(`{% url 'fix' %}`))
 </script>
 {% endblock %}

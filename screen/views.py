@@ -5,3 +5,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def screen(request):
     return render(request,'screen/screen.html')
+
+@login_required
+def fix(request):
+    return render(request,"screen/fix.html")
