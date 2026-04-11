@@ -4,13 +4,13 @@
 <ul class="nav nav-tabs">
     
     <li class="nav-item">
-   <button id="line1" class="nav-link active" aria-current="page">Blender 1</button>
+   <button id="line1" class="nav-link" aria-current="page">Blender 1</button>
     </li>
     <li class="nav-item">
-        <button id="line2" class="nav-link active" aria-current="page">Blender 2</button>
+        <button id="line2" class="nav-link" aria-current="page">Blender 2</button>
     </li>
     <li class="nav-item">
-        <button id="fix" class="nav-link active" aria-current="page">Fix A Batch</button>
+        <button id="fix" class="nav-link" aria-current="page">Fix A Batch</button>
     </li> 
 
  
@@ -21,11 +21,30 @@
 </div>
 
 <script>
+    function setActive(clickedBtn) {
+    document.querySelectorAll(".nav-link").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    clickedBtn.classList.add("active");
+}
+
     function openUp(ip){
         document.querySelector('iframe').src = `${ip}`;
     }
-    document.querySelector("#line1").addEventListener('click',()=>openUp("http://10.120.120.101:5050"));
-    document.querySelector("#line2").addEventListener('click',()=>openUp("http://10.120.120.249:5050"));
-    document.querySelector("#fix").addEventListener('click',()=>openUp(`{% url 'fix' %}`))
+    document.querySelector("#line1").addEventListener('click', (e) => {
+    setActive(e.target);
+    openUp("http://10.120.120.101:5050");
+});
+
+document.querySelector("#line2").addEventListener('click', (e) => {
+    setActive(e.target);
+    openUp("http://10.120.120.249:5050");
+});
+
+document.querySelector("#fix").addEventListener('click', (e) => {
+    setActive(e.target);
+    openUp(`{% url 'fix' %}`);
+});
 </script>
 {% endblock %}
