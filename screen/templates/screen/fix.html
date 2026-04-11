@@ -11,43 +11,36 @@
         .result-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .result-card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
         
-        /* Mobile-first + beautiful desktop */
+        /* Everything stays as a clean vertical column */
+        .main-layout { display: flex; flex-direction: column; gap: 2rem; }
+        
         @media (max-width: 640px) {
-            .benzoate-row { flex-direction: column !important; gap: 12px !important; }
-            .benzoate-row input { width: 100% !important; }
             input[type="number"] { font-size: 1.25rem !important; padding: 14px !important; }
             select { font-size: 1.1rem !important; padding: 14px 16px !important; min-height: 52px !important; }
-        }
-        
-        /* Desktop polish */
-        @media (min-width: 1024px) {
-            .main-container { max-width: 1280px !important; }
-            .input-panel { padding: 2.5rem !important; }
-            .result-panel { padding: 2.5rem !important; }
-            .card { padding: 2rem !important; }
-            .header-text { font-size: 2.5rem !important; }
         }
     </style>
 </head>
 <body class="bg-zinc-950 text-white min-h-screen pb-12">
-    <div class="main-container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
         <div class="flex items-center justify-between mb-10 border-b border-zinc-800 pb-8">
             <div class="flex items-center gap-x-4">
                 <div class="w-12 h-12 bg-red-600 rounded-3xl flex items-center justify-center text-4xl flex-shrink-0">🥤</div>
                 <div>
-                    <h1 class="header-text text-4xl font-semibold tracking-tighter">Pepsi Syrup Fixer</h1>
+                    <h1 class="text-4xl font-semibold tracking-tighter">Pepsi Syrup Fixer</h1>
                     <p class="text-zinc-400 text-xl">Benzoate • Caffeine • Aspartame • Citric Acid</p>
                 </div>
             </div>
             <div class="px-6 py-3 bg-emerald-500/10 text-emerald-400 text-sm font-medium rounded-3xl border border-emerald-500/30 hidden lg:flex items-center gap-x-2">
-                ✅ Very Accurate • Looks great on phone &amp; desktop
+                ✅ Very Accurate • Single column layout
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-            <!-- Input Panel -->
-            <div class="lg:col-span-5 bg-zinc-900 rounded-3xl input-panel shadow-2xl border border-zinc-800">
+        <!-- Single vertical column layout (input on top, results below on ALL screens) -->
+        <div class="main-layout">
+            
+            <!-- Input Panel (always full width) -->
+            <div class="bg-zinc-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-zinc-800">
                 <h2 class="text-2xl font-semibold mb-6 flex items-center gap-x-3">
                     <span class="text-3xl">🧪</span>
                     Per-Ingredient Fix
@@ -69,34 +62,32 @@
                 </button>
             </div>
 
-            <!-- Results Panel -->
-            <div class="lg:col-span-7">
-                <div id="results-panel" class="hidden bg-zinc-900 rounded-3xl result-panel shadow-2xl border border-zinc-800">
-                    <div class="flex justify-between items-center mb-8">
-                        <h2 class="text-3xl font-semibold">✅ How Much MORE to Add</h2>
-                        <button onclick="copyResults()" class="flex items-center gap-x-2 bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-3xl text-sm font-medium">
-                            📋 Copy to clipboard
-                        </button>
-                    </div>
-
-                    <div id="results-grid" class="space-y-6">
-                        <!-- Populated by JS -->
-                    </div>
-
-                    <div class="mt-10 bg-zinc-950 border border-emerald-500/30 rounded-2xl p-6 text-xs text-emerald-400 leading-relaxed">
-                        <strong>✅ Very accurate math</strong><br>
-                        More = Already added (pure lbs) × (target ÷ result − 1)<br>
-                        Benzoate supports any combination: lbs pure ↔ gallons solution (input &amp; output).
-                    </div>
+            <!-- Results Panel (appears below input on ALL screens) -->
+            <div id="results-panel" class="hidden bg-zinc-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-zinc-800">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-semibold">✅ How Much MORE to Add</h2>
+                    <button onclick="copyResults()" class="flex items-center gap-x-2 bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-3xl text-sm font-medium">
+                        📋 Copy to clipboard
+                    </button>
                 </div>
 
-                <!-- Empty state -->
-                <div id="empty-state" class="bg-zinc-900/50 border border-dashed border-zinc-700 rounded-3xl h-full flex flex-col items-center justify-center p-12 text-center">
-                    <div class="text-8xl mb-8">🥤</div>
-                    <h3 class="text-3xl font-medium text-zinc-400">Ready to fix your batch?</h3>
-                    <p class="text-zinc-400 mt-4 max-w-md text-lg">Fill in the numbers on the left.<br>No defaults — just your real values.</p>
-                    <p class="text-emerald-400 font-semibold mt-10 text-lg">Works beautifully on phone and desktop</p>
+                <div id="results-grid" class="space-y-6">
+                    <!-- Populated by JS -->
                 </div>
+
+                <div class="mt-10 bg-zinc-950 border border-emerald-500/30 rounded-2xl p-6 text-xs text-emerald-400 leading-relaxed">
+                    <strong>✅ Very accurate math</strong><br>
+                    More = Already added (pure lbs) × (target ÷ result − 1)<br>
+                    Benzoate supports any combination: lbs pure ↔ gallons solution (input &amp; output).
+                </div>
+            </div>
+
+            <!-- Empty state (shown until you calculate) -->
+            <div id="empty-state" class="bg-zinc-900/50 border border-dashed border-zinc-700 rounded-3xl p-12 text-center">
+                <div class="text-8xl mb-8">🥤</div>
+                <h3 class="text-3xl font-medium text-zinc-400">Ready to fix your batch?</h3>
+                <p class="text-zinc-400 mt-4 max-w-md mx-auto text-lg">Fill in the numbers above.<br>Everything stays in a clean vertical column on phone and desktop.</p>
+                <p class="text-emerald-400 font-semibold mt-10 text-lg">Single-column layout • No side-by-side panels</p>
             </div>
         </div>
     </div>
@@ -121,15 +112,15 @@
                         </div>
                         
                         <div class="space-y-6">
-                            <!-- Already added row -->
+                            <!-- Always vertical column for benzoate too -->
                             <div>
                                 <label class="block text-xs text-zinc-400 mb-2">Already added as</label>
-                                <div class="benzoate-row flex flex-col sm:flex-row gap-3">
+                                <div class="flex flex-col gap-3">
                                     <input id="benzoate-added" type="number" step="0.01" 
                                            placeholder="e.g. 250"
                                            class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-4 py-3 text-2xl font-medium outline-none">
                                     <select id="benzoate-input-unit" onchange="handleBenzoateUnitChange()" 
-                                            class="bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-5 py-3 text-base font-medium outline-none sm:w-48 w-full">
+                                            class="bg-zinc-900 border border-zinc-700 focus:border-red-500 rounded-2xl px-5 py-3 text-base font-medium outline-none">
                                         <option value="lbs">lbs pure</option>
                                         <option value="gal">gallons solution</option>
                                     </select>
@@ -346,7 +337,7 @@
 
         window.onload = () => {
             createIngredientInputs()
-            console.log("%c✅ Pepsi Syrup Fixer • Now looks great on desktop & mobile!", "color:#ff0000; font-family:monospace; font-size:14px")
+            console.log("%c✅ Pepsi Syrup Fixer • Everything now stays in a clean vertical column on desktop & mobile!", "color:#ff0000; font-family:monospace; font-size:14px")
         }
     </script>
 </body>
