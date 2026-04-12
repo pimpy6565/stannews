@@ -9,17 +9,10 @@
         <title>{% block title %}{% endblock %}</title>
      
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
+        <link rel="stylesheet" href="{% static 'news/styles.css' %}">
         <link rel="icon" href="{% static 'news/stan.ico' %}">
         <link rel="apple-touch-icon" href="{% static 'news/stan.png' %}">
-        <style>
-            img{
-                max-width: 100%;
-                max-height: 100%;
-                margin: 0;
-                width: 850px;
-            }
-        </style>
+
         {% block extra_head %}{% endblock %}
     </head>
     <body>

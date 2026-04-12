@@ -34,7 +34,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SECRET_KEY = 'django-insecure-*fjd$int7k0$q3-vd=y7vwtw5konr8!-&urwn8js^ar&la!iq+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 #ill turn this on to see what it looks like on phone
 ALLOWED_HOSTS = ['*']
 
@@ -88,20 +88,20 @@ WSGI_APPLICATION = 'pepsilabnews.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': "/var/data/db.sqlite3",
+if not DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': "/var/data/db.sqlite3",
+        }
     }
-}
-
-'''DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': "db.sqlite3",
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': "db.sqlite3",
+        }
     }
-}'''
 
 
 # Password validation
