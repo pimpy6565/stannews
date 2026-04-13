@@ -16,7 +16,7 @@ def page(request,slug):
 
     if slug == "a":
         url = "http://10.120.120.101:5050/video_feed"
-    if slug == "b":
+    elif slug == "b":
         url = "http://10.120.120.249:5050/video_feed"
     else: 
         url = ""
