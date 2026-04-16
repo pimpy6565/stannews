@@ -6,5 +6,6 @@ urlpatterns = [
     path("login/", auth_views.LoginView.as_view(template_name="screen/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("fix/",views.fix,name="fix"),
-    path("page/<str:slug>",views.page,name="page")
+    path("page/<str:slug>",views.page,name="page"),
+    path("qr",views.qrcodes,name="qr")
 ]

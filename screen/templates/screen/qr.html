@@ -1,0 +1,18 @@
+{% extends 'news/layout.html' %}
+
+{% block title %}QR CODES{% endblock %}
+
+{% block body %}
+
+<div id="QR" style="display: flex;justify-content: center;align-items: center;">
+
+    <img class="card" style="height:50vh;max-width:500px;" src="data:image/png;base64,{{ code }}">
+</div>
+
+<form method="POST" class="form-control card" style="position:fixed;bottom:0;">
+    {% csrf_token %}
+    <input class="form-control" type="text" name="code">
+    <input class="btn btn-outline-primary" type="submit">
+</form>
+
+{% endblock %}
