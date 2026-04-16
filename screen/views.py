@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.staticfiles import finders
 from django.contrib.auth.decorators import login_required
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse,JsonResponse
 import qrcode
 from io import BytesIO
 import base64
@@ -74,7 +74,6 @@ def qrcodes(request):
 
         qr_base64 = base64.b64encode(buffer.getvalue()).decode()
 
-        return render(request, "screen/qr.html", {
-            "code": qr_base64
-        })
+        return JsonResponse({"code":qr_base64})
+        
     return render(request,"screen/qr.html")

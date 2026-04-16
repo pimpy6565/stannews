@@ -13,9 +13,10 @@
         <link rel="icon" href="{% static 'news/stan.ico' %}">
         <link rel="apple-touch-icon" href="{% static 'news/stan.png' %}">
         <script>
-          document.addEventListener("DOMContentLoaded",()=>{
-            document.querySelectorAll("video").forEach((vid)=>vid.preload = "auto")
-          })
+
+          window.addEventListener("load", () => {
+            document.querySelectorAll("video").forEach((vid) => vid.load());
+          });
         </script>
         {% block extra_head %}{% endblock %}
     </head>

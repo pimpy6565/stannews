@@ -4,15 +4,33 @@
 
 {% block body %}
 
-<div id="QR" style="display: flex;justify-content: center;align-items: center;">
+<div id="QR" style="display: none;justify-content: center;align-items: center;">
 
-    <img class="card" style="height:50vh;max-width:500px;" src="data:image/png;base64,{{ code }}">
+    <img class="card" style="height:50vh;max-width:500px;">
 </div>
 
-<form method="POST" class="form-control card" style="position:fixed;bottom:0;">
+<form id='qrcode' method="POST" class="form-control card" style="position:fixed;bottom:0;">
     {% csrf_token %}
-    <input class="form-control" type="text" name="code">
+    <input id="thecode" class="form-control" type="text" name="code" autofocus>
     <input class="btn btn-outline-primary" type="submit">
 </form>
+
+<script>
+    document.querySelector("#qrcode").addEventListener('submit',(e)=>{
+        e.preventDefault();
+        fetch(`{% url 'qr' %}`,{
+            method:"POST",
+            body: new FormData(document.querySelector("#qrcode"))
+        })
+        .then(response=>response.json())
+        .then(data=>{
+            document.querySelector('img').src = `data:image/png;base64,${data.code}`;
+            document.querySelector("#QR").style.display = "flex";
+            document.querySelector("#thecode").value = '';
+            document.querySelector("#thecode").focus();
+        })
+
+    })
+</script>
 
 {% endblock %}
