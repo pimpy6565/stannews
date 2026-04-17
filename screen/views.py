@@ -6,6 +6,7 @@ import qrcode
 from io import BytesIO
 import base64
 from PIL import Image
+from random import uniform
 # Create your views here.
 @login_required
 def screen(request):
@@ -77,3 +78,22 @@ def qrcodes(request):
         return JsonResponse({"code":qr_base64})
         
     return render(request,"screen/qr.html")
+
+@login_required
+def fill(request):
+    return render(request,"screen/fill.html")
+
+def rando(request):
+    if request.method == "GET":
+        num1 = request.GET.get('number1')
+        num2 = request.GET.get('number2')
+        valves = request.GET.get('valves')
+        valves = int(valves)
+        num1 = float(num1)
+        num2 = float(num2)
+        random_numbers = [round(uniform(num1,num2),2) for _ in range(valves)]
+       
+        
+        
+        return JsonResponse({"number":random_numbers})
+    

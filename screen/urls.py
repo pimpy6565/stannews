@@ -7,5 +7,8 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("fix/",views.fix,name="fix"),
     path("page/<str:slug>",views.page,name="page"),
-    path("qr",views.qrcodes,name="qr")
+    path("qr",views.qrcodes,name="qr"),
+    path("fill",views.fill,name="fill"),
+    path('rando',views.rando,name='rando'),
+
 ]

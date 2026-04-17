@@ -1,0 +1,49 @@
+{% extends 'news/layout.html' %}
+{% load static %}
+
+
+{% block title %}Fill Height 🥤{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="{% static 'screen/styles.css' %}">
+<div style="display: flex;justify-content: center;align-items: center;">
+<table>
+
+            <div id="results"> </div>
+        
+    
+</table>
+</div>
+<form id='rando' class="form-control card bg-primary" style="position:fixed;bottom:0;">
+    <input class="form-control mt-1" type="number" name="number1" min="1" placeholder="Low End Weight" required>
+    <input class="form-control mt-1" type="number" name="number2" min="1" placeholder="High End Weight" required>
+    <input class="form-control mt-1" type="number" name="valves" min="1" placeholder="How Many Valves?" required>
+    <input class="btn btn-dark" type="submit">
+</form>
+<script>
+    document.addEventListener("DOMContentLoaded",()=>{
+        document.querySelector("#rando").addEventListener('submit',(e)=>{
+            e.preventDefault();
+            const number1 = document.querySelector("[name=number1]").value;
+            const number2 = document.querySelector("[name=number2]").value;
+            const valves = document.querySelector("[name=valves]").value;
+
+            fetch(`{% url 'rando' %}?number1=${number1}&number2=${number2}&valves=${valves}`,{
+                method:"GET",
+            
+            })
+            .then(response=>response.json())
+            .then(data=>{
+                console.log(data);
+
+                document.querySelector('#results').innerHTML = '';
+                document.querySelector('#results').innerHTML = "<ol class='nums'> </ol>";
+                data.number.forEach(item=>{
+                    let listItem = document.createElement('li');
+                    listItem.innerHTML = item;
+                    document.querySelector('.nums').appendChild(listItem)});
+            })
+        })
+    })
+</script>
+{% endblock %}
