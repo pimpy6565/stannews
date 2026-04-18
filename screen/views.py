@@ -7,12 +7,8 @@ from io import BytesIO
 import base64
 from PIL import Image
 from random import uniform
-
-
 import requests
-
 from django.views.decorators.csrf import csrf_exempt
-
 @csrf_exempt
 def proxy_to_flask(request, path):
     flask_url = f"http://10.120.120.101:5050/{path}"
@@ -42,6 +38,7 @@ def proxy_to_flask(request, path):
         return HttpResponse(f"Cannot connect to Flask: {str(e)}", status=502)
     except Exception as e:
         return HttpResponse(f"Proxy error: {str(e)}", status=502)
+    
 @login_required
 def screen(request):
     return render(request,'screen/screen.html')
