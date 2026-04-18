@@ -86,6 +86,24 @@
             </div>
           </nav>
           <script>
+            async function liveCall() {
+              const messagesDiv = document.getElementById("messages");
+              const response = await fetch("/msg");
+              const data = await response.json();
+          
+              messagesDiv.innerHTML = "";
+          
+              for (let i = 0; i < data.msg.length; i++) {
+                  const p = document.createElement("p");
+                  p.textContent = data.msg[i].text;
+                  messagesDiv.appendChild(p);
+              }
+          
+              messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          }
+          
+          
+          
             let input = document.getElementById("msg");
 
 input.addEventListener("input", ()=> {
@@ -113,22 +131,9 @@ document.getElementById("chatForm").addEventListener("submit", function(e) {
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     });
 });
-const messagesDiv = document.getElementById("messages");
 
-fetch("/msg")
-  .then(response => response.json())
-  .then(data => {
-      messagesDiv.innerHTML = ""; // clear old messages
 
-      // data.msg is now an array of objects
-      for (let i = 0; i < data.msg.length; i++) {
-          const p = document.createElement("p");
-          p.textContent = data.msg[i].text;  // get the text from each object
-          messagesDiv.appendChild(p);
-      }
-
-      messagesDiv.scrollTop = messagesDiv.scrollHeight; // auto-scroll
-  });
+      setInterval(liveCall, 3000);
             </script>
          
         {% block body %}
