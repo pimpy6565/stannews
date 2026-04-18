@@ -5,3 +5,4 @@ whitenoise
 django-widget-tweaks
 qrcode
 pillow
+requests
