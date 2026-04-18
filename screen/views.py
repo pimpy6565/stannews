@@ -1,13 +1,47 @@
 from django.shortcuts import render
 from django.contrib.staticfiles import finders
 from django.contrib.auth.decorators import login_required
-from django.http.response import HttpResponse,JsonResponse
+from django.http.response import HttpResponse,JsonResponse,StreamingHttpResponse
 import qrcode
 from io import BytesIO
 import base64
 from PIL import Image
 from random import uniform
-# Create your views here.
+
+
+import requests
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def proxy_to_flask(request, path):
+    flask_url = f"http://10.120.120.101:5050/{path}"
+    
+    try:
+        response = requests.request(
+            method=request.method,
+            url=flask_url,
+            headers={k: v for k, v in request.headers.items() if k.lower() != 'host'},
+            data=request.body,
+            stream=True,
+            timeout=15
+        )
+
+        def stream_content():
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    yield chunk
+
+        return StreamingHttpResponse(
+            stream_content(),
+            status=response.status_code,
+            content_type=response.headers.get('Content-Type'),
+        )
+
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"Cannot connect to Flask: {str(e)}", status=502)
+    except Exception as e:
+        return HttpResponse(f"Proxy error: {str(e)}", status=502)
 @login_required
 def screen(request):
     return render(request,'screen/screen.html')
@@ -97,3 +131,5 @@ def rando(request):
         
         return JsonResponse({"number":random_numbers})
     
+def app(request):
+    return render(request,"screen/index.html")
