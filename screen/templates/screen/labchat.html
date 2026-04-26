@@ -1,0 +1,17 @@
+{% extends 'news/layout.html' %}
+{% load static %}
+{% block title %}
+    Lab Chat
+{% endblock %}
+{% block extra_head %}
+    <script type="module" crossorigin src="{% static 'screen/dist/assets/indexs-D0XRnZqp.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static 'screen/dist/assets/indexs-x1XGuNl0.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="mt-4" id="root"></div>
+{% endblock %}
+{% block extra_scripts %}
+
+{% endblock %}
