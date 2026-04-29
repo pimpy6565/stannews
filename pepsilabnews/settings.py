@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-import os
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -36,7 +36,11 @@ SECRET_KEY = 'django-insecure-*fjd$int7k0$q3-vd=y7vwtw5konr8!-&urwn8js^ar&la!iq+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 #ill turn this on to see what it looks like on phone
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'stannews.onrender.com',
+                 ]
 
 
 # Application definition
