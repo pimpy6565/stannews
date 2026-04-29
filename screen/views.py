@@ -150,5 +150,3 @@ def rando(request):
 def app(request):
     return render(request,"screen/index.html")
 
-def chat(request):
-    return render(request,"screen/labchat.html")

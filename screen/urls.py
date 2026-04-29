@@ -13,7 +13,7 @@ urlpatterns = [
     path("fill",views.fill,name="fill"),
     path('rando',views.rando,name='rando'),
     path("app/",views.app,name="app"),
-    path("chat",views.chat,name="chat"),
+    
     path('proxy/<path:path>', views.proxy_to_flask, name='proxy_to_flask'),
 
     # Catch-all for React (must be LAST)

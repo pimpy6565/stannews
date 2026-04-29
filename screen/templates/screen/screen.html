@@ -12,9 +12,7 @@
     <li class="nav-item">
         <button id="fix" class="nav-link">Fix A Batch</button>
     </li>
-    <li class="nav-item">
-        <button id="chat" class="nav-link">Lab Chat</button>
-    </li>
+
 </ul>
 
 <!-- Better container for mobile -->
@@ -51,10 +49,7 @@
         openUp("{% url 'fix' %}");   // this one stays the same
     });
 
-    document.getElementById("chat").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("{% url 'chat' %}");   // this one stays the same
-    });
+
 
     // Optional: make sure it loads something on page load
     window.addEventListener('load', () => {
