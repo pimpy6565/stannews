@@ -31,11 +31,11 @@
 
     function openUp(url) {
         const iframe = document.getElementById('main-frame');
-        // Safari sometimes needs a cache-buster
+       
         iframe.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
     }
 
-    // Click handlers
+   
     document.getElementById("line1").addEventListener('click', (e) => {
         setActive(e.target);
         openUp("http://10.120.120.101:5050");
