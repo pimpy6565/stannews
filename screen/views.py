@@ -153,6 +153,7 @@ def rando(request):
 def app(request):
     return render(request,"screen/index.html")
 
+@login_required
 def hplc(request):
     hplc_db = Hplc.objects.all()
     return render(request,"screen/hplc.html",{
