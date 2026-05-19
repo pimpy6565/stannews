@@ -159,3 +159,25 @@ def hplc(request):
     return render(request,"screen/hplc.html",{
         "hplc":hplc_db
     })
+    
+@login_required
+def search(request):
+    if request.method == "GET":
+        name = request.GET.get('q')
+        if name:
+            hplc_db = Hplc.objects.filter(name__icontains=name)
+            return render(request,"screen/search.html",{
+                "hplc":hplc_db
+            }) 
+        
+        else:
+            hplc_db = Hplc.objects.all()
+            return render(request,"screen/search.html",{
+            "hplc":hplc_db
+    })
+            
+    else:
+        hplc_db = Hplc.objects.all()
+        return render(request,"screen/search.html",{
+        "hplc":hplc_db
+    })
