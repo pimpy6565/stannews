@@ -12,7 +12,9 @@
     <li class="nav-item">
         <button id="fix" class="nav-link">Fix A Batch</button>
     </li>
-
+    <li class="nav-item">
+        <button id="hplc" class="nav-link">Hplc 🧪</button>
+    </li>
 </ul>
 
 <!-- Better container for mobile -->
@@ -47,6 +49,11 @@
     document.getElementById("fix").addEventListener('click', (e) => {
         setActive(e.target);
         openUp("{% url 'fix' %}");   // this one stays the same
+    });
+
+    document.getElementById("hplc").addEventListener('click', (e) => {
+        setActive(e.target);
+        openUp("{% url 'hplc' %}");   // this one stays the same
     });
 
 

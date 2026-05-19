@@ -9,6 +9,9 @@ from PIL import Image
 from random import uniform
 import requests
 from django.views.decorators.csrf import csrf_exempt
+from .models import Hplc
+
+
 @csrf_exempt
 def proxy_to_flask(request, path):
     flask_url = f"http://10.120.120.101:5050/{path}"
@@ -150,3 +153,8 @@ def rando(request):
 def app(request):
     return render(request,"screen/index.html")
 
+def hplc(request):
+    hplc_db = Hplc.objects.all()
+    return render(request,"screen/hplc.html",{
+        "hplc":hplc_db
+    })
