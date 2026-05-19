@@ -12,9 +12,7 @@
     <li class="nav-item">
         <button id="fix" class="nav-link">Fix A Batch</button>
     </li>
-    <li class="nav-item">
-        <button id="pay" class="nav-link">Dayforce</button>
-    </li>
+
 </ul>
 
 <!-- Better container for mobile -->
@@ -51,10 +49,7 @@
         openUp("{% url 'fix' %}");   // this one stays the same
     });
 
-    document.getElementById("pay").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("https://www.dayforcehcm.com/mydayforce/login.aspx");   // this one stays the same
-    });
+
 
 
 

@@ -65,7 +65,7 @@
       </div>
 
       <div class="overflow-x-auto print:overflow-visible">
-        <table id="expirationTable" class="w-full min-w-[500px] print:w-full print:table-auto">
+        <table id="expirationTable" class="w-full min-w-[400px] print:w-full print:table-auto">
           <thead>
             <tr class="border-b border-zinc-100 bg-white/70 print:bg-zinc-100 print:border-zinc-400">
               <th class="text-left pl-4 sm:pl-8 md:pl-10 py-3 sm:py-7 font-semibold text-zinc-500 text-xs sm:text-base uppercase tracking-widest w-2/5 print:text-zinc-700 print:py-4">Flavor</th>
@@ -172,7 +172,8 @@ const products = [
   { flavor: "Mug Diet Root Beer", line1Days: 91, line2Days: 98, line3Days: 105 },
   { flavor: "Starry", line1Days: 91, line2Days: 98, line3Days: 168 },
   { flavor: "Lipton Brisk", line1Days: 126, line2Days: 126, line3Days: 189 },
-  { flavor: "Lipton Fruit Punch", line1Days: 147, line2Days: 126, line3Days: 147 }
+  { flavor: "Lipton Fruit Punch", line1Days: 147, line2Days: 126, line3Days: 147 },
+  { flavor: "Polar Seltzer", isSpecial: true }
 ];
 
 let currentMonday = null;
@@ -191,13 +192,28 @@ function getCurrentMonday() {
 
 function formatDate(date) {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  return `${months[date.getMonth()]} ${String(date.getDate()).padStart(2,'0')} ${String(date.getFullYear()).slice(-2)}`;
+  return `${months[date.getMonth()]} ${String(date.getDate()).padStart(2,'0')} ${String(date.getFullYear()).slice(-2)} ${String(getJulianDate().hjCode)}`;
 }
 
 function addDays(baseDate, days) {
   const date = new Date(baseDate);
   date.setDate(date.getDate() + days);
   return date;
+}
+
+// ====================== NEW: 18-month helper for Polar Seltzer (from current date, not Monday) ======================
+function addMonths(baseDate, months) {
+  const date = new Date(baseDate);
+  date.setMonth(date.getMonth() + months);
+  return date;
+}
+
+function getExpirationDate(product, lineNum) {
+  if (product.isSpecial) {
+    return addMonths(new Date(), 18);
+  }
+  const days = product[`line${lineNum}Days`];
+  return addDays(currentMonday, days);
 }
 
 // ====================== UPDATED HJ CODE (now mmddy format) ======================
@@ -238,10 +254,10 @@ function printPage() {
   products.forEach(product => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td style="padding: 8px 12px; border: 1px solid #374151; font-weight: 500;">${product.flavor}</td>
-      <td style="padding: 8px 8px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line1Days))}</td>
-      <td style="padding: 8px 8px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line2Days))}</td>
-      <td style="padding: 8px 8px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(addDays(currentMonday, product.line3Days))}</td>
+      <td style="padding: 8px 2px; border: 1px solid #374151; font-weight: 500;">${product.flavor}</td>
+      <td style="padding: 8px 4px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(getExpirationDate(product, 1))}</td>
+      <td style="padding: 8px 4px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(getExpirationDate(product, 2))}</td>
+      <td style="padding: 8px 4px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(getExpirationDate(product, 3))}</td>
     `;
     tbody.appendChild(row);
   });
@@ -277,9 +293,9 @@ function renderTable() {
     row.className = 'table-row';
     row.innerHTML = `
       <td class="pl-2 sm:pl-8 md:pl-10 py-3 sm:py-8 font-medium text-sm sm:text-xl text-zinc-800">${product.flavor}</td>
-      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(addDays(currentMonday, product.line1Days))}</td>
-      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(addDays(currentMonday, product.line2Days))}</td>
-      <td class="px-1 sm:px-6 py-2 sm:py-8 pr-2 sm:pr-8">${createDateCell(addDays(currentMonday, product.line3Days))}</td>
+      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(getExpirationDate(product, 1))}</td>
+      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(getExpirationDate(product, 2))}</td>
+      <td class="px-1 sm:px-6 py-2 sm:py-8 pr-2 sm:pr-8">${createDateCell(getExpirationDate(product, 3))}</td>
     `;
     tbody.appendChild(row);
   });
@@ -362,4 +378,3 @@ function initializeLabExpirations() {
 window.onload = initializeLabExpirations;
 </script>
 {% endblock %}
-```DigitYear
