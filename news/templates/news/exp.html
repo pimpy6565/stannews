@@ -30,7 +30,6 @@
           <span>Refresh Week</span>
         </button>
 
-        <!-- NEW: Toggle button to turn on/off live code (auto-updates) - added exactly as requested, nothing else changed -->
         <div class="flex items-center gap-x-3 bg-white border border-zinc-200 rounded-3xl px-6 py-2 sm:py-4 shadow-lg print:hidden">
           <span class="text-emerald-600 text-sm sm:text-base font-semibold tracking-widest">LIVE</span>
           <label class="relative inline-flex items-center cursor-pointer">
@@ -190,9 +189,11 @@ function getCurrentMonday() {
   return monday;
 }
 
-function formatDate(date) {
+// ====================== UPDATED formatDate - supports custom HJ code for Polar ======================
+function formatDate(date, customCode = null) {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  return `${months[date.getMonth()]} ${String(date.getDate()).padStart(2,'0')} ${String(date.getFullYear()).slice(-2)} ${String(getJulianDate().hjCode)}`;
+  const hjPart = customCode !== null ? customCode : getJulianDate().hjCode;
+  return `${months[date.getMonth()]} ${String(date.getDate()).padStart(2,'0')} ${String(date.getFullYear()).slice(-2)} ${hjPart}`;
 }
 
 function addDays(baseDate, days) {
@@ -201,7 +202,6 @@ function addDays(baseDate, days) {
   return date;
 }
 
-// ====================== NEW: 18-month helper for Polar Seltzer (from current date, not Monday) ======================
 function addMonths(baseDate, months) {
   const date = new Date(baseDate);
   date.setMonth(date.getMonth() + months);
@@ -221,7 +221,6 @@ function getJulianDate() {
   const now = new Date();
   const year = now.getFullYear();
   
-  // Julian date stays the same (MM DDD Y)
   const startOfYear = new Date(year, 0, 0);
   const diff = now - startOfYear;
   const oneDay = 1000 * 60 * 60 * 24;
@@ -233,14 +232,13 @@ function getJulianDate() {
   
   const julianStr = `${month} ${julianDay} ${lastDigitYear}`;
   
-  // NEW: HJ code is now mmddy format (MM + DD + Y)
   const dayOfMonth = String(now.getDate()).padStart(2, '0');
   const hjCode = `HJ${month}${dayOfMonth}${lastDigitYear}`;
   
   return { julianStr, hjCode };
 }
 
-// ====================== SINGLE-PAGE PRINT ======================
+// ====================== SINGLE-PAGE PRINT (now uses custom code for Polar) ======================
 function printPage() {
   const options = { weekday:'long', month:'long', day:'numeric', year:'numeric' };
   let str = currentMonday.toLocaleDateString('en-US', options);
@@ -253,11 +251,14 @@ function printPage() {
   tbody.innerHTML = '';
   products.forEach(product => {
     const row = document.createElement('tr');
+    const isPolar = product.isSpecial;
+    const polarCode = isPolar ? "HJWV1" : null;
+    
     row.innerHTML = `
       <td style="padding: 8px 2px; border: 1px solid #374151; font-weight: 500;">${product.flavor}</td>
-      <td style="padding: 8px 4px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(getExpirationDate(product, 1))}</td>
-      <td style="padding: 8px 4px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(getExpirationDate(product, 2))}</td>
-      <td style="padding: 8px 4px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(getExpirationDate(product, 3))}</td>
+      <td style="padding: 8px 4px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(getExpirationDate(product, 1), polarCode)}</td>
+      <td style="padding: 8px 4px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(getExpirationDate(product, 2), polarCode)}</td>
+      <td style="padding: 8px 4px; border: 1px solid #374151; text-align: center; font-weight: 600; color: #1e40af;">${formatDate(getExpirationDate(product, 3), polarCode)}</td>
     `;
     tbody.appendChild(row);
   });
@@ -271,9 +272,9 @@ function printPage() {
   window.print();
 }
 
-// ====================== REST OF YOUR ORIGINAL CODE (UNCHANGED) ======================
-function createDateCell(date) {
-  const formatted = formatDate(date);
+// ====================== REST OF ORIGINAL CODE (updated for Polar) ======================
+function createDateCell(date, customCode = null) {
+  const formatted = formatDate(date, customCode);
   return `<div onclick="copyDate('${formatted}', this)" class="date-cell mx-auto bg-white text-blue-600 hover:bg-blue-600 hover:text-white font-semibold rounded-3xl text-center cursor-pointer shadow-inner border border-white/70">${formatted}</div>`;
 }
 
@@ -291,11 +292,14 @@ function renderTable() {
   products.forEach(product => {
     const row = document.createElement('tr');
     row.className = 'table-row';
+    const isPolar = product.isSpecial;
+    const polarCode = isPolar ? "HJWV1" : null;
+    
     row.innerHTML = `
       <td class="pl-2 sm:pl-8 md:pl-10 py-3 sm:py-8 font-medium text-sm sm:text-xl text-zinc-800">${product.flavor}</td>
-      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(getExpirationDate(product, 1))}</td>
-      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(getExpirationDate(product, 2))}</td>
-      <td class="px-1 sm:px-6 py-2 sm:py-8 pr-2 sm:pr-8">${createDateCell(getExpirationDate(product, 3))}</td>
+      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(getExpirationDate(product, 1), polarCode)}</td>
+      <td class="px-1 sm:px-6 py-2 sm:py-8">${createDateCell(getExpirationDate(product, 2), polarCode)}</td>
+      <td class="px-1 sm:px-6 py-2 sm:py-8 pr-2 sm:pr-8">${createDateCell(getExpirationDate(product, 3), polarCode)}</td>
     `;
     tbody.appendChild(row);
   });
@@ -336,7 +340,6 @@ function updateJulianFooter() {
   `;
 }
 
-// NEW: Toggle function (live mode on/off) - controls the auto-update intervals
 function toggleLiveMode() {
   const isLive = document.getElementById('liveToggle').checked;
   if (isLive) {
@@ -369,10 +372,9 @@ function initializeLabExpirations() {
   renderTable();
   updateLastUpdated();
   updateJulianFooter();
-  // Live intervals (default ON - exactly as original)
   lastUpdatedInterval = setInterval(updateLastUpdated, 30000);
   julianInterval = setInterval(updateJulianFooter, 86400000);
-  console.log('%c✅ Lab Expirations - HJ code now in mmddy format!', 'color:#0066ff;font-weight:700');
+  console.log('%c✅ Lab Expirations - Polar Seltzer now shows fixed "HJWV1"', 'color:#0066ff;font-weight:700');
 }
 
 window.onload = initializeLabExpirations;
