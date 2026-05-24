@@ -16,6 +16,7 @@
 
           window.addEventListener("load", () => {
             document.querySelectorAll("video").forEach((vid) => vid.load());
+            liveCall();
           });
         </script>
         {% block extra_head %}{% endblock %}
@@ -123,17 +124,15 @@ document.getElementById("chatForm").addEventListener("submit", function(e) {
     })
     .then(response => response.json())
     .then(data => {
-        const messagesDiv = document.getElementById("messages");
-        messagesDiv.innerHTML += "<p>" + data.msg + "</p>";
+       
         document.getElementById("msg").value = "";
 
-        // auto-scroll to newest message
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        liveCall();
     });
 });
 
 
-      setInterval(liveCall, 3000);
+      
             </script>
          
         {% block body %}

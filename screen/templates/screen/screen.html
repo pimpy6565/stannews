@@ -1,5 +1,5 @@
 {% extends 'news/layout.html' %}
-{% block title %}They Cant Stop Us!🥷🏿{% endblock %}
+{% block title %}Home Base!👽{% endblock %}
 
 {% block body %}
 <ul class="nav nav-tabs">
@@ -12,11 +12,9 @@
     <li class="nav-item">
         <button id="fix" class="nav-link">Fix A Batch</button>
     </li>
+
     <li class="nav-item">
-        <button id="hplc" class="nav-link">Hplc 🧪</button>
-    </li>
-    <li class="nav-item">
-        <button id="hplc_search" class="nav-link">Hplc Search🧪</button>
+        <button id="hplc_search" class="nav-link">Hplc🧪</button>
     </li>
 </ul>
 
@@ -54,10 +52,7 @@
         openUp("{% url 'fix' %}");   // this one stays the same
     });
 
-    document.getElementById("hplc").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("{% url 'hplc' %}");   // this one stays the same
-    });
+
     document.getElementById("hplc_search").addEventListener('click', (e) => {
         setActive(e.target);
         openUp("{% url 'search' %}");   // this one stays the same
