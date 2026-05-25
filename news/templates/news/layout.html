@@ -1,145 +1,188 @@
 {% load static %}
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
+              rel="stylesheet" 
+              integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" 
+              crossorigin="anonymous">
+        
         <title>{% block title %}{% endblock %}</title>
      
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="{% static 'news/styles.css' %}">
         <link rel="icon" href="{% static 'news/stan.ico' %}">
         <link rel="apple-touch-icon" href="{% static 'news/stan.png' %}">
+        
         <script>
-
-          window.addEventListener("load", () => {
-            document.querySelectorAll("video").forEach((vid) => vid.load());
-            liveCall();
-          });
+            window.addEventListener("load", () => {
+                document.querySelectorAll("video").forEach((vid) => vid.load());
+            });
+            
+            document.addEventListener("DOMContentLoaded", () => liveCall());
         </script>
+        
         {% block extra_head %}{% endblock %}
     </head>
+    
     <body>
         <nav class="navbar bg-primary" data-bs-theme="dark">
             <div class="container-fluid">
-              <a class="navbar-brand" href="{% url 'index' %}">Pepsi Pennsauken News</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
-                <div class="offcanvas-header">
-                  <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Menu</h5>
-                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-                  <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                    <li class="nav-item">
-                      <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{% url 'About' %}">Contact Information</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{% url 'exp' %}">Code Sheet</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{% url 'lab' %}">Lab Calculater</a>
-                    </li>                                         
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'Disclaimer' %}">Disclaimer</a>
-                      </li>
+                <a class="navbar-brand" href="{% url 'index' %}">Pepsi Pennsauken News</a>
+                
+                <button class="navbar-toggler" 
+                        type="button" 
+                        data-bs-toggle="offcanvas" 
+                        data-bs-target="#offcanvasDarkNavbar" 
+                        aria-controls="offcanvasDarkNavbar" 
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="offcanvas offcanvas-end text-bg-dark" 
+                     tabindex="-1" 
+                     id="offcanvasDarkNavbar" 
+                     aria-labelledby="offcanvasDarkNavbarLabel">
+                    
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Menu</h5>
+                        <button type="button" 
+                                class="btn-close btn-close-white" 
+                                data-bs-dismiss="offcanvas" 
+                                aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                <a class="nav-link active" 
+                                   aria-current="page" 
+                                   href="{% url 'index' %}">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'About' %}">Contact Information</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'exp' %}">Code Sheet</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'lab' %}">Lab Calculater</a>
+                            </li>                                         
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'Disclaimer' %}">Disclaimer</a>
+                            </li>
 
-                      {% if user.is_authenticated %}
-                      <li class="nav-item">
-                        <a class="nav-link" href="{% url 'qr' %}">Qr Codes</a>
-                      </li>  
-                      <li class="nav-item">
-                        <a class="nav-link" href="{% url 'screen' %}">Lab Blender App</a>
-                      </li>                      
-                      <li class="nav-item">
-                        <a class="nav-link" href="{% url 'fill' %}">Fill Height Randomizer</a>
-                      </li>                          
-                    <li class="nav-item">
-                      User: {{ user }} 🚀👨‍🔬
-                        <form action="{% url 'logout' %}" method="POST">
-                          {% csrf_token %}
-                          <button class="btn btn-outline-primary" type="submit">Logout</button>
-                        </form>
-                    </li> 
-                    {% else %} 
-                    <li class="nav-item">
-                      <button class="btn btn-outline-primary" onclick="window.location.href = `{% url 'login' %}`">Login</button>
-                      {% endif %}
-                  </li> 
-                  </ul>
-
+                            {% if user.is_authenticated %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'qr' %}">Qr Codes</a>
+                                </li>  
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'screen' %}">Lab Blender App</a>
+                                </li>                      
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'fill' %}">Fill Height Randomizer</a>
+                                </li>                          
+                                <li class="nav-item">
+                                    User: {{ user }} 🚀👨‍🔬
+                                    <form action="{% url 'logout' %}" method="POST" class="d-inline">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-primary" type="submit">Logout</button>
+                                    </form>
+                                </li> 
+                            {% else %} 
+                                <li class="nav-item">
+                                    <button class="btn btn-outline-primary" 
+                                            onclick="window.location.href = `{% url 'login' %}`">Login</button>
+                                </li> 
+                            {% endif %}
+                        </ul>
+                    </div>
+                    
+                    <div id="messages" style="height: 300px; overflow-y: auto; padding: 5px;"></div>
+                    
+                    <form id="chatForm">
+                        {% csrf_token %}
+                        <input type="text" 
+                               id="msg" 
+                               placeholder="Chat Here....." 
+                               name="msg" 
+                               style="width: 80%;">
+                        <input type="submit" value="Send">
+                    </form>
+                    
                 </div>
-                <div id="messages" style="height: 300px; overflow-y: auto; padding: 5px;">
-                </div>
-                <form id="chatForm">
-                  {% csrf_token %}
-                <input type="text" id="msg" placeholder="Chat Here....." name="msg" style="width: 80%;">
-                <input type="submit" value="Send">
-              </form>
-              </div>
             </div>
-          </nav>
-          <script>
+        </nav>
+        
+        <script>
+            // ==================== LIVE CHAT SYSTEM ====================
             async function liveCall() {
-              const messagesDiv = document.getElementById("messages");
-              const response = await fetch("/msg");
-              const data = await response.json();
-          
-              messagesDiv.innerHTML = "";
-          
-              for (let i = 0; i < data.msg.length; i++) {
-                  const p = document.createElement("p");
-                  p.textContent = data.msg[i].text;
-                  messagesDiv.appendChild(p);
-              }
-          
-              messagesDiv.scrollTop = messagesDiv.scrollHeight;
-          }
-          
-          
-          
-            let input = document.getElementById("msg");
-
-input.addEventListener("input", ()=> {
-      input.value = input.value.toUpperCase();});
-document.getElementById("chatForm").addEventListener("submit", function(e) {
-    e.preventDefault(); // stop page reload
-
-    let message = document.getElementById("msg").value;
-  
-    fetch("/msg", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
-        },
-        body: "msg=" + encodeURIComponent(message)
-    })
-    .then(response => response.json())
-    .then(data => {
-       
-        document.getElementById("msg").value = "";
-
-        liveCall();
-    });
-});
-
-
-      
-            </script>
+                const messagesDiv = document.getElementById("messages");
+                
+                try {
+                    const response = await fetch("/msg");
+                    const data = await response.json();
+                    
+                    messagesDiv.innerHTML = "";
+                    
+                    for (let i = 0; i < data.msg.length; i++) {
+                        const p = document.createElement("p");
+                        p.textContent = data.msg[i].text;
+                        messagesDiv.appendChild(p);
+                    }
+                    
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                } catch (error) {
+                    console.error("Error loading messages:", error);
+                }
+            }
+            
+            // Initialize chat features once the page is fully loaded
+            document.addEventListener("DOMContentLoaded", () => {
+                // Auto-uppercase the chat input
+                const input = document.getElementById("msg");
+                if (input) {
+                    input.addEventListener("input", () => {
+                        input.value = input.value.toUpperCase();
+                    });
+                }
+                
+                // Handle chat form submission
+                const chatForm = document.getElementById("chatForm");
+                if (chatForm) {
+                    chatForm.addEventListener("submit", function(e) {
+                        e.preventDefault();
+                        
+                        const message = document.getElementById("msg").value;
+                        
+                        fetch("/msg", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                            },
+                            body: "msg=" + encodeURIComponent(message)
+                        })
+                        .then(response => response.json())
+                        .then(() => {
+                            document.getElementById("msg").value = "";
+                            liveCall();
+                        })
+                        .catch(error => console.error("Error sending message:", error));
+                    });
+                }
+            });
+        </script>
          
         {% block body %}
-
         {% endblock %}
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" 
+                integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" 
+                crossorigin="anonymous"></script>
+        
         {% block extra_scripts %}{% endblock %}
-      </body>  
-    
+    </body>
 </html>
