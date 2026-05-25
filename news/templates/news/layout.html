@@ -115,7 +115,7 @@
         </nav>
         
         <script>
-            // ==================== LIVE CHAT SYSTEM (NOW AUTO-UPDATING) ====================
+            // ==================== LIVE CHAT SYSTEM (NEWEST MESSAGES AT BOTTOM) ====================
             let pollInterval = null;
 
             async function liveCall() {
@@ -128,12 +128,16 @@
                     
                     messagesDiv.innerHTML = "";
                     
-                    data.msg.forEach(item => {
+                    // Reverse so oldest messages are at the top, newest at the bottom
+                    const reversedMessages = [...data.msg].reverse();
+                    
+                    reversedMessages.forEach(item => {
                         const p = document.createElement("p");
                         p.textContent = item.text;
                         messagesDiv.appendChild(p);
                     });
                     
+                    // Always scroll to the very bottom
                     messagesDiv.scrollTop = messagesDiv.scrollHeight;
                 } catch (error) {
                     console.error("Error loading messages:", error);
@@ -168,7 +172,7 @@
                     });
                 }
 
-                // Auto-refresh when offcanvas opens
+                // Auto-refresh when offcanvas opens/closes
                 if (offcanvas) {
                     offcanvas.addEventListener("shown.bs.offcanvas", startAutoRefresh);
                     offcanvas.addEventListener("hidden.bs.offcanvas", stopAutoRefresh);
