@@ -20,8 +20,6 @@
             window.addEventListener("load", () => {
                 document.querySelectorAll("video").forEach((vid) => vid.load());
             });
-            
-            document.addEventListener("DOMContentLoaded", () => liveCall());
         </script>
         
         {% block extra_head %}{% endblock %}
@@ -117,46 +115,73 @@
         </nav>
         
         <script>
-            // ==================== LIVE CHAT SYSTEM ====================
+            // ==================== LIVE CHAT SYSTEM (NOW AUTO-UPDATING) ====================
+            let pollInterval = null;
+
             async function liveCall() {
                 const messagesDiv = document.getElementById("messages");
-                
+                if (!messagesDiv) return;
+
                 try {
                     const response = await fetch("/msg");
                     const data = await response.json();
                     
                     messagesDiv.innerHTML = "";
                     
-                    for (let i = 0; i < data.msg.length; i++) {
+                    data.msg.forEach(item => {
                         const p = document.createElement("p");
-                        p.textContent = data.msg[i].text;
+                        p.textContent = item.text;
                         messagesDiv.appendChild(p);
-                    }
+                    });
                     
                     messagesDiv.scrollTop = messagesDiv.scrollHeight;
                 } catch (error) {
                     console.error("Error loading messages:", error);
                 }
             }
-            
-            // Initialize chat features once the page is fully loaded
+
+            // Start auto-refresh every 1.5 seconds
+            function startAutoRefresh() {
+                if (pollInterval) clearInterval(pollInterval);
+                pollInterval = setInterval(liveCall, 1500);
+                liveCall(); // immediate first load
+            }
+
+            // Stop auto-refresh when chat is closed
+            function stopAutoRefresh() {
+                if (pollInterval) {
+                    clearInterval(pollInterval);
+                    pollInterval = null;
+                }
+            }
+
+            // Initialize everything
             document.addEventListener("DOMContentLoaded", () => {
-                // Auto-uppercase the chat input
+                const offcanvas = document.getElementById("offcanvasDarkNavbar");
                 const input = document.getElementById("msg");
+                const chatForm = document.getElementById("chatForm");
+
+                // Auto-uppercase input
                 if (input) {
                     input.addEventListener("input", () => {
                         input.value = input.value.toUpperCase();
                     });
                 }
-                
-                // Handle chat form submission
-                const chatForm = document.getElementById("chatForm");
+
+                // Auto-refresh when offcanvas opens
+                if (offcanvas) {
+                    offcanvas.addEventListener("shown.bs.offcanvas", startAutoRefresh);
+                    offcanvas.addEventListener("hidden.bs.offcanvas", stopAutoRefresh);
+                }
+
+                // Handle message sending
                 if (chatForm) {
                     chatForm.addEventListener("submit", function(e) {
                         e.preventDefault();
                         
-                        const message = document.getElementById("msg").value;
-                        
+                        const message = input ? input.value.trim() : "";
+                        if (!message) return;
+
                         fetch("/msg", {
                             method: "POST",
                             headers: {
@@ -167,8 +192,8 @@
                         })
                         .then(response => response.json())
                         .then(() => {
-                            document.getElementById("msg").value = "";
-                            liveCall();
+                            if (input) input.value = "";
+                            liveCall();           // instant update after send
                         })
                         .catch(error => console.error("Error sending message:", error));
                     });
