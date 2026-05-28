@@ -3,6 +3,10 @@
 
 {% block body %}
 <ul class="nav nav-tabs">
+    {% for group in user.groups.all %}
+    {% if group.name == "Lab Tech" %}
+
+
     <li class="nav-item">
         <button id="line1" class="nav-link">Blender 1</button>
     </li>
@@ -13,6 +17,8 @@
         <button id="fix" class="nav-link">Fix A Batch</button>
     </li>
 
+    {% endif %}
+    {% endfor %}
     <li class="nav-item">
         <button id="hplc_search" class="nav-link">Hplc🧪</button>
     </li>
@@ -36,21 +42,8 @@
         iframe.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
     }
 
-   
-    document.getElementById("line1").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("http://10.120.120.101:5050");
-    });
 
-    document.getElementById("line2").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("http://10.120.120.249:5050");
-    });
 
-    document.getElementById("fix").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("{% url 'fix' %}");   // this one stays the same
-    });
 
 
     document.getElementById("hplc_search").addEventListener('click', (e) => {
@@ -67,4 +60,24 @@
         document.getElementById("line1").click();
     });
 </script>
+{% for group in user.groups.all %}
+{% if group.name == "Lab Tech" %}
+<script>
+    document.getElementById("line1").addEventListener('click', (e) => {
+        setActive(e.target);
+        openUp("http://10.120.120.101:5050");
+    });
+
+    document.getElementById("line2").addEventListener('click', (e) => {
+        setActive(e.target);
+        openUp("http://10.120.120.249:5050");
+    });
+
+    document.getElementById("fix").addEventListener('click', (e) => {
+        setActive(e.target);
+        openUp("{% url 'fix' %}");   // this one stays the same
+    });
+</script>
+{% endif %}
+{% endfor %}
 {% endblock %}

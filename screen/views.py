@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.staticfiles import finders
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http.response import HttpResponse,JsonResponse,StreamingHttpResponse
 import qrcode
 from io import BytesIO
@@ -11,7 +11,15 @@ import requests
 from django.views.decorators.csrf import csrf_exempt
 from .models import Hplc
 
+def group_required(group_name):
 
+    def in_group(user):
+        return user.groups.filter(name=group_name).exists()
+
+    return user_passes_test(in_group)
+
+@login_required
+@group_required('Super')
 @csrf_exempt
 def proxy_to_flask(request, path):
     flask_url = f"http://10.120.120.101:5050/{path}"
@@ -43,14 +51,17 @@ def proxy_to_flask(request, path):
         return HttpResponse(f"Proxy error: {str(e)}", status=502)
     
 @login_required
+@group_required("Hplc")
 def screen(request):
     return render(request,'screen/screen.html')
 
 @login_required
+@group_required("Lab Tech")
 def fix(request):
     return render(request,"screen/fix.html")
 
 @login_required
+@group_required("Lab Tech")
 def page(request,slug):
 
     if slug == "a":
@@ -83,6 +94,7 @@ def page(request,slug):
 
 
 @login_required
+@group_required("Lab Tech")
 def qrcodes(request):
     if request.method == "POST":
         qr = qrcode.QRCode(
@@ -133,6 +145,7 @@ def qrcodes(request):
     return render(request,"screen/qr.html")
 
 @login_required
+@group_required("Lab Tech")
 def fill(request):
     return render(request,"screen/fill.html")
 
@@ -149,13 +162,16 @@ def rando(request):
         
         
         return JsonResponse({"number":random_numbers})
-    
+
+@login_required
+@group_required("Super")    
 def app(request):
     return render(request,"screen/index.html")
 
 
     
 @login_required
+@group_required("Hplc")
 def search(request):
     if request.method == "GET":
         name = request.GET.get('q')
