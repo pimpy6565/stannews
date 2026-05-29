@@ -56,7 +56,7 @@ def screen(request):
     return render(request,'screen/screen.html')
 
 @login_required
-@group_required("Lab Tech")
+@group_required("Hplc")
 def fix(request):
     return render(request,"screen/fix.html")
 

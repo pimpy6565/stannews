@@ -13,15 +13,17 @@
     <li class="nav-item">
         <button id="line2" class="nav-link">Blender 2</button>
     </li>
-    <li class="nav-item">
-        <button id="fix" class="nav-link">Fix A Batch</button>
-    </li>
+
 
     {% endif %}
     {% endfor %}
     <li class="nav-item">
         <button id="hplc_search" class="nav-link">Hplc🧪</button>
     </li>
+    <li class="nav-item">
+        <button id="fix" class="nav-link">Fix A Batch</button>
+    </li>
+
 </ul>
 
 <!-- Better container for mobile -->
@@ -44,21 +46,42 @@
 
 
 
-
+    document.getElementById("fix").addEventListener('click', (e) => {
+        setActive(e.target);
+        openUp("{% url 'fix' %}");   // this one stays the same
+    });
 
     document.getElementById("hplc_search").addEventListener('click', (e) => {
         setActive(e.target);
         openUp("{% url 'search' %}");   // this one stays the same
     });
 
+    // Set the correct *initial* active tab + load the right starting iframe content.
+    // Lab Tech → line1 (Blender 1). Everyone else → hplc_search.
+    // Full manual tab switching still works normally via the existing listeners.
+    (function() {
+        const line1 = document.getElementById("line1");
+        if (line1) {
+            // Lab Tech users start here
+            document.querySelectorAll(".nav-link").forEach(btn => btn.classList.remove("active"));
+            line1.classList.add("active");
+            openUp("http://10.120.120.101:5050");
+        } else {
+            const hplc = document.getElementById("hplc_search");
+            if (hplc) {
+                document.querySelectorAll(".nav-link").forEach(btn => btn.classList.remove("active"));
+                hplc.classList.add("active");
+                openUp("{% url 'search' %}");
+            }
+        }
+    })();
 
 
 
 
-    // Optional: make sure it loads something on page load
-    window.addEventListener('load', () => {
-        document.getElementById("line1").click();
-    });
+
+
+
 </script>
 {% for group in user.groups.all %}
 {% if group.name == "Lab Tech" %}
@@ -73,10 +96,7 @@
         openUp("http://10.120.120.249:5050");
     });
 
-    document.getElementById("fix").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("{% url 'fix' %}");   // this one stays the same
-    });
+
 </script>
 {% endif %}
 {% endfor %}
