@@ -1,62 +1,173 @@
-<!-- Table -->
-<div class="px-6 py-5">
-    <div class="overflow-auto max-h-[calc(100dvh-220px)] border border-zinc-800 rounded-3xl bg-zinc-900">
-        <table class="hplc-table w-full">   <!-- ← removed min-w-[900px] -->
-            <thead>
-                <tr>
-                    <th class="px-4 py-3 text-left rounded-tl-3xl">FLAVOR / PRODUCT</th>
-                    <th class="px-3 py-3 text-left">Caffeine</th>
-                    <th class="px-3 py-3 text-left">Benzoate</th>
-                    <th class="px-3 py-3 text-left">Aspartame</th>
-                    <th class="px-3 py-3 text-left">Sorbate</th>
-                    <th class="px-3 py-3 text-left rounded-tr-3xl">Ace-K</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-zinc-800">
-                {% for item in hplc %}
-                <tr>
-                    <td class="px-4 py-3 font-medium text-white">{{ item.name }}</td>
-                    
-                    <td class="px-3 py-3">
-                        <div class="font-medium">{{ item.caf }}</div>
-                        <div class="spec-range">{{ item.caf_low }} – {{ item.caf_high }}</div>
-                    </td>
-                    <td class="px-3 py-3">
-                        <div class="font-medium">{{ item.benz }}</div>
-                        <div class="spec-range">{{ item.benz_low }} – {{ item.benz_high }}</div>
-                    </td>
-                    <td class="px-3 py-3">
-                        <div class="font-medium">{{ item.asp }}</div>
-                        <div class="spec-range">{{ item.asp_low }} – {{ item.asp_high }}</div>
-                    </td>
-                    <td class="px-3 py-3">
-                        <div class="font-medium">{{ item.sorb }}</div>
-                        <div class="spec-range">{{ item.sorb_low }} – {{ item.sorb_high }}</div>
-                    </td>
-                    <td class="px-3 py-3">
-                        <div class="font-medium">{{ item.ace }}</div>
-                        <div class="spec-range">{{ item.ace_low }} – {{ item.ace_high }}</div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="px-6 py-16 text-center">
-                        <div class="text-6xl mb-4 opacity-40">🧪</div>
-                        <div class="text-lg text-zinc-400">No results found</div>
-                        <p class="text-sm text-zinc-500 mt-1">Try a broader search term</p>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="mt-3 text-[10px] text-zinc-500 px-1 flex items-center justify-between">
-        <div>
-            All values shown as <span class="font-medium">target (low – high)</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HPLC Database • Lab Operations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        
+        .hplc-table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .hplc-table th {
+            background-color: #18181b;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #71717a;
+        }
+        
+        .hplc-table td {
+            font-size: 0.9rem;
+            color: #e4e4e7;
+        }
+        
+        .hplc-table tr:hover td {
+            background-color: #27272a;
+        }
+        
+        .spec-range {
+            font-size: 0.75rem;
+            color: #a1a1aa;
+            font-family: ui-monospace, monospace;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200">
+    <div class="max-w-[1400px] mx-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-zinc-800">
+            <div>
+                <div class="flex items-center gap-x-3">
+                    <div class="text-3xl">🧪</div>
+                    <div>
+                        <h1 class="font-semibold text-2xl tracking-tighter">HPLC Reference Database</h1>
+                        <p class="text-xs text-zinc-400">Real-time flavor specifications • Pennsauken Production</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-right text-xs">
+                <div class="text-emerald-400 font-medium">LIVE DATA</div>
+                <div class="text-zinc-500">{{ hplc|length }} records</div>
+            </div>
         </div>
-        <div class="hidden md:block">
-            Double-click row to copy flavor name
+
+        <!-- Search -->
+        <div class="px-6 pt-5">
+            <form method="get" class="flex items-center gap-3">
+                <div class="relative flex-1 max-w-md">
+                    <div class="absolute left-4 top-3.5 text-zinc-400">🔍</div>
+                    <input 
+                        type="search" 
+                        name="q" 
+                        value="{{ request.GET.q|default:'' }}"
+                        placeholder="Search flavors (e.g. Pepsi, Diet, Baja...)"
+                        class="w-full bg-zinc-900 border border-zinc-700 focus:border-red-600/60 focus:ring-1 focus:ring-red-600/30 transition pl-11 py-3 rounded-3xl text-sm placeholder:text-zinc-500"
+                        autocomplete="off"
+                    >
+                </div>
+                <button type="submit"
+                        class="px-8 py-3 rounded-3xl bg-red-600 hover:bg-red-700 active:bg-red-800 font-semibold text-sm transition">
+                    SEARCH
+                </button>
+                {% if request.GET.q %}
+                <a href="{% url 'search' %}" 
+                   class="px-5 py-3 rounded-3xl border border-zinc-700 hover:bg-zinc-900 text-sm transition">
+                    Clear
+                </a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Table -->
+        <div class="px-6 py-5">
+            <div class="overflow-auto max-h-[calc(100dvh-220px)] border border-zinc-800 rounded-3xl bg-zinc-900">
+                <table class="hplc-table w-full">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-4 text-left rounded-tl-3xl">FLAVOR / PRODUCT</th>
+                            <th class="px-5 py-4 text-left">Caffeine</th>
+                            <th class="px-5 py-4 text-left">Benzoate</th>
+                            <th class="px-5 py-4 text-left">Aspartame</th>
+                            <th class="px-5 py-4 text-left">Sorbate</th>
+                            <th class="px-5 py-4 text-left rounded-tr-3xl">Ace-K</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-800">
+                        {% for item in hplc %}
+                        <tr>
+                            <td class="px-6 py-4 font-medium text-white">{{ item.name }}</td>
+                            
+                            <td class="px-5 py-4">
+                                <div class="font-medium">{{ item.caf }}</div>
+                                <div class="spec-range">{{ item.caf_low }} – {{ item.caf_high }}</div>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="font-medium">{{ item.benz }}</div>
+                                <div class="spec-range">{{ item.benz_low }} – {{ item.benz_high }}</div>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="font-medium">{{ item.asp }}</div>
+                                <div class="spec-range">{{ item.asp_low }} – {{ item.asp_high }}</div>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="font-medium">{{ item.sorb }}</div>
+                                <div class="spec-range">{{ item.sorb_low }} – {{ item.sorb_high }}</div>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="font-medium">{{ item.ace }}</div>
+                                <div class="spec-range">{{ item.ace_low }} – {{ item.ace_high }}</div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-16 text-center">
+                                <div class="text-6xl mb-4 opacity-40">🧪</div>
+                                <div class="text-lg text-zinc-400">No results found</div>
+                                <p class="text-sm text-zinc-500 mt-1">Try a broader search term</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-3 text-[10px] text-zinc-500 px-1 flex items-center justify-between">
+                <div>
+                    All values shown as <span class="font-medium">target (low – high)</span>
+                </div>
+                <div class="hidden md:block">
+                    Double-click row to copy flavor name
+                </div>
+            </div>
         </div>
     </div>
-</div>
+
+    <script>
+        // Simple row copy helper
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('dblclick', () => {
+                const flavor = row.querySelector('td')?.textContent?.trim();
+                if (flavor) {
+                    navigator.clipboard.writeText(flavor).then(() => {
+                        const original = row.style.backgroundColor;
+                        row.style.backgroundColor = '#27272a';
+                        setTimeout(() => row.style.backgroundColor = original, 600);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
