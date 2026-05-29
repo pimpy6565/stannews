@@ -91,45 +91,121 @@
         </div>
 
         <!-- Table -->
-        <div class="px-6 py-5">
-            <div class="overflow-auto max-h-[calc(100dvh-220px)] border border-zinc-800 rounded-3xl bg-zinc-900">
-                <table class="hplc-table w-full">
-                    <thead>
-                        <tr>
-                            <th class="px-6 py-4 text-left rounded-tl-3xl">FLAVOR / PRODUCT</th>
-                            <th class="px-5 py-4 text-left">Caffeine</th>
-                            <th class="px-5 py-4 text-left">Benzoate</th>
-                            <th class="px-5 py-4 text-left">Aspartame</th>
-                            <th class="px-5 py-4 text-left">Sorbate</th>
-                            <th class="px-5 py-4 text-left rounded-tr-3xl">Ace-K</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-zinc-800">
-                        {% for item in hplc %}
-                        <tr>
-                            <td class="px-6 py-4 font-medium text-white">{{ item.name }}</td>
-                            
-                            <td class="px-5 py-4">
-                                <div class="font-medium">{{ item.caf }}</div>
-                                <div class="spec-range">{{ item.caf_low }} – {{ item.caf_high }}</div>
-                            </td>
-                            <td class="px-5 py-4">
-                                <div class="font-medium">{{ item.benz }}</div>
-                                <div class="spec-range">{{ item.benz_low }} – {{ item.benz_high }}</div>
-                            </td>
-                            <td class="px-5 py-4">
-                                <div class="font-medium">{{ item.asp }}</div>
-                                <div class="spec-range">{{ item.asp_low }} – {{ item.asp_high }}</div>
-                            </td>
-                            <td class="px-5 py-4">
-                                <div class="font-medium">{{ item.sorb }}</div>
-                                <div class="spec-range">{{ item.sorb_low }} – {{ item.sorb_high }}</div>
-                            </td>
-                            <td class="px-5 py-4">
-                                <div class="font-medium">{{ item.ace }}</div>
-                                <div class="spec-range">{{ item.ace_low }} – {{ item.ace_high }}</div>
-                            </td>
-                        </tr>
+       <!-- Table -->
+<div class="px-6 py-5">
+    <div class="overflow-y-auto max-h-[calc(100dvh-220px)] border border-zinc-800 rounded-3xl bg-zinc-900">
+        
+        <table class="hplc-table w-full table-fixed">
+            
+            <thead>
+                <tr>
+                    <th class="px-6 py-4 text-left rounded-tl-3xl break-words">
+                        FLAVOR / PRODUCT
+                    </th>
+
+                    <th class="px-5 py-4 text-left break-words">
+                        Caffeine
+                    </th>
+
+                    <th class="px-5 py-4 text-left break-words">
+                        Benzoate
+                    </th>
+
+                    <th class="px-5 py-4 text-left break-words">
+                        Aspartame
+                    </th>
+
+                    <th class="px-5 py-4 text-left break-words">
+                        Sorbate
+                    </th>
+
+                    <th class="px-5 py-4 text-left rounded-tr-3xl break-words">
+                        Ace-K
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-zinc-800">
+                {% for item in hplc %}
+                <tr>
+
+                    <td class="px-6 py-4 font-medium text-white break-words">
+                        {{ item.name }}
+                    </td>
+
+                    <td class="px-5 py-4 break-words">
+                        <div class="font-medium">{{ item.caf }}</div>
+                        <div class="spec-range">
+                            {{ item.caf_low }} – {{ item.caf_high }}
+                        </div>
+                    </td>
+
+                    <td class="px-5 py-4 break-words">
+                        <div class="font-medium">{{ item.benz }}</div>
+                        <div class="spec-range">
+                            {{ item.benz_low }} – {{ item.benz_high }}
+                        </div>
+                    </td>
+
+                    <td class="px-5 py-4 break-words">
+                        <div class="font-medium">{{ item.asp }}</div>
+                        <div class="spec-range">
+                            {{ item.asp_low }} – {{ item.asp_high }}
+                        </div>
+                    </td>
+
+                    <td class="px-5 py-4 break-words">
+                        <div class="font-medium">{{ item.sorb }}</div>
+                        <div class="spec-range">
+                            {{ item.sorb_low }} – {{ item.sorb_high }}
+                        </div>
+                    </td>
+
+                    <td class="px-5 py-4 break-words">
+                        <div class="font-medium">{{ item.ace }}</div>
+                        <div class="spec-range">
+                            {{ item.ace_low }} – {{ item.ace_high }}
+                        </div>
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="6" class="px-6 py-16 text-center">
+                        <div class="text-6xl mb-4 opacity-40">🧪</div>
+
+                        <div class="text-lg text-zinc-400">
+                            No results found
+                        </div>
+
+                        <p class="text-sm text-zinc-500 mt-1">
+                            Try a broader search term
+                        </p>
+                    </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="mt-3 text-[10px] text-zinc-500 px-1 flex items-center justify-between">
+        <div>
+            All values shown as
+            <span class="font-medium">
+                target (low – high)
+            </span>
+        </div>
+
+        <div class="hidden md:block">
+            Double-click row to copy flavor name
+        </div>
+    </div>
+</div>
                         {% empty %}
                         <tr>
                             <td colspan="6" class="px-6 py-16 text-center">
