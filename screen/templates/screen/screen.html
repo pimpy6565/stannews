@@ -1,103 +1,467 @@
-{% extends 'news/layout.html' %}
-{% block title %}Home Base!👽{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lab Operations • Pepsi Pennsauken</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% load static %}
+    <link rel="icon" href="{% static 'screen/stan.ico' %}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --accent: 225 29 72; /* Pepsi red */
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, -apple-system, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
 
-{% block body %}
-<ul class="nav nav-tabs">
-    {% for group in user.groups.all %}
-    {% if group.name == "Lab Tech" %}
+        /* Professional Tab Bar */
+        .lab-tab-bar {
+            background-color: #18181b;
+            border-bottom: 1px solid #27272a;
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .lab-tab-bar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .lab-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            font-size: 0.925rem;
+            font-weight: 500;
+            color: #a1a1aa;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -1px;
+        }
+        .lab-tab:hover {
+            color: #e4e4e7;
+            background-color: #27272a;
+        }
+        .lab-tab.active {
+            color: white;
+            background-color: #27272a;
+            border-bottom-color: rgb(225 29 72);
+            font-weight: 600;
+        }
+        .lab-tab .tab-icon {
+            font-size: 1.05rem;
+            opacity: 0.9;
+        }
 
+        /* Iframe Panel */
+        .content-panel {
+            background-color: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 12px;
+            margin: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3),
+                        0 4px 6px -4px rgb(0 0 0 / 0.3);
+        }
+        
+        .iframe-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            background-color: #27272a;
+            border-bottom: 1px solid #3f3f46;
+            font-size: 0.75rem;
+            color: #71717a;
+        }
+        
+        #main-frame {
+            background: #09090b;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
 
-    <li class="nav-item">
-        <button id="line1" class="nav-link">Blender 1</button>
-    </li>
-    <li class="nav-item">
-        <button id="line2" class="nav-link">Blender 2</button>
-    </li>
+        .status-bar {
+            background-color: #18181b;
+            border-top: 1px solid #27272a;
+            font-size: 0.7rem;
+            color: #52525b;
+        }
 
+        .app-header {
+            background: linear-gradient(to right, #18181b, #27272a);
+            border-bottom: 1px solid #3f3f46;
+        }
 
-    {% endif %}
-    {% endfor %}
-    <li class="nav-item">
-        <button id="hplc_search" class="nav-link">Hplc🧪</button>
-    </li>
-    <li class="nav-item">
-        <button id="fix" class="nav-link">Fix A Batch</button>
-    </li>
+        .nav-user {
+            background-color: #27272a;
+            border: 1px solid #3f3f46;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 min-h-screen flex flex-col">
+    <!-- Professional Top App Bar -->
+    <header class="app-header sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto">
+            <div class="flex items-center justify-between px-5 h-14">
+                <!-- Branding -->
+                <div class="flex items-center gap-x-3">
+                    <div class="flex items-center justify-center w-9 h-9 bg-red-600 rounded-2xl shadow-inner">
+                        <span class="text-white text-2xl font-bold tracking-tighter">P</span>
+                    </div>
+                    <div>
+                        <div class="flex items-baseline gap-x-1.5">
+                            <a href="{% url 'index' %}" class="font-display text-xl tracking-tighter font-semibold hover:text-red-400 transition-colors">Pepsi Pennsauken</a>
+                            <span class="text-red-500 text-sm font-medium tracking-[1px] uppercase">Lab Ops</span>
+                        </div>
+                        <div class="text-[10px] text-zinc-500 -mt-0.5 font-medium">PRODUCTION SUPPORT SYSTEM</div>
+                    </div>
 
-</ul>
+                    <!-- Back to main site -->
+                    <a href="{% url 'index' %}" 
+                       class="ml-2 text-xs px-3 py-1.5 rounded-2xl border border-zinc-700 hover:bg-zinc-900 hover:border-zinc-600 text-zinc-400 hover:text-zinc-200 transition flex items-center gap-x-1.5">
+                        <span>←</span>
+                        <span class="hidden sm:inline">Main Site</span>
+                    </a>
+                </div>
 
-<!-- Better container for mobile -->
-<div id="iframe-container" style="height: calc(100dvh - 56px); width: 100%; border: none; overflow: hidden;">
-    <iframe id="main-frame" width="100%" height="100%" style="border: none; display: block;" allowfullscreen></iframe>
-</div>
+                <!-- Right side controls -->
+                <div class="flex items-center gap-x-3">
+                    <!-- User info -->
+                    <div class="flex items-center gap-x-2.5 pl-3 pr-4 py-1.5 rounded-3xl nav-user text-sm">
+                        <div class="w-7 h-7 bg-zinc-700 rounded-full flex items-center justify-center text-xs font-semibold">
+                            {{ user.username|make_list|first|upper }}
+                        </div>
+                        <div class="leading-tight">
+                            <div class="font-medium text-zinc-100">{{ user.username }}</div>
+                            {% with is_labtech=user.groups.all|dictsort:"name"|join:" " %}
+                                {% if "Lab Tech" in is_labtech %}
+                                    <div class="text-[10px] text-emerald-400 font-medium tracking-wide">LAB TECH</div>
+                                {% else %}
+                                    <div class="text-[10px] text-zinc-400 font-medium tracking-wide">HPLC OPERATOR</div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
 
-<script>
-    // Proper active state + iframe switch (Safari-friendly)
-    function setActive(clickedBtn) {
-        document.querySelectorAll(".nav-link").forEach(btn => btn.classList.remove("active"));
-        clickedBtn.classList.add("active");
-    }
+                    <!-- Actions -->
+                    <a href="{% url 'index' %}" 
+                       class="text-sm px-4 py-2 rounded-3xl border border-zinc-700 hover:bg-zinc-900 active:bg-black transition-colors flex items-center gap-x-2 text-zinc-300 hover:text-white">
+                        <span>←</span>
+                        <span class="hidden sm:inline">Main Site</span>
+                    </a>
 
-    function openUp(url) {
-        const iframe = document.getElementById('main-frame');
-       
-        iframe.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
-    }
+                    <button onclick="refreshCurrentFrame()" 
+                            class="flex items-center gap-x-2 px-4 py-2 text-sm font-medium rounded-3xl border border-zinc-700 hover:bg-zinc-900 active:bg-black transition-colors">
+                        <span>↻</span>
+                        <span class="hidden sm:inline text-xs tracking-widest">REFRESH</span>
+                    </button>
 
+                    <!-- Logout -->
+                    <form action="{% url 'logout' %}" method="POST" class="m-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="/screen/login/">
+                        <button type="submit"
+                                class="px-5 py-2 text-sm font-medium rounded-3xl border border-zinc-700 hover:bg-red-950 hover:border-red-900 hover:text-red-400 active:bg-black transition-all flex items-center gap-x-2">
+                            <span>⎋</span>
+                            <span class="hidden sm:inline">Sign out</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
 
+    <!-- Professional Tab Navigation -->
+    <nav class="lab-tab-bar max-w-[1600px] mx-auto w-full" role="tablist">
+        {% for group in user.groups.all %}
+        {% if group.name == "Lab Tech" %}
+            <button id="line1" 
+                    class="lab-tab"
+                    role="tab"
+                    aria-selected="false">
+                <span class="tab-icon">🥤</span>
+                <span>Blender Line 1</span>
+            </button>
+            <button id="line2" 
+                    class="lab-tab"
+                    role="tab"
+                    aria-selected="false">
+                <span class="tab-icon">🥤</span>
+                <span>Blender Line 2</span>
+            </button>
+        {% endif %}
+        {% endfor %}
 
-    document.getElementById("fix").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("{% url 'fix' %}");   // this one stays the same
-    });
+        <button id="hplc_search" 
+                class="lab-tab"
+                role="tab"
+                aria-selected="false">
+            <span class="tab-icon">🧪</span>
+            <span>HPLC Search</span>
+        </button>
+        
+        <button id="fix" 
+                class="lab-tab"
+                role="tab"
+                aria-selected="false">
+            <span class="tab-icon">🔧</span>
+            <span>Fix Batch</span>
+        </button>
+    </nav>
 
-    document.getElementById("hplc_search").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("{% url 'search' %}");   // this one stays the same
-    });
+    <!-- Main Content Area -->
+    <div class="flex-1 max-w-[1600px] mx-auto w-full px-3 pb-3">
+        <div class="content-panel h-[calc(100dvh-122px)] flex flex-col">
+            
+            <!-- Iframe Toolbar -->
+            <div class="iframe-toolbar">
+                <div class="flex items-center gap-x-3">
+                    <div class="flex items-center gap-x-1.5">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <span id="current-view-label" class="font-medium text-emerald-400 text-xs tracking-[0.5px]">READY</span>
+                    </div>
+                    <div class="h-3 w-px bg-zinc-700"></div>
+                    <span class="text-[10px] text-zinc-500 font-mono" id="current-url-display"></span>
+                </div>
 
-    // Set the correct *initial* active tab + load the right starting iframe content.
-    // Lab Tech → line1 (Blender 1). Everyone else → hplc_search.
-    // Full manual tab switching still works normally via the existing listeners.
-    (function() {
-        const line1 = document.getElementById("line1");
-        if (line1) {
-            // Lab Tech users start here
-            document.querySelectorAll(".nav-link").forEach(btn => btn.classList.remove("active"));
-            line1.classList.add("active");
-            openUp("http://10.120.120.101:5050");
-        } else {
+                <div class="flex items-center gap-x-1">
+                    <button onclick="refreshCurrentFrame()"
+                            class="px-3 py-1 hover:bg-zinc-800 active:bg-zinc-950 rounded-xl text-xs font-medium flex items-center gap-x-1 transition-colors">
+                        ↻ <span class="hidden md:inline">Refresh</span>
+                    </button>
+                    <button onclick="openCurrentInNewTab()"
+                            class="px-3 py-1 hover:bg-zinc-800 active:bg-zinc-950 rounded-xl text-xs font-medium flex items-center gap-x-1 transition-colors">
+                        ↗ <span class="hidden md:inline">New Tab</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- The actual iframe -->
+            <div class="flex-1 relative bg-black">
+                <iframe id="main-frame" 
+                        class="absolute inset-0 w-full h-full"
+                        allowfullscreen
+                        title="Lab Operations Content"></iframe>
+                
+                <!-- Subtle loading overlay (hidden by default) -->
+                <div id="iframe-loading" 
+                     class="hidden absolute inset-0 bg-black/70 items-center justify-center">
+                    <div class="flex flex-col items-center gap-y-3">
+                        <div class="w-6 h-6 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                        <div class="text-xs text-zinc-400 tracking-widest">LOADING CONTENT</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thin Professional Status Bar -->
+    <div class="status-bar px-5 py-1.5 flex items-center justify-between text-[10px] font-medium max-w-[1600px] mx-auto w-full">
+        <div class="flex items-center gap-x-4">
+            <div>PEPSI PENNSAUKEN • CONFIDENTIAL</div>
+            <div class="hidden sm:block text-zinc-600">•</div>
+            <div class="hidden sm:block">Internal Use Only</div>
+        </div>
+        
+        <div class="flex items-center gap-x-3 text-zinc-600">
+            <div id="clock" class="font-mono"></div>
+            <div class="hidden md:block">v2.4 • Prod</div>
+        </div>
+    </div>
+
+    <!-- All existing functionality preserved below -->
+    <script>
+        // Tailwind script
+        function initTailwind() {
+            document.documentElement.style.setProperty('--accent', '225 29 72');
+        }
+
+        // Proper active state + iframe switch (Safari-friendly)
+        function setActive(clickedBtn) {
+            document.querySelectorAll(".lab-tab").forEach(btn => btn.classList.remove("active"));
+            clickedBtn.classList.add("active");
+            
+            // Update toolbar label
+            const label = document.getElementById('current-view-label');
+            if (label) label.textContent = clickedBtn.textContent.trim().toUpperCase();
+        }
+
+        function openUp(url) {
+            const iframe = document.getElementById('main-frame');
+            const loading = document.getElementById('iframe-loading');
+            const urlDisplay = document.getElementById('current-url-display');
+
+            if (loading) loading.style.display = 'flex';
+            if (urlDisplay) urlDisplay.textContent = url.length > 42 ? url.substring(0, 39) + '...' : url;
+
+            iframe.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+
+            iframe.onload = function() {
+                if (loading) loading.style.display = 'none';
+            };
+            
+            // Fallback: hide loading after 4s even if onload doesn't fire
+            setTimeout(() => {
+                if (loading) loading.style.display = 'none';
+            }, 4000);
+        }
+
+        function refreshCurrentFrame() {
+            const iframe = document.getElementById('main-frame');
+            if (iframe && iframe.src) {
+                iframe.src = iframe.src.split('?')[0] + '?t=' + Date.now();
+            }
+        }
+
+        function openCurrentInNewTab() {
+            const iframe = document.getElementById('main-frame');
+            if (iframe && iframe.src) {
+                window.open(iframe.src.split('?')[0], '_blank');
+            }
+        }
+
+        // Live clock in status bar
+        function startClock() {
+            const clockEl = document.getElementById('clock');
+            if (!clockEl) return;
+            
+            function updateClock() {
+                const now = new Date();
+                clockEl.textContent = now.toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: false 
+                });
+            }
+            updateClock();
+            setInterval(updateClock, 30000);
+        }
+
+        // Keyboard shortcuts for power users
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+                if (e.key === '1') {
+                    const btn = document.getElementById('line1');
+                    if (btn) btn.click();
+                }
+                if (e.key === '2') {
+                    const btn = document.getElementById('line2');
+                    if (btn) btn.click();
+                }
+                if (e.key.toLowerCase() === 'h') {
+                    const btn = document.getElementById('hplc_search');
+                    if (btn) btn.click();
+                }
+                if (e.key.toLowerCase() === 'f') {
+                    const btn = document.getElementById('fix');
+                    if (btn) btn.click();
+                }
+                if (e.key.toLowerCase() === 'r' && (e.metaKey || e.ctrlKey)) {
+                    e.preventDefault();
+                    refreshCurrentFrame();
+                }
+            });
+
+            // Show hint once
+            setTimeout(() => {
+                console.log('%c[Lab Ops] Keyboard shortcuts: 1 = Line1, 2 = Line2, H = HPLC, F = Fix, ⌘R = Refresh', 'color:#3f3f46');
+            }, 8000);
+        }
+
+        // ===================== ATTACH ALL LISTENERS =====================
+        function attachListeners() {
+            const fixBtn = document.getElementById("fix");
+            const hplcBtn = document.getElementById("hplc_search");
+            const line1Btn = document.getElementById("line1");
+            const line2Btn = document.getElementById("line2");
+
+            if (fixBtn) {
+                fixBtn.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("{% url 'fix' %}");
+                });
+            }
+
+            if (hplcBtn) {
+                hplcBtn.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("{% url 'search' %}");
+                });
+            }
+
+            // Lab Tech only listeners (only exist for those users)
+            if (line1Btn) {
+                line1Btn.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("http://10.120.120.101:5050");
+                });
+            }
+
+            if (line2Btn) {
+                line2Btn.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("http://10.120.120.249:5050");
+                });
+            }
+        }
+
+        // Set correct initial state (Lab Tech vs regular operator)
+        function setInitialState() {
+            const line1 = document.getElementById("line1");
             const hplc = document.getElementById("hplc_search");
-            if (hplc) {
-                document.querySelectorAll(".nav-link").forEach(btn => btn.classList.remove("active"));
-                hplc.classList.add("active");
+
+            if (line1) {
+                // Lab Tech user
+                setActive(line1);
+                openUp("http://10.120.120.101:5050");
+            } else if (hplc) {
+                // Regular HPLC / operator user
+                setActive(hplc);
                 openUp("{% url 'search' %}");
             }
         }
-    })();
 
+        // Boot everything
+        function bootLabOperations() {
+            initTailwind();
+            attachListeners();
+            setInitialState();
+            startClock();
+            setupKeyboardShortcuts();
 
+            // Optional: focus the iframe area for power users
+            setTimeout(() => {
+                const frame = document.getElementById('main-frame');
+                if (frame) frame.focus();
+            }, 1200);
+        }
 
-
-
-
-
-</script>
-{% for group in user.groups.all %}
-{% if group.name == "Lab Tech" %}
-<script>
-    document.getElementById("line1").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("http://10.120.120.101:5050");
-    });
-
-    document.getElementById("line2").addEventListener('click', (e) => {
-        setActive(e.target);
-        openUp("http://10.120.120.249:5050");
-    });
-
-
-</script>
-{% endif %}
-{% endfor %}
-{% endblock %}
+        // Start when ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bootLabOperations);
+        } else {
+            bootLabOperations();
+        }
+    </script>
+</body>
+</html>

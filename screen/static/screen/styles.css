@@ -1,7 +1,41 @@
-.nums{
-    font-size: 2.5rem;
-    color: blue;
+/* Lab Operations - Supporting Styles (used alongside Tailwind) */
+
+:root {
+  --lab-red: #e11d48;
 }
-body{
-    background-color: black;
+
+/* Fallback for older embedded content that may still pull this file */
+body.lab-ops-fallback {
+  background-color: #09090b;
+  color: #e4e4e7;
+  font-family: Inter, system_ui, sans-serif;
+}
+
+/* Make sure any old Bootstrap tables inside iframes get some love */
+.lab-ops-fallback .table {
+  color: #e4e4e7;
+}
+
+.lab-ops-fallback .table th {
+  background: #18181b;
+  color: #71717a;
+  border-color: #27272a;
+}
+
+.lab-ops-fallback .table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: rgba(63, 63, 70, 0.2);
+}
+
+/* Subtle focus ring for accessibility */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid rgb(225 29 72 / 0.5);
+  outline-offset: 2px;
+}
+
+/* Print styles for batch reports if ever needed */
+@media print {
+  .lab-tab-bar, header, .status-bar, .iframe-toolbar {
+    display: none !important;
+  }
 }

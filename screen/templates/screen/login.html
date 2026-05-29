@@ -1,23 +1,93 @@
-{% extends 'news/layout.html' %}
-{% load widget_tweaks %}
-{% block title %}Login Page 🔓{% endblock %}
-{% block body %}
-<div style="height:25vh"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in • Lab Operations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        body {
+            font-family: 'Inter', system_ui, -apple-system, sans-serif;
+        }
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif;
+            letter-spacing: -0.04em;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 min-h-screen flex items-center justify-center p-6">
+    {% load widget_tweaks %}
+    <div class="w-full max-w-md">
+        <!-- Branding -->
+        <div class="flex justify-center mb-8">
+            <div class="flex items-center gap-x-3">
+                <div class="w-12 h-12 bg-red-600 rounded-3xl flex items-center justify-center shadow-inner">
+                    <span class="text-white text-4xl font-bold tracking-tighter">P</span>
+                </div>
+                <div>
+                    <a href="{% url 'index' %}" class="font-display text-3xl tracking-tighter font-semibold hover:text-red-400 transition-colors">Pepsi Pennsauken</a>
+                    <div class="text-red-500 text-xs tracking-[2px] -mt-1 font-medium">LAB OPERATIONS</div>
+                </div>
+            </div>
+        </div>
 
-<form method="POST" class="p-4 mt-5 border rounded row shadow" style="max-width:500px;margin:auto;margin-top:200px;">
-    {% csrf_token %}
-    <h1>Login Page 🔐</h1>
-    <div class="mb-3 form-control form-control-lg" style="border:none;">
-        {{ form.username.label_tag}}
-        {{ form.username | add_class:"form-control form-control-lg" }}
+        <!-- Quick link back -->
+        <div class="text-center mb-4">
+            <a href="{% url 'index' %}" class="text-xs text-zinc-400 hover:text-zinc-200 inline-flex items-center gap-x-1">
+                ← Back to Main Site
+            </a>
+        </div>
+
+        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl">
+            <div class="mb-8">
+                <h1 class="text-3xl font-semibold tracking-tighter">Sign in</h1>
+                <p class="text-zinc-400 mt-1.5 text-sm">Access the Production Support System</p>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div class="mb-5 p-4 bg-red-950/60 border border-red-900 rounded-2xl text-red-400 text-sm">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-400 mb-1.5 tracking-wider">USERNAME</label>
+                        {{ form.username|add_class:"w-full bg-zinc-950 border border-zinc-700 focus:border-red-600/70 rounded-2xl py-3.5 px-5 text-lg placeholder:text-zinc-500 focus:outline-none" }}
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-400 mb-1.5 tracking-wider">PASSWORD</label>
+                        {{ form.password|add_class:"w-full bg-zinc-950 border border-zinc-700 focus:border-red-600/70 rounded-2xl py-3.5 px-5 text-lg placeholder:text-zinc-500 focus:outline-none" }}
+                    </div>
+                </div>
+
+                {# Preserve redirect target after login #}
+                <input type="hidden" name="next" value="{{ next|default:'/screen' }}">
+
+                <button type="submit"
+                        class="mt-7 w-full bg-red-600 hover:bg-red-700 active:bg-red-800 transition font-semibold py-4 rounded-3xl text-lg tracking-[-0.2px]">
+                    SIGN IN TO LAB OPS
+                </button>
+
+                <div class="mt-6 text-center text-[10px] text-zinc-500">
+                    This is an internal system. All access is logged.
+                </div>
+            </form>
+        </div>
+
+        <div class="text-center mt-6 text-xs text-zinc-600">
+            Pepsi Pennsauken • Confidential • Internal Use Only
+        </div>
     </div>
-
-    <div class="mb-3 form-control form-control-lg" style="border:none;">
-        {{ form.password.label_tag }}
-        {{ form.password | add_class:"form-control form-control-lg" }}
-    </div>
-
-    <button class="btn btn-primary w-100" type="submit">Login</button>
-</form>
-
-{% endblock %}
+</body>
+</html>
