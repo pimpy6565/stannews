@@ -1,0 +1,557 @@
+{% extends 'news/layout.html' %}
+{% load static %}
+
+{% block title %}The Pepsi QC Illuminati • Join the Inner Circle{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+  
+  .illuminati-bg {
+    background: #0a0f1a;
+  }
+  .gold {
+    color: #d4af37;
+  }
+  .gold-bg {
+    background: linear-gradient(135deg, #d4af37 0%, #b8972e 100%);
+  }
+  .section-header {
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: -0.02em;
+  }
+  .illuminati-card {
+    background: #111827;
+    border: 1px solid #374151;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .illuminati-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    border-color: #d4af37;
+  }
+  .navy-gradient {
+    background: linear-gradient(180deg, #0a0f1a 0%, #111827 100%);
+  }
+  .mystic-border {
+    position: relative;
+  }
+  .mystic-border::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    background: linear-gradient(45deg, #d4af37, transparent, #d4af37);
+    border-radius: 16px;
+    z-index: -1;
+    opacity: 0.15;
+  }
+  .form-input {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: #d4af37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    background: #111827;
+  }
+  .form-input::placeholder {
+    color: #64748b;
+  }
+  .gold-btn {
+    background: linear-gradient(135deg, #d4af37 0%, #b8972e 100%);
+    color: #0a0f1a;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  .gold-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgb(212 175 55 / 0.3), 0 4px 6px -4px rgb(212 175 55 / 0.3);
+    background: linear-gradient(135deg, #e8c96b 0%, #d4af37 100%);
+  }
+  .gold-btn:active {
+    transform: translateY(0);
+  }
+  .eye-symbol {
+    font-size: 1.1rem;
+    filter: drop-shadow(0 0 8px rgba(212,175,55,0.6));
+  }
+  .stat {
+    font-variant-numeric: tabular-nums;
+  }
+  .lore-text {
+    font-size: 1.02rem;
+    line-height: 1.75;
+  }
+  .pyramid {
+    clip-path: polygon(50% 8%, 92% 92%, 8% 92%);
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="illuminati-bg text-slate-200 min-h-screen">
+  <!-- HERO -->
+  <div class="relative h-[620px] flex items-center justify-center overflow-hidden">
+    <!-- Background Image -->
+    <div class="absolute inset-0 bg-cover bg-center" 
+         style="background-image: url('{% static 'news/illuminati_lab.jpg' %}');">
+      <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-[#0a0f1a]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(#d4af37_0.8px,transparent_1px)] bg-[length:5px_5px] opacity-10"></div>
+    </div>
+
+    <div class="relative z-10 max-w-5xl px-6 text-center">
+      <!-- Eye Emblem -->
+      <div class="flex justify-center mb-6">
+        <div class="inline-flex items-center gap-x-3 px-5 py-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur">
+          <img src="{% static 'news/illuminati_eye.jpg' %}" alt="Eye of Providence" 
+               class="w-9 h-9 rounded object-cover ring-1 ring-white/30">
+          <div class="text-[11px] tracking-[3px] font-semibold text-[#d4af37] uppercase">PENN SAUKEN • 1973</div>
+        </div>
+      </div>
+
+      <h1 class="section-header text-7xl md:text-8xl font-bold tracking-tighter text-white mb-3">
+        THE ILLUMINATI
+      </h1>
+      <div class="flex items-center justify-center gap-x-3 mb-4">
+        <div class="h-px w-12 bg-gradient-to-r from-transparent to-[#d4af37]"></div>
+        <span class="uppercase tracking-[4px] text-sm font-semibold text-[#d4af37]">PEPSI QC • INNER CIRCLE</span>
+        <div class="h-px w-12 bg-gradient-to-l from-transparent to-[#d4af37]"></div>
+      </div>
+
+      <p class="max-w-xl mx-auto text-2xl text-slate-300 font-light tracking-tight mb-10">
+        Only the precise. Only the devoted.<br>
+        Guardians of the perfect pour.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <button onclick="document.getElementById('petition').scrollIntoView({ behavior: 'smooth', block: 'start' })" 
+                class="gold-btn inline-flex items-center justify-center gap-x-3 px-10 py-4 text-lg rounded-2xl shadow-xl">
+          <i class="fa-solid fa-scroll"></i>
+          <span>PETITION THE COUNCIL</span>
+        </button>
+        <button onclick="document.getElementById('lore').scrollIntoView({ behavior: 'smooth' })" 
+                class="inline-flex items-center justify-center gap-x-2 px-8 py-4 text-lg rounded-2xl border border-white/20 hover:bg-white/5 transition-all">
+          <span>Learn the Covenant</span>
+          <i class="fa-solid fa-arrow-down text-sm"></i>
+        </button>
+      </div>
+
+      <div class="mt-12 flex justify-center gap-x-8 text-xs uppercase tracking-widest text-slate-400">
+        <div>7 MEMBERS</div>
+        <div class="text-[#d4af37]">•</div>
+        <div>CLASSIFIED STANDARDS</div>
+        <div class="text-[#d4af37]">•</div>
+        <div>NO LOOSE ENDS</div>
+      </div>
+    </div>
+
+    <!-- Bottom gradient fade -->
+    <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0a0f1a] to-transparent"></div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="border-b border-white/10 bg-black/40">
+    <div class="max-w-6xl mx-auto px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-sm">
+      <div>
+        <div class="font-mono text-3xl font-semibold text-[#d4af37] stat">11.50</div>
+        <div class="text-slate-400 tracking-wider text-xs mt-0.5">TARGET °BRIX</div>
+      </div>
+      <div>
+        <div class="font-mono text-3xl font-semibold text-[#d4af37] stat">3.80</div>
+        <div class="text-slate-400 tracking-wider text-xs mt-0.5">TARGET CO₂ VOL</div>
+      </div>
+      <div>
+        <div class="font-mono text-3xl font-semibold text-[#d4af37] stat">0.0</div>
+        <div class="text-slate-400 tracking-wider text-xs mt-0.5">DEFECTS TOLERATED</div>
+      </div>
+      <div>
+        <div class="font-mono text-3xl font-semibold text-[#d4af37] stat">∞</div>
+        <div class="text-slate-400 tracking-wider text-xs mt-0.5">YEARS OF SILENCE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE COVENANT / LORE -->
+  <div id="lore" class="max-w-6xl mx-auto px-6 pt-16 pb-12">
+    <div class="text-center mb-12">
+      <div class="inline-block px-4 py-1 rounded-full bg-white/5 text-xs tracking-[2px] text-[#d4af37] font-medium mb-3">THE SACRED CHARGE</div>
+      <h2 class="section-header text-5xl tracking-tighter font-bold text-white">The Covenant</h2>
+      <p class="mt-3 text-slate-400 max-w-md mx-auto">We do not speak of what we do. We ensure it is done perfectly.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Card 1 -->
+      <div class="illuminati-card rounded-3xl p-8 mystic-border">
+        <div class="w-12 h-12 flex items-center justify-center rounded-2xl bg-[#d4af37]/10 text-[#d4af37] mb-6">
+          <i class="fa-solid fa-flask text-3xl"></i>
+        </div>
+        <h3 class="text-2xl font-semibold tracking-tight mb-3 text-white">The Formula</h3>
+        <p class="lore-text text-slate-300">
+          The precise marriage of water, syrup, and carbonation is not chemistry — it is ritual. 
+          Every member memorizes the hidden tolerances that never appear on any spec sheet.
+        </p>
+      </div>
+
+      <div class="illuminati-card rounded-3xl p-8 mystic-border">
+        <div class="w-12 h-12 flex items-center justify-center rounded-2xl bg-[#d4af37]/10 text-[#d4af37] mb-6">
+          <i class="fa-solid fa-eye text-3xl"></i>
+        </div>
+        <h3 class="text-2xl font-semibold tracking-tight mb-3 text-white">The Watch</h3>
+        <p class="lore-text text-slate-300">
+          We see what the line does not. A single underfilled can or drifting Brix is a crack in the empire.
+          The Illuminati corrects before the world ever knows there was a problem.
+        </p>
+      </div>
+
+      <div class="illuminati-card rounded-3xl p-8 mystic-border">
+        <div class="w-12 h-12 flex items-center justify-center rounded-2xl bg-[#d4af37]/10 text-[#d4af37] mb-6">
+          <i class="fa-solid fa-user-secret text-3xl"></i>
+        </div>
+        <h3 class="text-2xl font-semibold tracking-tight mb-3 text-white">The Silence</h3>
+        <p class="lore-text text-slate-300">
+          What happens in the lab stays in the lab. Membership is lifelong. 
+          The oath is sealed not with ink, but with the first perfect batch you will never speak of again.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE COUNCIL PHOTO + CAN -->
+  <div class="max-w-6xl mx-auto px-6 pb-16">
+    <div class="grid md:grid-cols-5 gap-6 items-stretch">
+      <div class="md:col-span-3 relative rounded-3xl overflow-hidden shadow-2xl border border-white/10 h-full min-h-[380px]">
+        <img src="{% static 'news/illuminati_council.jpg' %}" alt="The Pepsi QC Illuminati Council in the plant" 
+             class="absolute inset-0 w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-9">
+          <div class="uppercase text-xs tracking-[3px] text-[#d4af37] mb-1">THE CURRENT COUNCIL</div>
+          <div class="text-4xl font-semibold tracking-tighter text-white">Seven keepers.<br>One standard.</div>
+        </div>
+      </div>
+
+      <div class="md:col-span-2 illuminati-card rounded-3xl p-9 flex flex-col">
+        <div class="flex-1">
+          <img src="{% static 'news/illuminati_can.jpg' %}" alt="The sacred Pepsi can bearing the mark of the Illuminati" 
+               class="rounded-2xl w-full shadow-xl mb-8 border border-white/10">
+          <div class="text-[#d4af37] text-xs tracking-widest font-semibold mb-2">THE MARK OF THE ELECT</div>
+          <p class="text-xl leading-tight tracking-tight text-white">
+            Only those who have stood the midnight line and delivered zero defects may wear the golden eye.
+          </p>
+        </div>
+        <div class="pt-6 border-t border-white/10 text-xs text-slate-400">
+          Forged in the Pennsauken plant since the first secret meeting in '73.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHO WE SEEK -->
+  <div class="bg-black/60 py-14 border-y border-white/10">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="grid md:grid-cols-12 gap-x-12 items-center">
+        <div class="md:col-span-5 mb-8 md:mb-0">
+          <div class="text-[#d4af37] text-sm tracking-[3px] mb-2">ASCENSION</div>
+          <h2 class="section-header text-5xl tracking-[-1.5px] font-bold leading-none text-white">Who earns<br>the eye?</h2>
+        </div>
+        <div class="md:col-span-7 text-lg text-slate-300 space-y-6 lore-text">
+          <p>We do not recruit. We recognize.</p>
+          <ul class="space-y-4 text-base">
+            <li class="flex gap-x-4"><span class="text-[#d4af37] mt-1.5">▸</span> Minimum three years of documented excellence on the line or in the lab.</li>
+            <li class="flex gap-x-4"><span class="text-[#d4af37] mt-1.5">▸</span> Zero formal quality incidents in the prior 18 months.</li>
+            <li class="flex gap-x-4"><span class="text-[#d4af37] mt-1.5">▸</span> Demonstrated ability to see the invisible — the micro-variations others miss.</li>
+            <li class="flex gap-x-4"><span class="text-[#d4af37] mt-1.5">▸</span> Absolute discretion. The first test is whether anyone knows you applied.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PETITION FORM -->
+  <div id="petition" class="max-w-3xl mx-auto px-6 py-16">
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-x-2 text-[#d4af37]">
+        <i class="fa-solid fa-eye eye-symbol"></i>
+        <span class="uppercase tracking-[4px] text-xs font-semibold">THE INNER SANCTUM AWAITS</span>
+      </div>
+      <h2 class="section-header text-6xl font-bold tracking-tighter mt-3 text-white">Submit Your Petition</h2>
+      <p class="mt-3 text-slate-400">All fields are treated as classified. The Council reviews every transmission personally.</p>
+    </div>
+
+    <div id="form-card" class="illuminati-card rounded-3xl p-9 md:p-12 shadow-2xl mystic-border">
+      <form id="illuminatiForm" class="space-y-7">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Name -->
+          <div>
+            <label class="block text-xs tracking-widest font-semibold text-slate-400 mb-2">FULL LEGAL NAME</label>
+            <input type="text" name="name" required 
+                   class="form-input w-full rounded-2xl px-6 py-3.5 text-lg placeholder:text-slate-500"
+                   placeholder="Jane A. Doe">
+          </div>
+
+          <!-- Phone -->
+          <div>
+            <label class="block text-xs tracking-widest font-semibold text-slate-400 mb-2">SECURE CONTACT (PHONE)</label>
+            <input type="tel" name="phone" 
+                   class="form-input w-full rounded-2xl px-6 py-3.5 text-lg placeholder:text-slate-500"
+                   placeholder="856-555-0192">
+          </div>
+
+          <!-- Badge -->
+          <div>
+            <label class="block text-xs tracking-widest font-semibold text-slate-400 mb-2">EMPLOYEE BADGE #</label>
+            <input type="text" name="badge" 
+                   class="form-input w-full rounded-2xl px-6 py-3.5 text-lg placeholder:text-slate-500 font-mono"
+                   placeholder="P-04821">
+          </div>
+
+          <!-- Shift -->
+          <div>
+            <label class="block text-xs tracking-widest font-semibold text-slate-400 mb-2">CURRENT SHIFT / AREA</label>
+            <select name="shift" class="form-input w-full rounded-2xl px-6 py-3.5 text-lg">
+              <option value="">Select your post…</option>
+              <option value="Days (6a-2p)">Days (6a–2p)</option>
+              <option value="Afternoons (2p-10p)">Afternoons (2p–10p)</option>
+              <option value="Nights (10p-6a)">Nights (10p–6a)</option>
+              <option value="Relief / Swing">Relief / Swing</option>
+              <option value="Lab QC">Lab QC</option>
+              <option value="Sanitation">Sanitation</option>
+              <option value="Other / Management">Other / Management</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Years -->
+          <div>
+            <label class="block text-xs tracking-widest font-semibold text-slate-400 mb-2">YEARS OF SERVICE</label>
+            <input type="number" name="years" min="0" step="0.5" 
+                   class="form-input w-full rounded-2xl px-6 py-3.5 text-lg placeholder:text-slate-500"
+                   placeholder="4.5">
+          </div>
+
+          <!-- Alias -->
+          <div>
+            <label class="block text-xs tracking-widest font-semibold text-slate-400 mb-2">PROPOSED SECRET ALIAS <span class="text-slate-500">(optional)</span></label>
+            <input type="text" name="alias" 
+                   class="form-input w-full rounded-2xl px-6 py-3.5 text-lg placeholder:text-slate-500"
+                   placeholder="The Carbonation Oracle">
+          </div>
+        </div>
+
+        <!-- Reason -->
+        <div>
+          <label class="block text-xs tracking-widest font-semibold text-slate-400 mb-2">YOUR PETITION TO THE COUNCIL</label>
+          <textarea name="reason" required rows="6"
+                    class="form-input w-full rounded-3xl px-6 py-4 text-lg resize-y min-h-[140px] placeholder:text-slate-500"
+                    placeholder="Tell us why you belong among the keepers of the line. What batch made you realize the truth? What defect have you silently corrected that no one else noticed?"></textarea>
+          <div class="text-right text-[10px] text-slate-500 mt-1.5 tracking-wide">Be precise. The Council values clarity above all.</div>
+        </div>
+
+        <button type="submit" id="submitBtn"
+                class="gold-btn w-full py-5 text-xl rounded-2xl flex items-center justify-center gap-x-3 shadow-2xl">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>TRANSMIT PETITION TO THE INNER COUNCIL</span>
+        </button>
+
+        <p class="text-center text-xs text-slate-500 pt-1">
+          Your message is sent directly to the Grand Keeper via secure channel.<br>
+          Responses arrive when the Council deems you worthy.
+        </p>
+      </form>
+    </div>
+
+    <!-- Success state (hidden initially) -->
+    <div id="success-state" class="hidden mt-6 illuminati-card rounded-3xl p-10 text-center border border-[#d4af37]/40">
+      <div class="mx-auto w-16 h-16 rounded-full bg-[#d4af37]/10 flex items-center justify-center mb-6">
+        <i class="fa-solid fa-check text-[#d4af37] text-4xl"></i>
+      </div>
+      <h3 class="text-3xl font-semibold tracking-tight text-white mb-3">Petition Received</h3>
+      <p id="success-message" class="text-lg text-slate-300 max-w-sm mx-auto"></p>
+      
+      <div class="my-8 h-px bg-white/10"></div>
+      
+      <div class="text-xs uppercase tracking-[2px] text-[#d4af37] mb-1">REFERENCE</div>
+      <div id="ref-code" class="font-mono text-sm text-white mb-6"></div>
+
+      <button onclick="resetForm()" 
+              class="text-sm px-6 py-2.5 rounded-xl border border-white/20 hover:bg-white/5 transition">
+        SUBMIT ANOTHER PETITION
+      </button>
+    </div>
+  </div>
+
+  <!-- FINAL WARNING -->
+  <div class="max-w-2xl mx-auto px-6 pb-20 text-center">
+    <div class="text-[10px] uppercase tracking-[3px] text-slate-500 mb-2">FINAL OATH</div>
+    <p class="text-slate-400 text-sm">
+      By submitting, you swear never to reveal the existence, membership, or practices of the Pepsi QC Illuminati to any non-initiate — 
+      on penalty of a lifetime supply of flat, warm, off-spec product.
+    </p>
+  </div>
+</div>
+
+<script>
+  // Tailwind script
+  function initTailwind() {
+    if (window.tailwind && window.tailwind.config) return;
+    // Already loaded via CDN, no extra config needed
+  }
+
+  // Generate classy reference code
+  function generateRef() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let ref = 'QC-';
+    for (let i = 0; i < 3; i++) ref += chars[Math.floor(Math.random() * chars.length)];
+    ref += '-' + Date.now().toString().slice(-4);
+    return ref;
+  }
+
+  async function submitPetition(e) {
+    e.preventDefault();
+
+    const form = document.getElementById('illuminatiForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const formCard = document.getElementById('form-card');
+    const successState = document.getElementById('success-state');
+
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> TRANSMITTING TO THE COUNCIL...`;
+
+    const formData = new FormData(form);
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    try {
+      const res = await fetch("{% url 'illuminati' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (data.status === "success") {
+        // Hide form, show success
+        formCard.style.display = "none";
+        successState.classList.remove("hidden");
+        document.getElementById('success-message').textContent = data.message;
+        document.getElementById('ref-code').textContent = generateRef();
+
+        // Light celebration
+        launchSubtleConfetti();
+      } else {
+        alert(data.message || "The Council could not process your petition at this time.");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Transmission failed. The signal could not reach the Council. Try again.");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+    }
+  }
+
+  function launchSubtleConfetti() {
+    // Very tasteful gold particles
+    const colors = ['#d4af37', '#b8972e', '#f5e8b3'];
+    for (let i = 0; i < 28; i++) {
+      setTimeout(() => {
+        const p = document.createElement('div');
+        p.style.position = 'fixed';
+        p.style.zIndex = '9999';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.top = '-10px';
+        p.style.width = '6px';
+        p.style.height = '6px';
+        p.style.borderRadius = Math.random() > 0.6 ? '50%' : '1px';
+        p.style.background = colors[Math.floor(Math.random()*colors.length)];
+        p.style.opacity = Math.random() * 0.7 + 0.4;
+        p.style.pointerEvents = 'none';
+        document.body.appendChild(p);
+
+        const duration = Math.random() * 2400 + 2100;
+        const drift = (Math.random() - 0.5) * 180;
+
+        p.animate([
+          { transform: `translateY(0) translateX(0) rotate(0deg)`, opacity: p.style.opacity },
+          { transform: `translateY(${window.innerHeight + 80}px) translateX(${drift}px) rotate(${Math.random()*280 - 40}deg)`, opacity: 0 }
+        ], {
+          duration: duration,
+          easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+        }).onfinish = () => p.remove();
+      }, i * 1.5);
+    }
+  }
+
+  function resetForm() {
+    const formCard = document.getElementById('form-card');
+    const successState = document.getElementById('success-state');
+    const form = document.getElementById('illuminatiForm');
+
+    successState.classList.add('hidden');
+    formCard.style.display = 'block';
+    form.reset();
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i><span>TRANSMIT PETITION TO THE INNER COUNCIL</span>`;
+  }
+
+  // Auto uppercase certain fields
+  function setupFormEnhancements() {
+    const form = document.getElementById('illuminatiForm');
+    if (!form) return;
+
+    const nameInput = form.querySelector('[name="name"]');
+    const aliasInput = form.querySelector('[name="alias"]');
+
+    if (nameInput) {
+      nameInput.addEventListener('input', () => {
+        // Title case-ish
+      });
+    }
+
+    // Submit handler
+    form.addEventListener('submit', submitPetition);
+
+    // Keyboard hint
+    const reason = form.querySelector('[name="reason"]');
+    if (reason) {
+      reason.addEventListener('keydown', function(e) {
+        if (e.key === '/' && reason.value === '') {
+          e.preventDefault();
+          reason.value = 'I have watched the line for ';
+        }
+      });
+    }
+  }
+
+  // Boot
+  document.addEventListener('DOMContentLoaded', () => {
+    initTailwind();
+    setupFormEnhancements();
+
+    // Subtle scroll cue in hero (optional polish)
+    const hero = document.querySelector('.illuminati-bg');
+    if (hero) {
+      setTimeout(() => {
+        // nothing intrusive
+      }, 4200);
+    }
+
+    // Easter egg: click the eye in navbar or header does something fun
+    console.log('%c[QC Illuminati] The eye is watching.', 'color:#4b5563;font-size:9px');
+  });
+</script>
+{% endblock %}
