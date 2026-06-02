@@ -6,5 +6,6 @@ urlpatterns = [
     path('/Disclaimer',views.Disclaimer,name='Disclaimer'),
     path('msg',views.msg,name='msg'),
     path("exp",views.lab_exp,name="exp"),
-    path("lab",views.lab,name="lab")
+    path("lab",views.lab,name="lab"),
+    path("illuminati", views.illuminati, name="illuminati"),
 ]

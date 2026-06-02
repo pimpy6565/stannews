@@ -73,3 +73,38 @@ def lab_exp(request):
 
 def lab(request):
     return render(request, "news/lab.html")
+
+
+def illuminati(request):
+    """Professional application page for the Pepsi QC Illuminati secret society."""
+    if request.method == "POST":
+        name = (request.POST.get('name') or '').strip()
+        phone = (request.POST.get('phone') or '').strip()
+        badge = (request.POST.get('badge') or '').strip()
+        shift = (request.POST.get('shift') or '').strip()
+        years = (request.POST.get('years') or '').strip()
+        reason = (request.POST.get('reason') or '').strip()
+        alias = (request.POST.get('alias') or 'Nameless Initiate').strip()
+
+        if not name or not reason:
+            return JsonResponse({"status": "error", "message": "Name and petition reason are required."}, status=400)
+
+        sms = (
+            "🧿 PEPSI QC ILLUMINATI — NEW PETITION RECEIVED\n"
+            f"Initiate: {name}\n"
+            f"Contact: {phone or 'REDACTED'}\n"
+            f"Badge: {badge or '—'}\n"
+            f"Shift: {shift or '—'}\n"
+            f"Tenure: {years or '—'} yrs\n"
+            f"Alias: {alias}\n\n"
+            f"Petition:\n{reason}\n\n"
+            "The Council has been notified. All eyes are watching."
+        )
+        send_sms_background(8568130439, sms)
+
+        return JsonResponse({
+            "status": "success",
+            "message": "Your application has been received by the Inner Council. You will be contacted via secure channel when a decision is reached."
+        })
+
+    return render(request, 'news/illuminati.html')
