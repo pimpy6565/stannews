@@ -248,6 +248,14 @@
                 <span class="tab-icon">🥤</span>
                 <span><span class="hidden sm:inline">Blender </span>Line 2</span>
             </button>
+
+            <button id="game" 
+            class="lab-tab"
+            role="tab"
+            aria-selected="false">
+            <span class="tab-icon">🥤</span>
+            </span>Game</span>
+        </button>
         {% endif %}
         {% endfor %}
 
@@ -435,7 +443,7 @@
             const hplcBtn = document.getElementById("hplc_search");
             const line1Btn = document.getElementById("line1");
             const line2Btn = document.getElementById("line2");
-
+            const game = document.getElementById("game");
             if (fixBtn) {
                 fixBtn.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
@@ -462,6 +470,12 @@
                 line2Btn.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
                     openUp("http://10.120.120.249:5050");
+                });
+            }
+            if (game) {
+                game.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("{% url 'game' %}");
                 });
             }
         }

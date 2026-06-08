@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STANRIS • /game</title>
+  <link rel="icon" href="{% static 'screen/stan.ico' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&amp;family=Inter:wght@400;500&amp;display=swap');
+
+    :root {
+      --accent: 225 29 72;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0a0a0f;
+    }
+
+    .font-display {
+      font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+    }
+
+    #canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border: 4px solid #3f3f55;
+      border-radius: 4px;
+      background: #0c0c12;
+      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+      outline: none;
+    }
+
+    .panel {
+      background: #14141c;
+      border: 1px solid #3f3f55;
+    }
+
+    .retro-text {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      letter-spacing: 0.05em;
+    }
+
+    .scanline {
+      pointer-events: none;
+      background: linear-gradient(
+        to bottom,
+        transparent 50%,
+        rgba(0, 0, 0, 0.06) 51%
+      );
+      background-size: 100% 4px;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-white flex flex-col">
+  <!-- Top bar -->
+  <div class="border-b border-white/10 bg-black/40">
+    <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-x-3">
+        <div class="w-8 h-8 rounded bg-[#e11d48] flex items-center justify-center">
+          <span class="font-display text-lg font-bold tracking-[-1px]">S</span>
+        </div>
+        <div>
+          <span class="font-display text-2xl tracking-[-1.5px] font-semibold">STANRIS</span>
+          <span class="ml-2 text-xs px-1.5 py-0.5 rounded bg-white/10 text-white/60 align-middle">TETRIS</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-x-4 text-sm">
+        <a href="/screen/" class="text-white/60 hover:text-white transition">← back to screen</a>
+        <a href="https://github.com/raysan5/raylib" target="_blank" class="text-white/40 hover:text-white/70 text-xs">built with raylib + emscripten</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-6 pt-8 pb-12 flex-1 w-full">
+    <div class="flex flex-col items-center">
+      <!-- Status -->
+      <div id="status" class="mb-3 text-xs uppercase tracking-[2px] text-white/40 retro-text">
+        Loading WebAssembly game...
+      </div>
+
+      <!-- Game -->
+      <div class="relative">
+        <canvas id="canvas" width="800" height="720" tabindex="1" class="block"></canvas>
+        <div class="scanline absolute inset-0 pointer-events-none rounded"></div>
+      </div>
+
+      <!-- Legend -->
+      <div class="mt-6 w-full max-w-[800px]">
+        <div class="panel rounded-xl p-5 text-sm">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-y-3 text-white/80">
+            <div><span class="font-mono text-[#e11d48]">← →</span> move</div>
+            <div><span class="font-mono text-[#e11d48]">↑ / X</span> rotate CW</div>
+            <div><span class="font-mono text-[#e11d48]">Z</span> rotate CCW</div>
+            <div><span class="font-mono text-[#e11d48]">↓</span> soft drop</div>
+            <div><span class="font-mono text-[#e11d48]">SPACE</span> hard drop</div>
+            <div><span class="font-mono text-[#e11d48]">C / SHIFT</span> hold</div>
+            <div><span class="font-mono text-[#e11d48]">P</span> pause</div>
+            <div><span class="font-mono text-[#e11d48]">R</span> restart</div>
+          </div>
+          <div class="mt-3 pt-3 border-t border-white/10 text-[12px] text-white/50">
+            7-bag randomizer • lock delay • ghost piece • DAS/ARR • classic scoring
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 text-[11px] text-white/40 text-center max-w-md">
+        Built in C with raylib. Compiled to WebAssembly. Textures generated with Python/PIL.
+        Run <span class="font-mono text-white/60">screen/game/build.sh</span> after setting up emsdk + raylib-web.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tailwind script
+    function initTailwind() {
+      // Already loaded via CDN, small runtime tweaks only
+    }
+
+    // Emscripten integration
+    const canvas = document.getElementById('canvas');
+    const statusEl = document.getElementById('status');
+
+    // Make sure keyboard goes to the canvas
+    canvas.addEventListener('click', () => canvas.focus());
+    window.addEventListener('load', () => {
+      setTimeout(() => canvas.focus(), 400);
+    });
+
+    // Global Module config (must be set BEFORE loading the .js)
+    // This is critical for Emscripten to find tetris.wasm + tetris.data
+    // from the correct /static/... location instead of relative to /game/
+    const staticGamePrefix = "{% static 'screen/game/' %}";
+
+    window.Module = {
+      canvas: canvas,
+      locateFile: function(path, scriptDirectory) {
+        // Force all assets (wasm, data package) to load from our static directory
+        return staticGamePrefix + path;
+      },
+      setStatus: function(text) {
+        if (statusEl && text) {
+          // Emscripten calls this during "Downloading data..." etc.
+          statusEl.textContent = text;
+        }
+      },
+      print: function(text) { console.log('[wasm]', text); },
+      printErr: function(text) { console.warn('[wasm:err]', text); if (statusEl) statusEl.textContent = 'ERROR — check console (F12)'; },
+      onRuntimeInitialized: function() {
+        if (statusEl) {
+          statusEl.textContent = 'READY • CLICK CANVAS TO FOCUS • ARROWS + SPACE TO PLAY';
+          statusEl.classList.add('!text-emerald-400/70');
+        }
+      },
+      onAbort: function(what) {
+        if (statusEl) {
+          statusEl.textContent = 'ABORTED: ' + what + ' (see console)';
+          statusEl.classList.add('!text-red-400');
+        }
+      }
+    };
+
+    // Load the compiled game
+    function loadGame() {
+      if (statusEl) statusEl.textContent = 'Loading game files...';
+
+      const script = document.createElement('script');
+      script.src = "{% static 'screen/game/tetris.js' %}";
+
+      script.onload = function() {
+        if (statusEl) statusEl.textContent = 'Initializing WebAssembly + loading textures...';
+      };
+
+      script.onerror = function() {
+        if (statusEl) {
+          statusEl.innerHTML = 'FAILED TO LOAD — run <span class="font-mono">screen/game/build.sh</span> and hard-refresh (⌘⇧R)';
+          statusEl.classList.add('!text-amber-400');
+        }
+        // Show a helpful message in the canvas area
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.fillStyle = '#111';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = '#e11d48';
+          ctx.font = 'bold 28px monospace';
+          ctx.fillText('BUILD / LOAD ERROR', 220, 310);
+          ctx.fillStyle = '#888';
+          ctx.font = '15px monospace';
+          ctx.fillText('Check DevTools Console (F12) + Network tab', 170, 345);
+          ctx.fillText('See screen/game/README.md for build steps', 175, 370);
+        }
+      };
+
+      document.body.appendChild(script);
+    }
+
+    // Fullscreen helper (optional)
+    function addFullscreenHint() {
+      const hint = document.createElement('div');
+      hint.className = 'absolute -bottom-6 right-1 text-[10px] text-white/30 select-none hidden md:block';
+      hint.textContent = 'F11 or click canvas for focus';
+      const wrapper = canvas.parentElement;
+      if (wrapper) wrapper.style.position = 'relative';
+      // We attach it via CSS instead of polluting DOM for now.
+    }
+
+    initTailwind();
+    loadGame();
+    addFullscreenHint();
+
+    // Keyboard hint when tabbed away
+    document.addEventListener('keydown', function(e) {
+      if (e.key.toLowerCase() === 'r' && document.activeElement !== canvas) {
+        // Allow global restart even if focus lost
+        // (the game also handles R internally)
+      }
+    });
+  </script>
+</body>
+</html>
