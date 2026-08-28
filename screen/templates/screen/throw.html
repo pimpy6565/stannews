@@ -3,72 +3,154 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Throw Calc</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: Inter, system-ui, sans-serif; background: #09090b; color: #e4e4e7; }
-        input { background: #18181b; border: 1px solid #3f3f46; color: #fafafa; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: Inter, system-ui, sans-serif; }
+        input, select { background: #18181b; border: 1px solid #3f3f46; color: #fafafa; }
+        @media (max-width: 640px) {
+            input[type="number"], input[type="text"] { font-size: 1.25rem !important; padding: 14px !important; }
+        }
     </style>
 </head>
-<body class="p-6">
-    <h1 class="text-2xl font-semibold tracking-tight mb-1">Throw Calc</h1>
-    <p class="text-zinc-500 text-sm mb-6">Syrup gal = batch × (finished °Brix ÷ syrup °Brix). Water is the rest.</p>
-    {% if error %}<div class="mb-4 text-red-400">{{ error }}</div>{% endif %}
-    <form method="post" class="grid gap-4 max-w-xl" id="throw-form">
-        {% csrf_token %}
-        <label class="text-xs tracking-widest text-zinc-500">FLAVOR
-            <input name="flavor" id="flavor" required class="mt-1 w-full rounded-xl px-4 py-3 text-lg">
-        </label>
-        <label class="text-xs tracking-widest text-zinc-500">FINISHED BRIX
-            <input name="finished_brix" id="finished_brix" type="number" step="0.001" value="11.5" class="mt-1 w-full rounded-xl px-4 py-3 text-xl">
-        </label>
-        <label class="text-xs tracking-widest text-zinc-500">SYRUP BRIX
-            <input name="syrup_brix" id="syrup_brix" type="number" step="0.001" value="55" class="mt-1 w-full rounded-xl px-4 py-3 text-xl">
-        </label>
-        <label class="text-xs tracking-widest text-zinc-500">BATCH GALLONS
-            <input name="batch_gallons" id="batch_gallons" type="number" step="0.001" value="1000" class="mt-1 w-full rounded-xl px-4 py-3 text-xl">
-        </label>
-        <div id="live" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-2 text-lg"></div>
-        <button class="bg-red-600 hover:bg-red-500 text-white font-semibold py-3 rounded-xl">SAVE TO BATCH LOG</button>
-    </form>
-    <h2 class="mt-10 mb-3 text-sm tracking-widest text-zinc-500">LAST 25</h2>
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="text-zinc-500 text-left"><tr>
-                <th class="py-2">When</th><th>Flavor</th><th>Batch</th><th>Syrup gal</th><th>Water gal</th><th>Who</th>
-            </tr></thead>
-            <tbody>
-            {% for row in logs %}
-                <tr class="border-t border-zinc-800">
-                    <td class="py-2 pr-3 whitespace-nowrap">{{ row.created_at }}</td>
-                    <td>{{ row.flavor }}</td>
-                    <td>{{ row.batch_gallons }}</td>
-                    <td>{{ row.syrup_gallons }}</td>
-                    <td>{{ row.water_gallons }}</td>
-                    <td>{{ row.ran_by }}</td>
-                </tr>
-            {% empty %}
-                <tr><td colspan="6" class="py-6 text-zinc-600">No batches yet.</td></tr>
-            {% endfor %}
-            </tbody>
-        </table>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen pb-12">
+    <div class="max-w-xl mx-auto px-4 py-8">
+        <div class="flex items-center gap-x-3 mb-2">
+            <div class="w-11 h-11 bg-red-600 rounded-2xl flex items-center justify-center text-2xl">🧮</div>
+            <div>
+                <h1 class="text-3xl font-semibold tracking-tight">Throw Calc</h1>
+                <p class="text-zinc-500 text-sm">1+N water per syrup. Same math as the blender.</p>
+            </div>
+        </div>
+        {% if error %}<div class="mt-4 mb-2 text-red-400">{{ error }}</div>{% endif %}
+
+        <div class="flex gap-2 mt-6 mb-6">
+            <button type="button" id="mode-batch" class="flex-1 py-3 rounded-2xl bg-red-600 font-medium">New batch</button>
+            <button type="button" id="mode-syrup" class="flex-1 py-3 rounded-2xl bg-zinc-800 text-zinc-400 font-medium">Syrup already in</button>
+        </div>
+
+        <form method="post" id="throw-form" class="space-y-5">
+            {% csrf_token %}
+            <label class="block text-xs tracking-widest text-zinc-500">FLAVOR <span class="normal-case tracking-normal text-zinc-600">(for the log)</span>
+                <input name="flavor" id="flavor" placeholder="Pepsi / Diet / Mountain Dew" class="mt-1 w-full rounded-2xl px-4 py-3 text-lg">
+            </label>
+            <div class="grid grid-cols-2 gap-4">
+                <label class="block text-xs tracking-widest text-zinc-500">FINISHED °BRIX
+                    <input name="finished_brix" id="finished_brix" type="number" step="0.001" inputmode="decimal" value="11.5" class="mt-1 w-full rounded-2xl px-4 py-3 text-2xl font-medium">
+                </label>
+                <label class="block text-xs tracking-widest text-zinc-500">SYRUP °BRIX
+                    <input name="syrup_brix" id="syrup_brix" type="number" step="0.001" inputmode="decimal" value="55" class="mt-1 w-full rounded-2xl px-4 py-3 text-2xl font-medium">
+                </label>
+            </div>
+            <label id="batch-wrap" class="block text-xs tracking-widest text-zinc-500">FINISHED BATCH GALLONS
+                <input name="batch_gallons" id="batch_gallons" type="number" step="0.001" inputmode="decimal" value="1000" class="mt-1 w-full rounded-2xl px-4 py-3 text-2xl font-medium">
+            </label>
+            <label id="syrup-in-wrap" class="hidden block text-xs tracking-widest text-zinc-500">SYRUP ALREADY IN (GAL)
+                <input id="syrup_in" type="number" step="0.001" inputmode="decimal" value="200" class="mt-1 w-full rounded-2xl px-4 py-3 text-2xl font-medium">
+            </label>
+
+            <div id="live" class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 space-y-4"></div>
+
+            <button class="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-4 rounded-2xl text-lg">SAVE TO BATCH LOG</button>
+        </form>
+
+        <h2 class="mt-12 mb-3 text-xs tracking-widest text-zinc-500">LAST THROWS</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="text-zinc-500 text-left"><tr>
+                    <th class="py-2">When</th><th>Flavor</th><th>Batch</th><th>Syrup</th><th>Water</th><th>Who</th>
+                </tr></thead>
+                <tbody>
+                {% for row in logs %}
+                    <tr class="border-t border-zinc-800">
+                        <td class="py-2 pr-3 whitespace-nowrap text-zinc-500">{{ row.created_at|date:"n/j g:i A" }}</td>
+                        <td>{{ row.flavor }}</td>
+                        <td>{{ row.batch_gallons }}</td>
+                        <td>{{ row.syrup_gallons }}</td>
+                        <td>{{ row.water_gallons }}</td>
+                        <td>{{ row.ran_by }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6" class="py-6 text-zinc-600">No batches yet.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="mt-6 text-[11px] text-zinc-600 leading-relaxed">Throw 1+N = gallons of treated water per 1 gallon of syrup. Syrup gal = batch × (finished °Brix ÷ syrup °Brix).</p>
     </div>
     <script>
-    function live() {
-        const t = parseFloat(document.getElementById('finished_brix').value) || 0;
-        const s = parseFloat(document.getElementById('syrup_brix').value) || 0;
-        const b = parseFloat(document.getElementById('batch_gallons').value) || 0;
-        const el = document.getElementById('live');
-        if (s <= 0 || t <= 0 || t > s) { el.textContent = 'Need syrup brix higher than finished brix.'; return; }
-        const syrup = b * (t / s);
-        const water = b - syrup;
-        const n = s / t;
-        el.innerHTML = `<div class="flex justify-between"><span class="text-zinc-400">Throw</span><span>1 + ${n.toFixed(2)}</span></div>
-            <div class="flex justify-between"><span class="text-zinc-400">Syrup</span><span class="text-red-400 text-2xl font-semibold">${syrup.toFixed(2)} gal</span></div>
-            <div class="flex justify-between"><span class="text-zinc-400">Water</span><span class="text-2xl font-semibold">${water.toFixed(2)} gal</span></div>`;
+    let mode = 'batch';
+    const modeBatch = document.getElementById('mode-batch');
+    const modeSyrup = document.getElementById('mode-syrup');
+    function setMode(next) {
+        mode = next;
+        const batchOn = mode === 'batch';
+        modeBatch.className = 'flex-1 py-3 rounded-2xl font-medium ' + (batchOn ? 'bg-red-600 text-white' : 'bg-zinc-800 text-zinc-400');
+        modeSyrup.className = 'flex-1 py-3 rounded-2xl font-medium ' + (!batchOn ? 'bg-red-600 text-white' : 'bg-zinc-800 text-zinc-400');
+        document.getElementById('batch-wrap').classList.toggle('hidden', !batchOn);
+        document.getElementById('syrup-in-wrap').classList.toggle('hidden', batchOn);
+        live();
     }
-    ['finished_brix','syrup_brix','batch_gallons'].forEach(id => document.getElementById(id).addEventListener('input', live));
+    modeBatch.onclick = () => setMode('batch');
+    modeSyrup.onclick = () => setMode('syrup');
+
+    function nums() {
+        const finished = parseFloat(document.getElementById('finished_brix').value) || 0;
+        const syrupBrix = parseFloat(document.getElementById('syrup_brix').value) || 0;
+        const batch = parseFloat(document.getElementById('batch_gallons').value) || 0;
+        const syrupIn = parseFloat(document.getElementById('syrup_in').value) || 0;
+        return { finished, syrupBrix, batch, syrupIn };
+    }
+
+    function live() {
+        const { finished, syrupBrix, batch, syrupIn } = nums();
+        const el = document.getElementById('live');
+        if (syrupBrix <= 0 || finished <= 0 || finished > syrupBrix) {
+            el.innerHTML = '<div class="text-red-400">Syrup °Brix has to be higher than finished °Brix.</div>';
+            return;
+        }
+        const throwN = (syrupBrix / finished) - 1; // water per 1 syrup
+        let syrupGal, waterGal, batchGal;
+        if (mode === 'batch') {
+            syrupGal = batch * (finished / syrupBrix);
+            waterGal = batch - syrupGal;
+            batchGal = batch;
+        } else {
+            syrupGal = syrupIn;
+            waterGal = syrupIn * throwN;
+            batchGal = syrupGal + waterGal;
+            document.getElementById('batch_gallons').value = batchGal.toFixed(3);
+        }
+        el.innerHTML = `
+            <div class="flex justify-between items-end">
+                <span class="text-zinc-400 text-sm tracking-widest">THROW</span>
+                <span class="text-3xl font-semibold">1+${throwN.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between items-end pt-2 border-t border-zinc-800">
+                <span class="text-zinc-400 text-sm tracking-widest">${mode === 'syrup' ? 'WATER TO ADD' : 'SYRUP'}</span>
+                <span class="text-red-400 text-4xl font-semibold leading-none">${(mode === 'syrup' ? waterGal : syrupGal).toFixed(1)} <span class="text-lg text-zinc-400">gal</span></span>
+            </div>
+            <div class="flex justify-between items-end">
+                <span class="text-zinc-400 text-sm tracking-widest">${mode === 'syrup' ? 'FINISHED BATCH' : 'TREATED WATER'}</span>
+                <span class="text-3xl font-semibold leading-none">${(mode === 'syrup' ? batchGal : waterGal).toFixed(1)} <span class="text-lg text-zinc-400">gal</span></span>
+            </div>
+            <div class="text-xs text-zinc-500 font-mono">${syrupGal.toFixed(1)} syrup + ${waterGal.toFixed(1)} water = ${batchGal.toFixed(1)} finished</div>`;
+    }
+
+    ['finished_brix','syrup_brix','batch_gallons','syrup_in'].forEach(id => {
+        document.getElementById(id).addEventListener('input', live);
+    });
+    document.getElementById('throw-form').addEventListener('submit', (e) => {
+        const flavor = (document.getElementById('flavor').value || '').trim();
+        if (!flavor) {
+            e.preventDefault();
+            alert('Flavor is just for the log. Type what you threw.');
+            document.getElementById('flavor').focus();
+        }
+        if (mode === 'syrup') live();
+    });
     live();
     </script>
 </body>
