@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.staticfiles import finders
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http.response import HttpResponse,JsonResponse,StreamingHttpResponse
@@ -9,7 +9,7 @@ from PIL import Image
 from random import uniform
 import requests
 from django.views.decorators.csrf import csrf_exempt
-from .models import Hplc
+from .models import Hplc, ThrowBatch
 
 def group_required(group_name):
 
@@ -148,6 +148,45 @@ def qrcodes(request):
 @group_required("Lab Tech")
 def fill(request):
     return render(request,"screen/fill.html")
+
+@login_required
+@group_required("Lab Tech")
+def throw_calc(request):
+    error = None
+    if request.method == "POST":
+        flavor = (request.POST.get("flavor") or "").strip()
+        try:
+            finished_brix = float(request.POST.get("finished_brix") or 0)
+            syrup_brix = float(request.POST.get("syrup_brix") or 0)
+            batch_gallons = float(request.POST.get("batch_gallons") or 0)
+        except (TypeError, ValueError):
+            error = "Numbers only."
+            finished_brix = syrup_brix = batch_gallons = 0
+        if error is None:
+            if not flavor:
+                error = "Flavor is required to save a batch."
+            elif syrup_brix <= 0 or finished_brix <= 0:
+                error = "Brix has to be greater than 0."
+            elif finished_brix > syrup_brix:
+                error = "Finished brix can't be higher than syrup brix."
+            elif batch_gallons < 0:
+                error = "Batch gallons can't be negative."
+            else:
+                syrup_gallons = batch_gallons * (finished_brix / syrup_brix)
+                water_gallons = batch_gallons - syrup_gallons
+                ThrowBatch.objects.create(
+                    flavor=flavor[:80],
+                    finished_brix=round(finished_brix, 3),
+                    syrup_brix=round(syrup_brix, 3),
+                    batch_gallons=round(batch_gallons, 3),
+                    syrup_gallons=round(syrup_gallons, 3),
+                    water_gallons=round(water_gallons, 3),
+                    ran_by=request.user.username,
+                )
+                return redirect("throw")
+    logs = ThrowBatch.objects.order_by("-created_at")[:25]
+    return render(request, "screen/throw.html", {"logs": logs, "error": error})
+
 
 def rando(request):
     if request.method == "GET":
