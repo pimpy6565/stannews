@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Log</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: Inter, system-ui, sans-serif; background: #09090b; color: #e4e4e7; }</style>
+</head>
+<body class="p-6">
+    <h1 class="text-2xl font-semibold tracking-tight mb-1">Batch Log</h1>
+    <p class="text-zinc-500 text-sm mb-6">Last throws saved on this device. Not a plant historian, just so the numbers don’t vanish when you walk off.</p>
+    <form id="add" class="grid gap-3 max-w-xl mb-8">
+        <input id="flavor" placeholder="Flavor" class="bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2">
+        <div class="grid grid-cols-3 gap-3">
+            <input id="gallons" type="number" step="0.1" placeholder="Gallons" class="bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2">
+            <input id="brix" type="number" step="0.01" placeholder="Finished brix" class="bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2">
+            <input id="who" placeholder="Who ran it" class="bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2">
+        </div>
+        <button class="bg-red-600 hover:bg-red-500 text-white font-semibold py-2 rounded-xl">ADD ROW</button>
+    </form>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="text-zinc-500 text-left">
+                <tr><th class="py-2">When</th><th>Flavor</th><th>Gal</th><th>Brix</th><th>Who</th></tr>
+            </thead>
+            <tbody id="rows"></tbody>
+        </table>
+    </div>
+    <button id="clear" class="mt-6 text-xs text-zinc-500 underline">Clear log on this device</button>
+    <script>
+    const KEY = 'stan-batch-log';
+    function load() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } }
+    function save(rows) { localStorage.setItem(KEY, JSON.stringify(rows.slice(0, 50))); }
+    function render() {
+        const rows = load();
+        document.getElementById('rows').innerHTML = rows.map(r => {
+            const when = r.at ? new Date(r.at).toLocaleString() : '';
+            return `<tr class="border-t border-zinc-800"><td class="py-2 pr-3 whitespace-nowrap">${when}</td><td>${r.flavor || '—'}</td><td>${r.gallons ?? ''}</td><td>${r.brix ?? ''}</td><td>${r.who || ''}</td></tr>`;
+        }).join('') || '<tr><td colspan="5" class="py-6 text-zinc-600">No batches yet.</td></tr>';
+    }
+    document.getElementById('add').onsubmit = (e) => {
+        e.preventDefault();
+        const rows = load();
+        rows.unshift({
+            flavor: document.getElementById('flavor').value.trim(),
+            gallons: parseFloat(document.getElementById('gallons').value) || 0,
+            brix: parseFloat(document.getElementById('brix').value) || 0,
+            who: document.getElementById('who').value.trim(),
+            at: new Date().toISOString()
+        });
+        save(rows);
+        e.target.reset();
+        render();
+    };
+    document.getElementById('clear').onclick = () => { localStorage.removeItem(KEY); render(); };
+    render();
+    </script>
+</body>
+</html>
