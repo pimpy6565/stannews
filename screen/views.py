@@ -149,6 +149,16 @@ def qrcodes(request):
 def fill(request):
     return render(request,"screen/fill.html")
 
+@login_required
+@group_required("Lab Tech")
+def throw(request):
+    return render(request,"screen/throw.html")
+
+@login_required
+@group_required("Lab Tech")
+def batchlog(request):
+    return render(request,"screen/batchlog.html")
+
 def rando(request):
     if request.method == "GET":
         num1 = request.GET.get('number1')
