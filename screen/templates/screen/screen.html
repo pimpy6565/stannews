@@ -256,6 +256,20 @@
             <span class="tab-icon">🥤</span>
             </span>Game</span>
         </button>
+            <button id="throw"
+                    class="lab-tab"
+                    role="tab"
+                    aria-selected="false">
+                <span class="tab-icon">🧮</span>
+                <span>Throw</span>
+            </button>
+            <button id="batchlog"
+                    class="lab-tab"
+                    role="tab"
+                    aria-selected="false">
+                <span class="tab-icon">📋</span>
+                <span>Batch log</span>
+            </button>
         {% endif %}
         {% endfor %}
 
@@ -476,6 +490,20 @@
                 game.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
                     openUp("{% url 'game' %}");
+                });
+            }
+            const throwBtn = document.getElementById("throw");
+            const batchBtn = document.getElementById("batchlog");
+            if (throwBtn) {
+                throwBtn.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("{% url 'throw' %}");
+                });
+            }
+            if (batchBtn) {
+                batchBtn.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("{% url 'batchlog' %}");
                 });
             }
         }
