@@ -17,6 +17,8 @@ urlpatterns = [
     path('search',views.search,name="search"),
     path('proxy/<path:path>', views.proxy_to_flask, name='proxy_to_flask'),
 
+    path("throw/",views.throw,name="throw"),
+    path("batchlog/",views.batchlog,name="batchlog"),
     # Catch-all for React (must be LAST)
     re_path(r'^.*$', TemplateView.as_view(template_name='screen/index.html')),
 
