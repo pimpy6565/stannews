@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Throw Calc</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: Inter, system-ui, sans-serif; background: #09090b; color: #e4e4e7; }
+        input { background: #18181b; border: 1px solid #3f3f46; color: #fafafa; }
+    </style>
+</head>
+<body class="p-6">
+    <h1 class="text-2xl font-semibold tracking-tight mb-1">Throw Calc</h1>
+    <p class="text-zinc-500 text-sm mb-6">Syrup gal = batch × (finished °Brix ÷ syrup °Brix). Water is the rest.</p>
+    {% if error %}<div class="mb-4 text-red-400">{{ error }}</div>{% endif %}
+    <form method="post" class="grid gap-4 max-w-xl" id="throw-form">
+        {% csrf_token %}
+        <label class="text-xs tracking-widest text-zinc-500">FLAVOR
+            <input name="flavor" id="flavor" required class="mt-1 w-full rounded-xl px-4 py-3 text-lg">
+        </label>
+        <label class="text-xs tracking-widest text-zinc-500">FINISHED BRIX
+            <input name="finished_brix" id="finished_brix" type="number" step="0.001" value="11.5" class="mt-1 w-full rounded-xl px-4 py-3 text-xl">
+        </label>
+        <label class="text-xs tracking-widest text-zinc-500">SYRUP BRIX
+            <input name="syrup_brix" id="syrup_brix" type="number" step="0.001" value="55" class="mt-1 w-full rounded-xl px-4 py-3 text-xl">
+        </label>
+        <label class="text-xs tracking-widest text-zinc-500">BATCH GALLONS
+            <input name="batch_gallons" id="batch_gallons" type="number" step="0.001" value="1000" class="mt-1 w-full rounded-xl px-4 py-3 text-xl">
+        </label>
+        <div id="live" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-2 text-lg"></div>
+        <button class="bg-red-600 hover:bg-red-500 text-white font-semibold py-3 rounded-xl">SAVE TO BATCH LOG</button>
+    </form>
+    <h2 class="mt-10 mb-3 text-sm tracking-widest text-zinc-500">LAST 25</h2>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="text-zinc-500 text-left"><tr>
+                <th class="py-2">When</th><th>Flavor</th><th>Batch</th><th>Syrup gal</th><th>Water gal</th><th>Who</th>
+            </tr></thead>
+            <tbody>
+            {% for row in logs %}
+                <tr class="border-t border-zinc-800">
+                    <td class="py-2 pr-3 whitespace-nowrap">{{ row.created_at }}</td>
+                    <td>{{ row.flavor }}</td>
+                    <td>{{ row.batch_gallons }}</td>
+                    <td>{{ row.syrup_gallons }}</td>
+                    <td>{{ row.water_gallons }}</td>
+                    <td>{{ row.ran_by }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6" class="py-6 text-zinc-600">No batches yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+    function live() {
+        const t = parseFloat(document.getElementById('finished_brix').value) || 0;
+        const s = parseFloat(document.getElementById('syrup_brix').value) || 0;
+        const b = parseFloat(document.getElementById('batch_gallons').value) || 0;
+        const el = document.getElementById('live');
+        if (s <= 0 || t <= 0 || t > s) { el.textContent = 'Need syrup brix higher than finished brix.'; return; }
+        const syrup = b * (t / s);
+        const water = b - syrup;
+        const n = s / t;
+        el.innerHTML = `<div class="flex justify-between"><span class="text-zinc-400">Throw</span><span>1 + ${n.toFixed(2)}</span></div>
+            <div class="flex justify-between"><span class="text-zinc-400">Syrup</span><span class="text-red-400 text-2xl font-semibold">${syrup.toFixed(2)} gal</span></div>
+            <div class="flex justify-between"><span class="text-zinc-400">Water</span><span class="text-2xl font-semibold">${water.toFixed(2)} gal</span></div>`;
+    }
+    ['finished_brix','syrup_brix','batch_gallons'].forEach(id => document.getElementById(id).addEventListener('input', live));
+    live();
+    </script>
+</body>
+</html>
