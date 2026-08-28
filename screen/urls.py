@@ -11,6 +11,7 @@ urlpatterns = [
     path("page/<str:slug>",views.page,name="page"),
     path("qr",views.qrcodes,name="qr"),
     path("fill",views.fill,name="fill"),
+    path("throw/",views.throw_calc,name="throw"),
     path('rando',views.rando,name='rando'),
     path("app/",views.app,name="app"),
     
@@ -21,4 +22,3 @@ urlpatterns = [
     re_path(r'^.*$', TemplateView.as_view(template_name='screen/index.html')),
 
 ]
-
