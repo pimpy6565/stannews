@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Throw Calc</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: Inter, system-ui, sans-serif; background: #09090b; color: #e4e4e7; }
+        input { background: #18181b; border: 1px solid #3f3f46; color: #fafafa; }
+    </style>
+</head>
+<body class="p-6">
+    <h1 class="text-2xl font-semibold tracking-tight mb-1">Throw Calc</h1>
+    <p class="text-zinc-500 text-sm mb-6">Syrup + treated water for a finished batch. Simple ratio: syrup gal = batch × (target °Brix ÷ syrup °Brix).</p>
+    <div class="grid gap-4 max-w-xl">
+        <label class="text-xs tracking-widest text-zinc-500">TARGET FINISHED BRIX
+            <input id="target" type="number" step="0.01" value="11.5" class="mt-1 w-full rounded-xl px-4 py-3 text-xl">
+        </label>
+        <label class="text-xs tracking-widest text-zinc-500">SYRUP BRIX
+            <input id="syrup" type="number" step="0.01" value="55" class="mt-1 w-full rounded-xl px-4 py-3 text-xl">
+        </label>
+        <label class="text-xs tracking-widest text-zinc-500">BATCH GALLONS
+            <input id="batch" type="number" step="0.1" value="1000" class="mt-1 w-full rounded-xl px-4 py-3 text-xl">
+        </label>
+        <label class="text-xs tracking-widest text-zinc-500">FLAVOR
+            <input id="flavor" type="text" placeholder="Pepsi / Diet / etc" class="mt-1 w-full rounded-xl px-4 py-3 text-lg">
+        </label>
+        <button id="go" class="bg-red-600 hover:bg-red-500 text-white font-semibold py-3 rounded-xl">CALCULATE THROW</button>
+    </div>
+    <div id="out" class="hidden mt-8 max-w-xl space-y-3"></div>
+    <script>
+    function calc() {
+        const t = parseFloat(document.getElementById('target').value) || 0;
+        const s = parseFloat(document.getElementById('syrup').value) || 0;
+        const b = parseFloat(document.getElementById('batch').value) || 0;
+        const flavor = (document.getElementById('flavor').value || '').trim();
+        const box = document.getElementById('out');
+        if (s <= 0 || t <= 0 || b <= 0 || t >= s) {
+            box.classList.remove('hidden');
+            box.innerHTML = '<div class="text-red-400">Need syrup brix higher than target, and all numbers above zero.</div>';
+            return;
+        }
+        const syrupGal = b * (t / s);
+        const waterGal = b - syrupGal;
+        const ratio = (s / t).toFixed(2);
+        box.classList.remove('hidden');
+        box.innerHTML = `
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-2">
+                <div class="flex justify-between"><span class="text-zinc-400">Syrup</span><span class="text-2xl font-semibold text-red-400">${syrupGal.toFixed(1)} gal</span></div>
+                <div class="flex justify-between"><span class="text-zinc-400">Treated water</span><span class="text-2xl font-semibold">${waterGal.toFixed(1)} gal</span></div>
+                <div class="flex justify-between text-sm"><span class="text-zinc-500">Throw ratio</span><span>1 : ${ratio}</span></div>
+            </div>
+            <button id="save" class="w-full border border-zinc-700 rounded-xl py-2 text-sm">Save to batch log</button>
+        `;
+        document.getElementById('save').onclick = () => {
+            const who = prompt('Who ran it?', '') || 'unknown';
+            const logs = JSON.parse(localStorage.getItem('stan-batch-log') || '[]');
+            logs.unshift({ flavor, gallons: b, brix: t, syrupBrix: s, syrupGal: +syrupGal.toFixed(1), waterGal: +waterGal.toFixed(1), who, at: new Date().toISOString() });
+            localStorage.setItem('stan-batch-log', JSON.stringify(logs.slice(0, 50)));
+            document.getElementById('save').textContent = 'Saved';
+        };
+    }
+    document.getElementById('go').onclick = calc;
+    </script>
+</body>
+</html>
