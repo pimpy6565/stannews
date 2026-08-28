@@ -9,7 +9,7 @@ from PIL import Image
 from random import uniform
 import requests
 from django.views.decorators.csrf import csrf_exempt
-from .models import Hplc, ThrowBatch
+from .models import Hplc, ThrowBatch, ShiftPost
 
 def group_required(group_name):
 
@@ -187,6 +187,23 @@ def throw_calc(request):
     logs = ThrowBatch.objects.order_by("-created_at")[:25]
     return render(request, "screen/throw.html", {"logs": logs, "error": error})
 
+
+
+@login_required
+@group_required("Lab Tech")
+def shift_log(request):
+    error = None
+    if request.method == "POST":
+        body = (request.POST.get("body") or "").strip()
+        if not body:
+            error = "Type something."
+        elif len(body) > 280:
+            error = "Keep it to 280 characters."
+        else:
+            ShiftPost.objects.create(body=body[:280], posted_by=request.user.username)
+            return redirect("shiftlog")
+    posts = ShiftPost.objects.order_by("-created_at")[:80]
+    return render(request, "screen/shiftlog.html", {"posts": posts, "error": error})
 
 def rando(request):
     if request.method == "GET":
