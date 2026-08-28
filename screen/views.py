@@ -205,6 +205,25 @@ def shift_log(request):
     posts = ShiftPost.objects.order_by("-created_at")[:80]
     return render(request, "screen/shiftlog.html", {"posts": posts, "error": error})
 
+
+@login_required
+@group_required("Lab Tech")
+def shift_log_feed(request):
+    from django.utils.dateformat import format as dateformat
+    posts = ShiftPost.objects.order_by("-created_at")[:80]
+    return JsonResponse({
+        "posts": [
+            {
+                "id": p.id,
+                "body": p.body,
+                "posted_by": p.posted_by,
+                "created_at": dateformat(p.created_at, "n/j g:i A"),
+                "initial": (p.posted_by or "?")[:1].upper(),
+            }
+            for p in posts
+        ]
+    })
+
 def rando(request):
     if request.method == "GET":
         num1 = request.GET.get('number1')

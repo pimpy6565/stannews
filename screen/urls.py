@@ -13,6 +13,7 @@ urlpatterns = [
     path("fill",views.fill,name="fill"),
     path("throw/",views.throw_calc,name="throw"),
     path("shiftlog/",views.shift_log,name="shiftlog"),
+    path("shiftlog/feed/",views.shift_log_feed,name="shiftlog_feed"),
     path('rando',views.rando,name='rando'),
     path("app/",views.app,name="app"),
     

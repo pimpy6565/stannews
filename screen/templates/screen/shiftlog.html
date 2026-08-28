@@ -8,27 +8,28 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: Inter, system-ui, sans-serif; }
-        textarea { background: #18181b; border: 1px solid #3f3f46; color: #fafafa; }
+        textarea { background: #18181b; border: 1px solid #3f3f46; color: #fafafa; position: relative; z-index: 2; }
+        form { position: relative; z-index: 2; }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen pb-12">
-    <div class="max-w-xl mx-auto px-4 py-8">
+    <div class="max-w-xl mx-auto px-4 py-8 relative z-10">
         <h1 class="text-3xl font-semibold tracking-tight">Shift log</h1>
         <p class="text-zinc-500 text-sm mt-1">Floor notebook. Newest first. Lab Tech only.</p>
         {% if error %}<div class="mt-4 text-red-400">{{ error }}</div>{% endif %}
-        <form method="post" class="mt-6 bg-zinc-900 border border-zinc-800 rounded-3xl p-4">
+        <form method="post" class="mt-6 bg-zinc-900 border border-zinc-800 rounded-3xl p-4 relative z-10">
             {% csrf_token %}
             <textarea name="body" id="body" maxlength="280" rows="3" required
                 placeholder="What's going on on the floor?"
-                class="w-full rounded-2xl px-4 py-3 text-lg outline-none resize-none"></textarea>
+                class="w-full rounded-2xl px-4 py-3 text-lg outline-none resize-none relative z-10"></textarea>
             <div class="flex items-center justify-between mt-3">
                 <span id="count" class="text-xs text-zinc-500 font-mono">0 / 280</span>
                 <button class="bg-red-600 hover:bg-red-500 text-white font-semibold px-5 py-2 rounded-2xl">Post</button>
             </div>
         </form>
-        <div class="mt-8 space-y-3">
+        <div id="feed" class="mt-8 space-y-3">
             {% for post in posts %}
-            <article class="bg-zinc-900 border border-zinc-800 rounded-3xl p-4">
+            <article class="bg-zinc-900 border border-zinc-800 rounded-3xl p-4" data-id="{{ post.id }}">
                 <div class="flex items-center gap-3 mb-2">
                     <div class="w-9 h-9 rounded-full bg-red-600 flex items-center justify-center text-sm font-semibold">{{ post.posted_by|make_list|first|upper }}</div>
                     <div>
@@ -39,16 +40,70 @@
                 <p class="text-lg leading-snug whitespace-pre-wrap">{{ post.body }}</p>
             </article>
             {% empty %}
-            <p class="text-zinc-600 py-8 text-center">No posts yet. First one is yours.</p>
+            <p id="empty" class="text-zinc-600 py-8 text-center">No posts yet. First one is yours.</p>
             {% endfor %}
         </div>
     </div>
     <script>
     const ta = document.getElementById('body');
     const count = document.getElementById('count');
+    const feed = document.getElementById('feed');
     function tick() { count.textContent = (ta.value.length) + ' / 280'; }
     ta.addEventListener('input', tick);
     tick();
+
+    function card(p) {
+        const art = document.createElement('article');
+        art.className = 'bg-zinc-900 border border-zinc-800 rounded-3xl p-4';
+        art.dataset.id = String(p.id);
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-3 mb-2';
+        const av = document.createElement('div');
+        av.className = 'w-9 h-9 rounded-full bg-red-600 flex items-center justify-center text-sm font-semibold';
+        av.textContent = p.initial || '?';
+        const meta = document.createElement('div');
+        const name = document.createElement('div');
+        name.className = 'font-medium leading-tight';
+        name.textContent = p.posted_by;
+        const when = document.createElement('div');
+        when.className = 'text-xs text-zinc-500';
+        when.textContent = p.created_at;
+        meta.appendChild(name);
+        meta.appendChild(when);
+        row.appendChild(av);
+        row.appendChild(meta);
+        const body = document.createElement('p');
+        body.className = 'text-lg leading-snug whitespace-pre-wrap';
+        body.textContent = p.body;
+        art.appendChild(row);
+        art.appendChild(body);
+        return art;
+    }
+
+    let signature = '';
+    async function pull() {
+        try {
+            const res = await fetch('/screen/shiftlog/feed/', { credentials: 'same-origin', cache: 'no-store' });
+            if (!res.ok) return;
+            const data = await res.json();
+            const posts = data.posts || [];
+            const next = posts.map(p => p.id).join(',');
+            if (next === signature) return;
+            signature = next;
+            feed.innerHTML = '';
+            if (!posts.length) {
+                const empty = document.createElement('p');
+                empty.id = 'empty';
+                empty.className = 'text-zinc-600 py-8 text-center';
+                empty.textContent = 'No posts yet. First one is yours.';
+                feed.appendChild(empty);
+                return;
+            }
+            posts.forEach(p => feed.appendChild(card(p)));
+        } catch (e) {}
+    }
+    setInterval(pull, 4000);
+    pull();
     </script>
 </body>
 </html>
