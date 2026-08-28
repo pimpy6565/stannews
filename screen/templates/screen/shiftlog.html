@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shift log</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: Inter, system-ui, sans-serif; }
+        textarea { background: #18181b; border: 1px solid #3f3f46; color: #fafafa; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen pb-12">
+    <div class="max-w-xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-semibold tracking-tight">Shift log</h1>
+        <p class="text-zinc-500 text-sm mt-1">Floor notebook. Newest first. Lab Tech only.</p>
+        {% if error %}<div class="mt-4 text-red-400">{{ error }}</div>{% endif %}
+        <form method="post" class="mt-6 bg-zinc-900 border border-zinc-800 rounded-3xl p-4">
+            {% csrf_token %}
+            <textarea name="body" id="body" maxlength="280" rows="3" required
+                placeholder="What's going on on the floor?"
+                class="w-full rounded-2xl px-4 py-3 text-lg outline-none resize-none"></textarea>
+            <div class="flex items-center justify-between mt-3">
+                <span id="count" class="text-xs text-zinc-500 font-mono">0 / 280</span>
+                <button class="bg-red-600 hover:bg-red-500 text-white font-semibold px-5 py-2 rounded-2xl">Post</button>
+            </div>
+        </form>
+        <div class="mt-8 space-y-3">
+            {% for post in posts %}
+            <article class="bg-zinc-900 border border-zinc-800 rounded-3xl p-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-9 h-9 rounded-full bg-red-600 flex items-center justify-center text-sm font-semibold">{{ post.posted_by|make_list|first|upper }}</div>
+                    <div>
+                        <div class="font-medium leading-tight">{{ post.posted_by }}</div>
+                        <div class="text-xs text-zinc-500">{{ post.created_at|date:"n/j g:i A" }}</div>
+                    </div>
+                </div>
+                <p class="text-lg leading-snug whitespace-pre-wrap">{{ post.body }}</p>
+            </article>
+            {% empty %}
+            <p class="text-zinc-600 py-8 text-center">No posts yet. First one is yours.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+    const ta = document.getElementById('body');
+    const count = document.getElementById('count');
+    function tick() { count.textContent = (ta.value.length) + ' / 280'; }
+    ta.addEventListener('input', tick);
+    tick();
+    </script>
+</body>
+</html>
