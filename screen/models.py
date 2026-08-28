@@ -25,3 +25,17 @@ class Hplc(models.Model):
     
     def __str__(self):
         return self.name.title()
+
+
+class ThrowBatch(models.Model):
+    flavor = models.CharField(max_length=80)
+    finished_brix = models.DecimalField(max_digits=10, decimal_places=3)
+    syrup_brix = models.DecimalField(max_digits=10, decimal_places=3)
+    batch_gallons = models.DecimalField(max_digits=12, decimal_places=3)
+    syrup_gallons = models.DecimalField(max_digits=12, decimal_places=3)
+    water_gallons = models.DecimalField(max_digits=12, decimal_places=3)
+    ran_by = models.CharField(max_length=150)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
