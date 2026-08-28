@@ -257,6 +257,15 @@
                 <span><span class="hidden sm:inline">Throw </span>Calc</span>
             </button>
 
+            <button id="shiftlog" 
+                    class="lab-tab"
+                    role="tab"
+                    aria-selected="false">
+                <span class="tab-icon">📝</span>
+                <span>Shift log</span>
+            </button>
+
+
             <button id="game" 
             class="lab-tab"
             role="tab"
@@ -430,6 +439,11 @@
                     const btn = document.getElementById('throw');
                     if (btn) btn.click();
                 }
+
+                if (e.key.toLowerCase() === 'l') {
+                    const btn = document.getElementById('shiftlog');
+                    if (btn) btn.click();
+                }
                 if (e.key.toLowerCase() === 'h') {
                     const btn = document.getElementById('hplc_search');
                     if (btn) btn.click();
@@ -446,7 +460,7 @@
 
             // Show hint once
             setTimeout(() => {
-                console.log('%c[Lab Ops] Keyboard shortcuts: 1 = Line1, 2 = Line2, T = Throw Calc, H = HPLC, F = Fix, ⌘R = Refresh', 'color:#3f3f46');
+                console.log('%c[Lab Ops] Keyboard shortcuts: 1 = Line1, 2 = Line2, T = Throw Calc, L = Shift log, H = HPLC, F = Fix, ⌘R = Refresh', 'color:#3f3f46');
             }, 8000);
         }
 
@@ -491,6 +505,14 @@
                 throwBtn.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
                     openUp("{% url 'throw' %}");
+                });
+            }
+
+            const shiftlogBtn = document.getElementById("shiftlog");
+            if (shiftlogBtn) {
+                shiftlogBtn.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("{% url 'shiftlog' %}");
                 });
             }
             if (game) {

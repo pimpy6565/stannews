@@ -12,6 +12,7 @@ urlpatterns = [
     path("qr",views.qrcodes,name="qr"),
     path("fill",views.fill,name="fill"),
     path("throw/",views.throw_calc,name="throw"),
+    path("shiftlog/",views.shift_log,name="shiftlog"),
     path('rando',views.rando,name='rando'),
     path("app/",views.app,name="app"),
     
