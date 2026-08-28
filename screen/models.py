@@ -39,3 +39,12 @@ class ThrowBatch(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class ShiftPost(models.Model):
+    body = models.CharField(max_length=280)
+    posted_by = models.CharField(max_length=150)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
