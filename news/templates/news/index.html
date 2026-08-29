@@ -19,126 +19,62 @@ Home Page
     </div>
     <!-- Start Here -->
     <!-- Start Here: new stories go BELOW the pinned Pepsi diner hero. Do not move that first image. -->
+    {% for story in stories %}
+    {% if story.accent == "light" %}
+<div class="story-container" style="max-width: 800px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #222;">
+    {% if story.kicker %}
+    <div style="display: inline-flex; align-items: center; background: #0033a0; color: white; font-size: 14px; font-weight: 700; padding: 6px 18px; border-radius: 9999px; margin-bottom: 12px; letter-spacing: 0.5px;">{{ story.kicker }}</div>
+    {% endif %}
+    <h1 style="font-size: 2.4rem; margin-bottom: 10px; color: #0033a0;">{{ story.title }}</h1>
+    {% if story.dek %}
+    <p style="color: #666; font-style: italic; margin-bottom: 30px; font-size: 1.1rem;">
+        {{ story.dek }}
+    </p>
+    {% endif %}
+    {% if story.hero_image_url %}
+    {% if story.hero_image_url|slice:":4" == "http" %}
+    <img src="{{ story.hero_image_url }}" alt="{{ story.title }}" style="width: 100%; height: auto; border-radius: 12px; margin: 0 0 8px;">
+    {% else %}
+    <img src="{% static story.hero_image_url %}" alt="{{ story.title }}" style="width: 100%; height: auto; border-radius: 12px; margin: 0 0 8px;">
+    {% endif %}
+    {% if story.hero_caption %}
+    <p style="text-align: center; font-size: 0.85rem; color: #888; margin-top: 0;">{{ story.hero_caption }}</p>
+    {% endif %}
+    {% endif %}
+    {{ story.body|safe }}
+</div>
+    {% else %}
     <div style="display: flex;justify-content: center;align-items: center;">
-        <div style="max-width: 900px; margin:20px; font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.7; color: #e0e0e0; background: linear-gradient(180deg, #0f172a 0%, #1e2937 100%); padding: 30px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4); overflow: hidden; border-top: 5px solid #f59e0b;">
+        <div style="max-width: 900px; margin:20px; font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.7; color: #e0e0e0; background: {% if story.accent == 'pr' %}linear-gradient(180deg, #0a1628 0%, #1a2744 100%){% else %}linear-gradient(180deg, #0f172a 0%, #1e2937 100%){% endif %}; padding: 30px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4); overflow: hidden; border-top: 5px solid {% if story.accent == 'pr' %}#ed1c24{% else %}#f59e0b{% endif %};">
 
             <div style="text-align: center; margin-bottom: 25px;">
-                <div style="display: inline-flex; align-items: center; background: #f59e0b; color: #0f172a; font-size: 14px; font-weight: 700; padding: 6px 18px; border-radius: 9999px; margin-bottom: 12px; letter-spacing: 0.5px;">LOCAL • AUGUST 28, 2026</div>
-                <h1 style="font-size: 2.6rem; line-height: 1.1; font-weight: 800; margin: 0 0 12px; color: white; text-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);">Camden High Schools Dump the Khakis — Dress Code In, Uniforms Out</h1>
-                <p style="font-size: 1.1rem; color: #cbd5e1; margin: 0; max-width: 700px; margin-left: auto; margin-right: auto;">Five Camden high schools drop mandatory uniforms for Sept. 3. Regular clothes are in. Durags, bonnets, pajamas, and a whole list of nope are still out.</p>
+                {% if story.kicker %}
+                <div style="display: inline-flex; align-items: center; {% if story.accent == 'pr' %}background: linear-gradient(90deg, #ed1c24, #0050f0); color: white;{% else %}background: #f59e0b; color: #0f172a;{% endif %} font-size: 14px; font-weight: 700; padding: 6px 18px; border-radius: 9999px; margin-bottom: 12px; letter-spacing: 0.5px;">{{ story.kicker }}</div>
+                {% endif %}
+                <h1 style="font-size: 2.6rem; line-height: 1.1; font-weight: 800; margin: 0 0 12px; color: white; text-shadow: {% if story.accent == 'pr' %}0 4px 20px rgba(237, 28, 36, 0.4){% else %}0 4px 20px rgba(245, 158, 11, 0.3){% endif %};">{{ story.title }}</h1>
+                {% if story.dek %}
+                <p style="font-size: 1.1rem; color: #cbd5e1; margin: 0; max-width: 700px; margin-left: auto; margin-right: auto;">{{ story.dek }}</p>
+                {% endif %}
             </div>
 
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Construction_Camden_High_School.jpg" alt="Camden High School in Camden, New Jersey" style="width: 100%; height: auto; border-radius: 16px; margin: 0 0 8px; box-shadow: 0 10px 30px -10px rgba(245,158,11,0.5);">
-            <p style="text-align: center; font-size: 0.85rem; color: #94a3b8; margin-top: 0;">Camden High School (Stan News) • Photo: Biggboss420 / Wikimedia Commons, CC BY-SA 4.0</p>
+            {% if story.hero_image_url %}
+            {% if story.hero_image_url|slice:":4" == "http" %}
+            <img src="{{ story.hero_image_url }}" alt="{{ story.title }}" style="width: 100%; height: auto; border-radius: 16px; margin: 0 0 8px; box-shadow: {% if story.accent == 'pr' %}0 10px 30px -10px rgba(237,28,36,0.5){% else %}0 10px 30px -10px rgba(245,158,11,0.5){% endif %};">
+            {% else %}
+            <img src="{% static story.hero_image_url %}" alt="{{ story.title }}" style="width: 100%; height: auto; border-radius: 16px; margin: 0 0 8px; box-shadow: {% if story.accent == 'pr' %}0 10px 30px -10px rgba(237,28,36,0.5){% else %}0 10px 30px -10px rgba(245,158,11,0.5){% endif %};">
+            {% endif %}
+            {% if story.hero_caption %}
+            <p style="text-align: center; font-size: 0.85rem; color: #94a3b8; margin-top: 0;">{{ story.hero_caption }}</p>
+            {% endif %}
+            {% endif %}
 
-            <p style="margin-top: 30px;"><strong>CAMDEN, NJ</strong> — School's back Sept. 3 and the khaki era is over at Camden's five high schools. Superintendent Alfonso Q. Llano Jr. killed the old uniform (khaki pants, school-color shirt) after students and staff asked for more room to dress like themselves. Elementary and middle school still wear uniforms.</p>
-
-            <p>The new code hits Camden High, Eastside, Brimm Medical Arts, Creative Arts, and Big Picture Learning Academy. Hoodies are fine. Hoods come off at the door. Also banned: open-toe shoes, ski masks, baseball hats, short shorts, mini-skirts, baggy pants with underwear showing, durags, bonnets, rollers, pajamas, and clothes that show too much.</p>
-
-            <blockquote style="border-left: 5px solid #f59e0b; padding-left: 20px; margin: 25px 0; font-style: italic; color: #cbd5e1;">
-                "It allows students to break the mode, creates more creativity. It's a good step forward." — Odalys Dejesus, 17, Eastside High
-            </blockquote>
-
-            <img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Camden_city_hall.jpg" alt="Camden City Hall in Camden, New Jersey" style="width: 100%; height: auto; border-radius: 16px; margin: 25px 0 8px; box-shadow: 0 10px 30px -10px rgba(245,158,11,0.5);">
-            <p style="text-align: center; font-size: 0.85rem; color: #94a3b8;">Camden City Hall (Stan News) • Photo: Wikimedia Commons</p>
-
-            <p>Not everybody's cheering. Former board member Jose E. Delgado said uniforms were there for security, bullying, and gang colors, and he wants Trenton to look at whether the switch followed the rules. The state said it's a local call. Veteran Brimm teacher Karen Borrelli is worried parents who used uniform vouchers now have to keep up with fashion. "Our parents can't afford that."</p>
-
-            <p>Union president Pam Clark is for it at the high school level, with a catch: show up presentable or catch a consequence. First offense is a warning. Repeat it and you can get in-school suspension and a parent meeting.</p>
-
-            <p>One more thing they snuck in: high school now starts at 8:05 a.m. and lets out 2:25 p.m. That's an hour earlier, for jobs and after-school stuff. Llano says kids can still wear the old uniform if they want.</p>
-
-            <p style="background: #1e2937; padding: 20px; border-radius: 12px; border-left: 6px solid #f59e0b; margin: 30px 0;">
-                <strong>Stan News Tip:</strong> First day is Sept. 3. If you're rolling up to Camden High or Eastside in a durag and slides, that's a choice. Just not the dress-code kind.
-            </p>
+            {{ story.body|safe }}
 
         </div>
     </div>
-    <div style="display: flex;justify-content: center;align-items: center;">
-        <div style="max-width: 900px; margin:20px; font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.7; color: #e0e0e0; background: linear-gradient(180deg, #0f172a 0%, #1e2937 100%); padding: 30px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4); overflow: hidden;">
-    
-            <!-- Hero Header -->
-            <div style="text-align: center; margin-bottom: 25px;">
-                <div style="display: inline-flex; align-items: center; background: #f59e0b; color: #0f172a; font-size: 14px; font-weight: 700; padding: 6px 18px; border-radius: 9999px; margin-bottom: 12px; letter-spacing: 0.5px;">BREAKING • JULY 11, 2026</div>
-                <h1 style="font-size: 2.6rem; line-height: 1.1; font-weight: 800; margin: 0 0 12px; color: white; text-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);">Pentagon Drops 4th Batch of UFO/UAP Files — More Weird Shit Keeps Dropping</h1>
-                <p style="font-size: 1.1rem; color: #cbd5e1; margin: 0; max-width: 700px; margin-left: auto; margin-right: auto;">40 new files including 19 videos, six-pointed star objects, and more military encounters now public on war.gov/ufo</p>
-            </div>
-        
-            <!-- Official Site Banner -->
-            <a href="https://www.war.gov/ufo/" target="_blank" style="display: block; background: #1e2937; border: 2px solid #f59e0b; border-radius: 12px; padding: 12px 20px; text-align: center; color: white; text-decoration: none; font-weight: 600; margin-bottom: 25px; transition: all 0.3s ease;">
-                📂 Explore the Full Official Archive → war.gov/ufo
-            </a>
-        
-            <p style="margin-top: 30px;"><strong>WASHINGTON, D.C.</strong> — The Pentagon dropped its **fourth tranche** of declassified UAP files on July 10, 2026. This batch brings **40 new files** — 14 documents, **19 videos**, 4 audio recordings, and 3 images — straight from military sensors and historical records. Standouts include a creepy **six-pointed star-shaped object** tracked over the Yellow Sea and a diamond-like craft near a Texas nuclear plant. Pilots are still saying these things move “unlike anything I had seen” after decades in the air.</p>
-        
-            <h2 style="color: #f59e0b; border-bottom: 3px solid #f59e0b; padding-bottom: 8px; margin: 35px 0 18px;">What the Latest Release Shows</h2>
-            <ul style="padding-left: 20px; font-size: 1.1rem;">
-                <li>Six-pointed star-shaped object tracked by Indo-Pacific Command sensors over the Yellow Sea (2025)</li>
-                <li>Diamond-shaped craft spotted near a major nuclear weapons facility in Texas</li>
-                <li>2019 Gulf of America infrared video showing high-speed anomalous movement</li>
-                <li>“Maroonish” deformed balloon-like object from 2020 that still has no explanation</li>
-                <li>More Cold War-era and Apollo-related reports now fully public</li>
-            </ul>
-        
-            <!-- Image Placeholder -->
-            <img src="https://i.pinimg.com/736x/dc/7b/82/dc7b82e0155d3b2ec1ab5fa21576a9b4.jpg" alt="Mysterious girl looking up at the night sky" style="width: 100%; height: auto; border-radius: 16px; margin: 25px 0 8px; box-shadow: 0 10px 30px -10px rgba(245,158,11,0.5);">
-            <p style="text-align: center; font-size: 0.85rem; color: #94a3b8;">Keep your eyes on the skies… (Stan News)</p>
-            <p style="text-align: center; font-size: 0.85rem; color: #94a3b8;">Infrared capture of a UAP from military sensors (declassified July 10, 2026)</p>
-        
-            <h2 style="color: #f59e0b; margin: 40px 0 15px;">Watch the New Videos from the 4th Batch</h2>
-            
-            <p style="margin-bottom: 12px; font-weight: 600;">Full compilation of the latest 19 videos + expert breakdown:</p>
-            
-            <!-- YouTube Embed 1 -->
-            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3); margin-bottom: 10px;">
-                <iframe 
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
-                    src="https://www.youtube.com/embed/Bg-aBR2f0rk?rel=0&amp;modestbranding=1&amp;playsinline=1" 
-                    title="All videos from Pentagon's 4th UFO files release (July 2026)" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    allowfullscreen
-                    referrerpolicy="strict-origin-when-cross-origin">
-                </iframe>
-            </div>
-            <p style="text-align: center; font-size: 0.85rem; color: #94a3b8; margin-bottom: 30px;">
-                Credit: Face the Nation / CBS • <a href="https://www.youtube.com/watch?v=Bg-aBR2f0rk" target="_blank" style="color:#f59e0b;">Watch directly on YouTube</a>
-            </p>
-        
-            <p style="margin-bottom: 12px; font-weight: 600;">NewsNation coverage of the 4th batch drop:</p>
-            
-            <!-- YouTube Embed 2 -->
-            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3); margin-bottom: 25px;">
-                <iframe 
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
-                    src="https://www.youtube.com/embed/CZOZ3gnbk1w?rel=0&amp;modestbranding=1&amp;playsinline=1" 
-                    title="Pentagon releases fourth batch of UFO files - NewsNation" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    allowfullscreen
-                    referrerpolicy="strict-origin-when-cross-origin">
-                </iframe>
-            </div>
-            <p style="text-align: center; font-size: 0.85rem; color: #94a3b8;">
-                Credit: NewsNation • <a href="https://www.youtube.com/watch?v=CZOZ3gnbk1w" target="_blank" style="color:#f59e0b;">Watch directly on YouTube</a>
-            </p>
-        
-            <h2 style="color: #f59e0b; margin: 40px 0 15px;">Local NJ Angle + Public Reaction</h2>
-            <p>Jersey stays hot for weird skies — Toms River still leads the state in reported sightings. These new clips keep the mystery alive with no conventional explanation for several of them. President Trump’s transparency push is still rolling, and officials say more batches are coming.</p>
-        
-            <blockquote style="border-left: 5px solid #f59e0b; padding-left: 20px; margin: 25px 0; font-style: italic; color: #cbd5e1;">
-                “This is part of the ongoing transparency initiative. We’re releasing what we can.” — Pentagon officials
-            </blockquote>
-        
-            <p style="margin-top: 30px;"><strong>Full archive is live and growing:</strong> <a href="https://www.war.gov/ufo/" target="_blank" style="color: #f59e0b; text-decoration: underline;">https://www.war.gov/ufo/</a> (new files added on a rolling basis)</p>
-        
-            <p style="background: #1e2937; padding: 20px; border-radius: 12px; border-left: 6px solid #f59e0b; margin: 30px 0;">
-                <strong>Stan News Tip:</strong> If you spot something shiny, star-shaped, or diamond-like floating over Pennsauken, Camden, or the Turnpike — snap it and send it our way. We’re building the official South Jersey X-Files. Keep your eyes up, mi gente.
-            </p>
-            <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ea7cb104-c2d8-4e3b-b4fb-6bb1e7b197fb/da0rhoc-fae07efa-ed28-471e-84b2-70365fe995d5.jpg/v1/fill/w_720,h_1080,q_75,strp/cosplay_star_wars___original_sith_by_disharmonica_da0rhoc-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTA4MCIsInBhdGgiOiIvZi9lYTdjYjEwNC1jMmQ4LTRlM2ItYjRmYi02YmIxZTdiMTk3ZmIvZGEwcmhvYy1mYWUwN2VmYS1lZDI4LTQ3MWUtODRiMi03MDM2NWZlOTk1ZDUuanBnIiwid2lkdGgiOiI8PTcyMCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.ynvR6bPTLa0xdUfKxfSuBW3ZeO_xVdjOKX-OhJ44rc8" alt="Mysterious girl looking up at the night sky" style="width: 100%; height: auto; border-radius: 16px; margin: 25px 0 8px; box-shadow: 0 10px 30px -10px rgba(245,158,11,0.5);">
-        
-        </div>  
-    </div>
+    {% endif %}
+    {% endfor %}
+
     <div style="display: flex;justify-content: center;align-items: center;flex-direction:column;text-align:center;">
         <h1 style="font-size:xx-large"><b>Rat Boy Cronicles!</b><br>Episode 2</h1>
         <div>
@@ -148,71 +84,6 @@ Home Page
         </video>
     </div>
     </div>
-
-<div style="display: flex;justify-content: center;align-items: center;">
-    <div style="max-width: 900px; margin:20px; font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.7; color: #e0e0e0; background: linear-gradient(180deg, #0a1628 0%, #1a2744 100%); padding: 30px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4); overflow: hidden; border-top: 5px solid #ed1c24;">
-
-        <!-- Hero Header -->
-        <div style="text-align: center; margin-bottom: 25px;">
-            <div style="display: inline-flex; align-items: center; background: linear-gradient(90deg, #ed1c24, #0050f0); color: white; font-size: 14px; font-weight: 700; padding: 6px 18px; border-radius: 9999px; margin-bottom: 12px; letter-spacing: 0.5px;">🇵🇷 COMING UP • JUNE 28, 2026</div>
-            <h1 style="font-size: 2.6rem; line-height: 1.1; font-weight: 800; margin: 0 0 12px; color: white; text-shadow: 0 4px 20px rgba(237, 28, 36, 0.4);">69th Annual San Juan Bautista Parade Hits Camden — America's Original Puerto Rican Day Celebration Returns!</h1>
-            <p style="font-size: 1.1rem; color: #cbd5e1; margin: 0; max-width: 700px; margin-left: auto; margin-right: auto;">Broadway comes alive this Sunday with flags, music, food, and the baddest Boricua beauties south of the Ben Franklin Bridge</p>
-        </div>
-
-        <!-- Official Site Banner -->
-        <a href="https://sjbp.org/" target="_blank" style="display: block; background: #1a2744; border: 2px solid #ed1c24; border-radius: 12px; padding: 12px 20px; text-align: center; color: white; text-decoration: none; font-weight: 600; margin-bottom: 25px; transition: all 0.3s ease;">
-            🎉 Official Parade Site → sjbp.org
-        </a>
-
-        <!-- Hero Image -->
-        <img src="{% static 'news/pr_parade_hero.jpg' %}" alt="Puerto Rican parade celebration on Broadway in Camden NJ with flags and festive dancers" style="width: 100%; height: auto; border-radius: 16px; margin: 0 0 8px; box-shadow: 0 10px 30px -10px rgba(237,28,36,0.5);">
-        <p style="text-align: center; font-size: 0.85rem; color: #94a3b8; margin-top: 0;">The 69th Annual San Juan Bautista Parade returns to Broadway, Camden — Sunday, June 28, 2026 (Stan News)</p>
-
-        <p style="margin-top: 30px;"><strong>CAMDEN, NJ</strong> — Mark your calendars, mi gente. The <strong>69th Annual San Juan Bautista Parade and Concert</strong> rolls down Broadway this <strong>Sunday, June 28, 2026</strong>, kicking off at <strong>12:00 PM</strong>. Presented by Parada San Juan Bautista Inc., this is no ordinary block party — it's America's <em>first</em> Puerto Rican Day Parade, running strong since June 28, 1957. Nearly seven decades of pride, perreo, and plena on the streets of Camden.</p>
-
-        <h2 style="color: #ed1c24; border-bottom: 3px solid #0050f0; padding-bottom: 8px; margin: 35px 0 18px;">What You Need to Know</h2>
-        <ul style="padding-left: 20px; font-size: 1.1rem;">
-            <li><strong>When:</strong> Sunday, June 28, 2026 — Parade starts at 12:00 PM, festival runs until 5:00 PM</li>
-            <li><strong>Where:</strong> Broadway, Camden City, NJ 08103</li>
-            <li><strong>Who:</strong> Parada San Juan Bautista Inc. — the org that's been holding it down since '57</li>
-            <li><strong>Parade Info:</strong> (856) 757-9600</li>
-            <li><strong>Festival Info:</strong> (609) 220-7880</li>
-        </ul>
-
-        <!-- Flag Image -->
-        <img src="{% static 'news/pr_parade_flag.jpg' %}" alt="Puerto Rican flag waving at the Camden parade with festive dancers in the background" style="width: 100%; height: auto; border-radius: 16px; margin: 25px 0 8px; box-shadow: 0 10px 30px -10px rgba(0,80,240,0.5);">
-        <p style="text-align: center; font-size: 0.85rem; color: #94a3b8;">La bandera — front and center on Broadway (Stan News)</p>
-
-        <h2 style="color: #ed1c24; margin: 40px 0 15px;">The Flyest on the Floats</h2>
-        <p>Every year the parade brings out Camden's finest — and this year's lineup is already generating buzz. We're talking Boricua beauties in custom parade fits, flags on flags, and enough salsa energy to shake the Walt Whitman Bridge. No tattoos, all class, all culture. These ladies represent what the parade is really about: pride, community, and looking absolutely fire while doing it.</p>
-
-        <!-- Beauty Gallery -->
-        <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin: 25px 0;">
-            <div style="flex: 1; min-width: 280px; max-width: 420px;">
-                <img src="{% static 'news/pr_parade_beauty1.jpg' %}" alt="Puerto Rican parade participant holding the flag on Broadway Camden" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -8px rgba(237,28,36,0.4);">
-                <p style="text-align: center; font-size: 0.8rem; color: #94a3b8; margin-top: 6px;">Flag bearer on Broadway</p>
-            </div>
-            <div style="flex: 1; min-width: 280px; max-width: 420px;">
-                <img src="{% static 'news/pr_parade_beauty2.jpg' %}" alt="Puerto Rican parade dancers in festive red white and blue outfits Camden NJ" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 25px -8px rgba(0,80,240,0.4);">
-                <p style="text-align: center; font-size: 0.8rem; color: #94a3b8; margin-top: 6px;">Parade contingent ready to march</p>
-            </div>
-        </div>
-
-        <h2 style="color: #ed1c24; margin: 40px 0 15px;">More Than a Parade</h2>
-        <p>The San Juan Bautista Parade isn't just a walk down Broadway — it's a full-on cultural takeover. Expect live music, food vendors slinging pernil and alcapurrias, dance troupes, community organizations, and a concert that keeps the party going into the evening. The Parada San Juan Bautista Scholarship Fund has helped 145 Camden students pay for college since 1982, awarding $12,000 in scholarships every year.</p>
-
-        <blockquote style="border-left: 5px solid #ed1c24; padding-left: 20px; margin: 25px 0; font-style: italic; color: #cbd5e1;">
-            "This parade is Camden's heartbeat. Every year we come back stronger, louder, and prouder. ¡Wepa!" — Parada San Juan Bautista Inc.
-        </blockquote>
-
-        <p>Want to march? Register your contingent at <a href="https://sjbp.org/register-for-the-parade/" target="_blank" style="color: #ed1c24; text-decoration: underline;">sjbp.org/register-for-the-parade</a>. Need to volunteer? They'll put you to work. And if you're just coming to vibe — bring your flag, wear your colors, and get ready to turn Broadway into the hottest block in South Jersey.</p>
-
-        <p style="margin-top: 30px; text-align: center; font-size: 1.2rem;"><strong>🇵🇷 ¡WEPA! See you on Broadway — June 28, 2026 🇵🇷</strong></p>
-
-        <p style="margin-top: 15px; text-align: center;"><strong>Full details:</strong> <a href="https://sjbp.org/" target="_blank" style="color: #ed1c24; text-decoration: underline;">https://sjbp.org/</a> • <a href="https://www.camdencounty.com/event/68th-annual-san-juan-bautista-parade-and-concert/" target="_blank" style="color: #0050f0; text-decoration: underline;">Camden County Event Page</a></p>
-
-    </div>
-</div>
 
 <!--start here-->
 <div style="display: flex;justify-content: center;align-items:center;flex-direction: column;">
@@ -229,97 +100,6 @@ Home Page
         Your browser does not support the video tag.
     </video>
 
-</div>
-<div style="display: flex;justify-content: center;align-items: center;">
-    <div style="max-width: 900px; margin:20px; font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.7; color: #e0e0e0; background: linear-gradient(180deg, #0f172a 0%, #1e2937 100%); padding: 30px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4); overflow: hidden;">
-
-        <!-- Hero Header -->
-        <div style="text-align: center; margin-bottom: 25px;">
-            <div style="display: inline-flex; align-items: center; background: #f59e0b; color: #0f172a; font-size: 14px; font-weight: 700; padding: 6px 18px; border-radius: 9999px; margin-bottom: 12px; letter-spacing: 0.5px;">BREAKING • MAY 14, 2026</div>
-            <h1 style="font-size: 2.8rem; line-height: 1.1; font-weight: 800; margin: 0 0 12px; color: white; text-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);">Pentagon Drops Historic UFO/UAP Files: Trump’s Transparency Bombshell Goes Viral</h1>
-            <p style="font-size: 1.1rem; color: #cbd5e1; margin: 0; max-width: 700px; margin-left: auto; margin-right: auto;">Over 170 declassified documents, 28 never-before-seen videos, and decades of military sightings now public on war.gov/ufo</p>
-        </div>
-    
-        <!-- Official Site Banner -->
-        <a href="https://www.war.gov/ufo/" target="_blank" style="display: block; background: #1e2937; border: 2px solid #f59e0b; border-radius: 12px; padding: 12px 20px; text-align: center; color: white; text-decoration: none; font-weight: 600; margin-bottom: 25px; transition: all 0.3s ease;">
-            📂 Explore the Full Official Archive → war.gov/ufo
-        </a>
-    
-        <!-- Hero Image -->
-    
-        <p style="text-align: center; font-size: 0.85rem; color: #94a3b8; margin-top: 0;">Declassified Pentagon UAP files and imagery released May 8, 2026 (U.S. Department of War)</p>
-    
-        <p style="margin-top: 30px;"><strong>WASHINGTON, D.C.</strong> — In one of the most significant government disclosures in decades, the Pentagon on May 8, 2026, began releasing a massive trove of previously classified files on Unidentified Anomalous Phenomena (UAPs) — the modern term for UFOs. Ordered directly by President Donald Trump, the first batch includes over 170 documents, photos, and 28 high-resolution videos spanning from the 1940s to 2024.</p>
-    
-        <h2 style="color: #f59e0b; border-bottom: 3px solid #f59e0b; padding-bottom: 8px; margin: 35px 0 18px;">What the Release Reveals</h2>
-        <ul style="padding-left: 20px; font-size: 1.1rem;">
-            <li>Metallic oval objects, hovering spheres, and high-speed anomalies captured by military pilots and sensors</li>
-            <li>Cold War-era reports of rotating “flying discs” and mysterious lights over military bases</li>
-            <li>Apollo mission footage and transcripts showing unexplained phenomena on the Moon</li>
-            <li>Never-before-seen infrared videos of football-shaped craft with impossible maneuvers</li>
-            <li>28 declassified videos totaling over 40 minutes — none explained as conventional aircraft</li>
-        </ul>
-    
-        <!-- Image 2 -->
-        <img src="https://pbs.twimg.com/media/HIQLMFSXsAAze5s.jpg" alt="UAP infrared footage from Pentagon release" style="width: 100%; height: auto; border-radius: 16px; margin: 25px 0 8px; box-shadow: 0 10px 30px -10px rgba(245,158,11,0.5);">
-        <p style="text-align: center; font-size: 0.85rem; color: #94a3b8;">Infrared capture of a UAP from military sensors (declassified May 8, 2026)</p>
-    
-        <h2 style="color: #f59e0b; margin: 40px 0 15px;">Watch the Most Compelling Declassified Videos</h2>
-        
-        <p style="margin-bottom: 12px; font-weight: 600;">Full compilation of all 28 released UAP videos (Space.com supercut):</p>
-        
-        <!-- FIXED & IMPROVED EMBED #1 -->
-        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3); margin-bottom: 10px;">
-            <iframe 
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
-                src="https://www.youtube.com/embed/3bepozDGheY?rel=0&amp;modestbranding=1&amp;playsinline=1" 
-                title="All the UFO videos from Pentagon's May 8, 2026 release (Space.com)" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowfullscreen
-                referrerpolicy="strict-origin-when-cross-origin">
-            </iframe>
-        </div>
-        <p style="text-align: center; font-size: 0.85rem; color: #94a3b8; margin-bottom: 30px;">
-            Credit: U.S. Department of War / Space.com • <a href="https://www.youtube.com/watch?v=3bepozDGheY" target="_blank" style="color:#f59e0b;">Watch directly on YouTube (backup link)</a>
-        </p>
-    
-        <p style="margin-bottom: 12px; font-weight: 600;">CBS News — 6 standout videos from the drop:</p>
-        
-        <!-- FIXED & IMPROVED EMBED #2 -->
-        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3); margin-bottom: 25px;">
-            <iframe 
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
-                src="https://www.youtube.com/embed/sLChKGmOF-U?rel=0&amp;modestbranding=1&amp;playsinline=1" 
-                title="CBS News: 6 standout videos from Pentagon's May 2026 UFO release" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowfullscreen
-                referrerpolicy="strict-origin-when-cross-origin">
-            </iframe>
-        </div>
-        <p style="text-align: center; font-size: 0.85rem; color: #94a3b8;">
-            Credit: CBS News • <a href="https://www.youtube.com/watch?v=sLChKGmOF-U" target="_blank" style="color:#f59e0b;">Watch directly on YouTube (backup link)</a>
-        </p>
-    
-        <!-- Image 3 -->
-        <img src="https://pbs.twimg.com/media/HIQLMbuXsAAs_4k.jpg" alt="Declassified Apollo mission UAP sighting" style="width: 100%; height: auto; border-radius: 16px; margin: 30px 0 8px; box-shadow: 0 10px 30px -10px rgba(245,158,11,0.5);">
-        <p style="text-align: center; font-size: 0.85rem; color: #94a3b8;">Apollo 12 mission image highlighting unidentified phenomena (now public)</p>
-    
-        <h2 style="color: #f59e0b; margin: 40px 0 15px;">Public & Expert Reaction</h2>
-        <p>The release has ignited worldwide interest. While no definitive proof of extraterrestrial life was found, many cases remain “unresolved” with no conventional explanation. President Trump encouraged Americans to “make up their own minds” after reviewing the materials. Skeptics cite possible drones or optical effects, but military pilots and analysts say some footage defies known technology.</p>
-    
-        <blockquote style="border-left: 5px solid #f59e0b; padding-left: 20px; margin: 25px 0; font-style: italic; color: #cbd5e1;">
-            “This is the most transparent the U.S. government has ever been on UAPs. The American people can now see for themselves.” — Pentagon Public Affairs
-        </blockquote>
-    
-        <p style="margin-top: 30px;"><strong>Full archive is live and growing:</strong> <a href="https://www.war.gov/ufo/" target="_blank" style="color: #f59e0b; text-decoration: underline;">https://www.war.gov/ufo/</a> (new files added on a rolling basis)</p>
-    
-    
-    
-    
-    
-    </div>  
 </div>
 
 <div style="display: flex;justify-content: center;align-items:center;flex-direction: column;">
@@ -340,55 +120,6 @@ Home Page
     
 </div>
 
-
-<div class="story-container" style="max-width: 800px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #222;">
-    
-    <h1 style="font-size: 2.4rem; margin-bottom: 10px; color: #0033a0;">The Great Pepsi Pennsauken Bubble Mystery</h1>
-    
-    <p style="color: #666; font-style: italic; margin-bottom: 30px; font-size: 1.1rem;">
-        By Stan Reporter • Pennsauken, NJ
-    </p>
-
-    <div style="border-left: 5px solid #0033a0; padding-left: 20px; margin-bottom: 30px; font-size: 1.15rem; color: #444;">
-        PENNSAUKEN, NJ — Workers at the Pepsi-Cola & National Brand Beverages plant on North Crescent Boulevard thought it was just another loud Tuesday on the bottling line.
-    </div>
-
-    <p>Then the bubbles started acting weird.</p>
-
-    <p>At around 10:45 a.m., every single can of Pepsi rolling off the line began producing massive, perfectly round bubbles that refused to pop. Not foam. Not fizz. These were shiny, basketball-sized bubbles that floated gently toward the ceiling like they were filled with helium instead of carbonation.</p>
-
-    <p>Line supervisor Maria Gonzalez grabbed her phone and started filming as one bubble lifted a half-full case of Mountain Dew three feet in the air before gently setting it back down.</p>
-
-    <blockquote style="background: #f8f9fa; border-left: 6px solid #0070f3; padding: 20px; margin: 25px 0; font-style: italic; color: #333;">
-        “It looked like the soda was throwing a party and we weren’t invited,” she told Stan News.
-    </blockquote>
-
-    <p>By lunchtime, the entire warehouse was filled with floating Pepsi bubbles. Delivery drivers walked in, got trapped in a bubble cluster, and emerged laughing uncontrollably with giant smiles on their faces.</p>
-
-    <p>One veteran truck driver, who’s been hauling Pepsi out of Pennsauken for 22 years, said: “I’ve seen flat soda, I’ve seen exploding soda, but I’ve never seen soda that wants to fly.”</p>
-
-    <h2 style="color: #0033a0; margin-top: 35px;">Local Theories Went Wild</h2>
-    <ul style="padding-left: 20px; line-height: 1.8;">
-        <li>A kid from nearby Camden swore it was “the ghost of the old Coca-Cola plant getting revenge.”</li>
-        <li>A mechanic blamed it on “too much Jersey humidity mixing with the secret Pepsi formula.”</li>
-        <li>One conspiracy enthusiast claimed Pepsi had finally perfected “anti-gravity cola.”</li>
-    </ul>
-
-    <p>By 4 p.m. the bubbles finally started popping — and when they did, they released the strongest, freshest Pepsi scent the workers had ever smelled. Several employees said it was better than the first sip on a hot summer day.</p>
-
-    <p style="background: #e3f2fd; padding: 20px; border-radius: 8px; border-left: 5px solid #2196f3; margin: 30px 0;">
-        <strong>Stan News Tip:</strong> If you spot a stray Pepsi bubble floating over Pennsauken or Camden, snap a picture and send it our way. We’re collecting evidence for the official “Bubble Files.”
-    </p>
-
-    <p style="font-size: 1.1rem; margin-top: 40px; text-align: center; color: #555;">
-        Next time you crack open a cold Pepsi from the Pennsauken plant… take a second to listen. 
-        <strong>You might just hear it whispering, “Want to float today?”</strong>
-    </p>
-
-    <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #888; font-size: 0.95rem;">
-        © Stan News • stannews.onrender.com
-    </div>
-</div>
 
     <div style="text-align:center;">
         <h1>Need to know this weeks Expirations...<br> <a href="{% url 'exp' %}">Click Here</a></h1>
