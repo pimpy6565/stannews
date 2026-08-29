@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import chats
+from .models import chats, Story
 from django.core.mail import send_mail
 import threading
 
@@ -56,7 +56,8 @@ def msg(request):
 
 
 def index(request):
-    return render(request, 'news/index.html')
+    stories = Story.objects.filter(is_published=True).order_by("-published_at")
+    return render(request, "news/index.html", {"stories": stories})
 
 
 def About(request):
