@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+
 
 # Create your models here.
 class chats(models.Model):
@@ -33,3 +35,21 @@ class Story(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class UsernameSub(models.Model):
+    username = models.CharField(max_length=150, unique=True)
+    is_free = models.BooleanField(default=False, help_text="Works with no Zelle.")
+    paid_until = models.DateTimeField(null=True, blank=True)
+    last_marked_at = models.DateTimeField(null=True, blank=True)
+    note = models.CharField(max_length=200, blank=True)
+
+    def is_active(self):
+        if self.is_free:
+            return True
+        if self.paid_until and self.paid_until > timezone.now():
+            return True
+        return False
+
+    def __str__(self):
+        return self.username
