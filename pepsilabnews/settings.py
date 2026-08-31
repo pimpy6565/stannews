@@ -31,7 +31,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*fjd$int7k0$q3-vd=y7vwtw5konr8!-&urwn8js^ar&la!iq+'
+from django.core.exceptions import ImproperlyConfigured
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    raise ImproperlyConfigured("SECRET_KEY must be set in the environment")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
