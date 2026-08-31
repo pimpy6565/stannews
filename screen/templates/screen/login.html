@@ -6,19 +6,19 @@
     <title>Sign in • Lab Operations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
         
         body {
-            font-family: 'Inter', system_ui, -apple-system, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
         .font-display {
-            font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif;
+            font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
             letter-spacing: -0.04em;
         }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200 min-h-screen flex items-center justify-center p-6">
-    {% load widget_tweaks %}
+    
     <div class="w-full max-w-md">
         <!-- Branding -->
         <div class="flex justify-center mb-8">
@@ -27,7 +27,7 @@
                     <span class="text-white text-4xl font-bold tracking-tighter">P</span>
                 </div>
                 <div>
-                    <a href="{% url 'index' %}" class="font-display text-3xl tracking-tighter font-semibold hover:text-red-400 transition-colors">Pepsi Pennsauken</a>
+                    <a href="/" class="font-display text-3xl tracking-tighter font-semibold hover:text-red-400 transition-colors">Pepsi Pennsauken</a>
                     <div class="text-red-500 text-xs tracking-[2px] -mt-1 font-medium">LAB OPERATIONS</div>
                 </div>
             </div>
@@ -35,7 +35,7 @@
 
         <!-- Quick link back -->
         <div class="text-center mb-4">
-            <a href="{% url 'index' %}" class="text-xs text-zinc-400 hover:text-zinc-200 inline-flex items-center gap-x-1">
+            <a href="/" class="text-xs text-zinc-400 hover:text-zinc-200 inline-flex items-center gap-x-1">
                 ← Back to Main Site
             </a>
         </div>
@@ -50,34 +50,31 @@
                 {% csrf_token %}
 
                 {% if form.errors %}
-                    <div class="mb-5 p-4 bg-red-950/60 border border-red-900 rounded-2xl text-red-400 text-sm">
-                        {% for field, errors in form.errors.items %}
-                            {% for error in errors %}
-                                <div>{{ error }}</div>
-                            {% endfor %}
-                        {% endfor %}
-                    </div>
+                <p class="mb-4 text-sm text-red-400">Username or password is wrong, or this username is not paid this month.</p>
                 {% endif %}
-                
+
                 <div class="space-y-5">
                     <div>
                         <label class="block text-xs font-medium text-zinc-400 mb-1.5 tracking-wider">USERNAME</label>
-                        {{ form.username|add_class:"w-full bg-zinc-950 border border-zinc-700 focus:border-red-600/70 rounded-2xl py-3.5 px-5 text-lg placeholder:text-zinc-500 focus:outline-none" }}
+                        <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" class="w-full bg-zinc-950 border border-zinc-700 focus:border-red-600/70 rounded-2xl py-3.5 px-5 text-lg placeholder:text-zinc-500 focus:outline-none" required id="id_username">
                     </div>
 
                     <div>
                         <label class="block text-xs font-medium text-zinc-400 mb-1.5 tracking-wider">PASSWORD</label>
-                        {{ form.password|add_class:"w-full bg-zinc-950 border border-zinc-700 focus:border-red-600/70 rounded-2xl py-3.5 px-5 text-lg placeholder:text-zinc-500 focus:outline-none" }}
+                        <input type="password" name="password" autocomplete="current-password" class="w-full bg-zinc-950 border border-zinc-700 focus:border-red-600/70 rounded-2xl py-3.5 px-5 text-lg placeholder:text-zinc-500 focus:outline-none" required id="id_password">
                     </div>
                 </div>
 
-                {# Preserve redirect target after login #}
-                <input type="hidden" name="next" value="{{ next|default:'/screen' }}">
+                <input type="hidden" name="next" value="/screen">
 
                 <button type="submit"
                         class="mt-7 w-full bg-red-600 hover:bg-red-700 active:bg-red-800 transition font-semibold py-4 rounded-3xl text-lg tracking-[-0.2px]">
                     SIGN IN TO LAB OPS
                 </button>
+
+                <p class="mt-4 text-center text-sm text-zinc-400">
+                    Username needs $1/month Zelle. <a href="/username/" class="text-amber-400 hover:text-amber-300">Pay / instructions</a>
+                </p>
 
                 <div class="mt-6 text-center text-[10px] text-zinc-500">
                     This is an internal system. All access is logged.
@@ -86,7 +83,7 @@
         </div>
 
         <div class="text-center mt-6 text-xs text-zinc-600">
-            Pepsi Pennsauken • Confidential • Internal Use Only
+            Pepsi Pennsauken Lab Operations
         </div>
     </div>
 </body>
