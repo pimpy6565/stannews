@@ -1,11 +1,12 @@
 from django.urls import path,re_path
 from . import views
 from django.contrib.auth import views as auth_views
+from news.views import GatedLoginView
 
 from django.views.generic import TemplateView
 urlpatterns = [
     path("",views.screen,name='screen'),
-    path("login/", auth_views.LoginView.as_view(template_name="screen/login.html"), name="login"),
+    path("login/", GatedLoginView.as_view(), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("fix/",views.fix,name="fix"),
     path("page/<str:slug>",views.page,name="page"),

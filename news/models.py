@@ -33,3 +33,13 @@ class Story(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class UsernameSub(models.Model):
+    username = models.CharField(max_length=150, unique=True)
+    is_active = models.BooleanField(default=False)
+    is_free = models.BooleanField(default=False, help_text="Complimentary: skip Zelle.")
+    paid_until = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return self.username

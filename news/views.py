@@ -1,7 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import chats, Story
+from django.contrib.auth import logout
+from django.contrib.auth.views import LoginView
+from django.utils import timezone
+from .models import chats, Story, UsernameSub
 from django.core.mail import send_mail
 import threading
 
@@ -109,3 +112,33 @@ def illuminati(request):
         })
 
     return render(request, 'news/illuminati.html')
+
+
+def username_is_allowed(user):
+    if not user or not getattr(user, "is_authenticated", False):
+        return False
+    if user.is_staff or user.is_superuser:
+        return True
+    sub = UsernameSub.objects.filter(username__iexact=user.username).first()
+    return bool(sub and sub.is_active())
+
+
+def zelle_username(request):
+    user = request.user
+    if user.is_authenticated and username_is_allowed(user):
+        return redirect("/screen")
+    return render(request, "news/zelle_username.html", {
+        "needed": request.GET.get("needed") == "1",
+        "waiting": user.is_authenticated,
+    })
+
+
+class GatedLoginView(LoginView):
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return response
+        if not username_is_allowed(user):
+            return redirect("/username/?needed=1")
+        return response

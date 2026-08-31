@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import chats, Story
+from django.utils import timezone
+from datetime import timedelta
+from .models import chats, Story, UsernameSub
 
-# Register your models here.
 admin.site.register(chats)
 
 
@@ -12,3 +13,25 @@ class StoryAdmin(admin.ModelAdmin):
     search_fields = ("title", "kicker")
     date_hierarchy = "published_at"
     ordering = ("-published_at",)
+
+
+@admin.register(UsernameSub)
+class UsernameSubAdmin(admin.ModelAdmin):
+    list_display = ("username", "is_active", "is_free", "paid_until")
+    list_filter = ("is_active", "is_free")
+    search_fields = ("username",)
+    list_editable = ("is_free", "is_active")
+    actions = ["mark_zelle_received"]
+
+    @admin.action(description="Mark Zelle received (30 days)")
+    def mark_zelle_received(self, request, queryset):
+        now = timezone.now()
+        for row in queryset:
+            if row.is_free:
+                row.is_active = True
+                row.save(update_fields=["is_active"])
+                continue
+            start = row.paid_until if row.paid_until and row.paid_until > now else now
+            row.paid_until = start + timedelta(days=30)
+            row.is_active = True
+            row.save(update_fields=["paid_until", "is_active"])
