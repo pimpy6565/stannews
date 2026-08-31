@@ -1,6 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import logout
+from django.contrib.auth.views import LoginView
+from django.utils import timezone
 from .models import chats, Story, UsernameSub
 from django.core.mail import send_mail
 import threading
@@ -110,55 +113,32 @@ def illuminati(request):
 
     return render(request, 'news/illuminati.html')
 
-from datetime import timedelta
-from django.contrib.auth.views import LoginView
-from django.shortcuts import redirect
-from django.http import JsonResponse
-from django.utils import timezone
-
-ZELLE_PHONE = "8568130439"
-ZELLE_AMOUNT_USD = "1"
-
 
 def username_is_allowed(user):
     if not user or not getattr(user, "is_authenticated", False):
         return False
     if user.is_staff or user.is_superuser:
         return True
-    row = UsernameSub.objects.filter(username__iexact=user.username).first()
-    if row is None:
-        return False
-    if row.is_free:
-        return True
-    if not row.is_active:
-        return False
-    return row.paid_until is not None and row.paid_until > timezone.now()
-
-
-class GatedLoginView(LoginView):
-    template_name = "screen/login.html"
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        user = self.request.user
-        if username_is_allowed(user):
-            return response
-        return redirect("/username/?needed=1")
+    sub = UsernameSub.objects.filter(username__iexact=user.username).first()
+    return bool(sub and sub.is_active())
 
 
 def zelle_username(request):
     user = request.user
     if user.is_authenticated and username_is_allowed(user):
         return redirect("/screen")
-    claimed = False
-    if request.method == "POST" and user.is_authenticated:
-        UsernameSub.objects.get_or_create(username=user.username)
-        claimed = True
-    if request.GET.get("status") == "1":
-        return JsonResponse({"ok": True, "open": bool(user.is_authenticated and username_is_allowed(user))})
     return render(request, "news/zelle_username.html", {
-        "username": user.username if user.is_authenticated else "",
-        "claimed": claimed,
-        "zelle_phone": ZELLE_PHONE,
-        "zelle_amount": ZELLE_AMOUNT_USD,
+        "needed": request.GET.get("needed") == "1",
+        "waiting": user.is_authenticated,
     })
+
+
+class GatedLoginView(LoginView):
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return response
+        if not username_is_allowed(user):
+            return redirect("/username/?needed=1")
+        return response
