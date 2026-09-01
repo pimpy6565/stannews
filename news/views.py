@@ -115,12 +115,29 @@ def illuminati(request):
 
 
 def username_is_allowed(user):
+    """True if staff/superuser or UsernameSub grants access. Never raise."""
     if not user or not getattr(user, "is_authenticated", False):
         return False
     if user.is_staff or user.is_superuser:
         return True
-    sub = UsernameSub.objects.filter(username__iexact=user.username).first()
-    return bool(sub and sub.is_active())
+    try:
+        sub = UsernameSub.objects.filter(username__iexact=user.username).first()
+    except Exception:
+        # Schema mismatch or DB blip must not 500 login/paywall.
+        return False
+    if not sub:
+        return False
+    try:
+        if sub.is_free:
+            return True
+        if sub.paid_until is not None and sub.paid_until > timezone.now():
+            return True
+        active = sub.is_active
+        if callable(active):
+            return bool(active())
+        return bool(active)
+    except Exception:
+        return False
 
 
 def zelle_username(request):
