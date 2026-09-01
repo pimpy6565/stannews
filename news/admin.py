@@ -17,21 +17,25 @@ class StoryAdmin(admin.ModelAdmin):
 
 @admin.register(UsernameSub)
 class UsernameSubAdmin(admin.ModelAdmin):
-    list_display = ("username", "is_active", "is_free", "paid_until")
-    list_filter = ("is_active", "is_free")
+    list_display = ("username", "access_ok", "is_free", "paid_until", "last_marked_at")
+    list_filter = ("is_free",)
     search_fields = ("username",)
-    list_editable = ("is_free", "is_active")
+    list_editable = ("is_free",)
     actions = ["mark_zelle_received"]
+
+    @admin.display(boolean=True, description="Access OK")
+    def access_ok(self, obj):
+        return obj.is_active()
 
     @admin.action(description="Mark Zelle received (30 days)")
     def mark_zelle_received(self, request, queryset):
         now = timezone.now()
         for row in queryset:
             if row.is_free:
-                row.is_active = True
-                row.save(update_fields=["is_active"])
+                row.last_marked_at = now
+                row.save(update_fields=["last_marked_at"])
                 continue
             start = row.paid_until if row.paid_until and row.paid_until > now else now
             row.paid_until = start + timedelta(days=30)
-            row.is_active = True
-            row.save(update_fields=["paid_until", "is_active"])
+            row.last_marked_at = now
+            row.save(update_fields=["paid_until", "last_marked_at"])
