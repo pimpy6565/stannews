@@ -6,15 +6,12 @@ from news.views import GatedLoginView
 from django.views.generic import TemplateView
 urlpatterns = [
     path("",views.screen,name='screen'),
-    path("login/", GatedLoginView.as_view(), name="login"),
+    path("login/", GatedLoginView.as_view(template_name="screen/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("fix/",views.fix,name="fix"),
     path("page/<str:slug>",views.page,name="page"),
     path("qr",views.qrcodes,name="qr"),
     path("fill",views.fill,name="fill"),
-    path("throw/",views.throw_calc,name="throw"),
-    path("shiftlog/",views.shift_log,name="shiftlog"),
-    path("shiftlog/feed/",views.shift_log_feed,name="shiftlog_feed"),
     path('rando',views.rando,name='rando'),
     path("app/",views.app,name="app"),
     

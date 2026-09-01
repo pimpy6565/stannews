@@ -134,7 +134,6 @@ def zelle_username(request):
 
 
 class GatedLoginView(LoginView):
-    template_name = "screen/login.html"
     def form_valid(self, form):
         response = super().form_valid(form)
         user = self.request.user
