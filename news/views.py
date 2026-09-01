@@ -125,15 +125,25 @@ def username_is_allowed(user):
 
 def zelle_username(request):
     user = request.user
+    if request.GET.get("status") == "1":
+        return JsonResponse({"open": bool(user.is_authenticated and username_is_allowed(user))})
     if user.is_authenticated and username_is_allowed(user):
         return redirect("/screen")
+    claimed = False
+    if request.method == "POST" and user.is_authenticated:
+        claimed = True
     return render(request, "news/zelle_username.html", {
         "needed": request.GET.get("needed") == "1",
         "waiting": user.is_authenticated,
+        "claimed": claimed,
+        "zelle_amount": 1,
+        "zelle_phone": "8568130439",
+        "username": user.username if user.is_authenticated else "",
     })
 
 
 class GatedLoginView(LoginView):
+    template_name = "screen/login.html"
     def form_valid(self, form):
         response = super().form_valid(form)
         user = self.request.user
