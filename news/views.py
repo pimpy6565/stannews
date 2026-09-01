@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
 from django.utils import timezone
 from .models import chats, Story, UsernameSub
@@ -115,7 +115,6 @@ def illuminati(request):
 
 
 def username_is_allowed(user):
-    """True if staff/superuser or UsernameSub grants access. Never raise."""
     if not user or not getattr(user, "is_authenticated", False):
         return False
     if user.is_staff or user.is_superuser:
@@ -123,21 +122,16 @@ def username_is_allowed(user):
     try:
         sub = UsernameSub.objects.filter(username__iexact=user.username).first()
     except Exception:
-        # Schema mismatch or DB blip must not 500 login/paywall.
         return False
     if not sub:
         return False
-    try:
-        if sub.is_free:
-            return True
-        if sub.paid_until is not None and sub.paid_until > timezone.now():
-            return True
-        active = sub.is_active
-        if callable(active):
-            return bool(active())
-        return bool(active)
-    except Exception:
-        return False
+    if sub.is_free:
+        return True
+    if sub.paid_until is not None and sub.paid_until > timezone.now():
+        return True
+    return bool(sub.is_active)
+
+
 
 
 def zelle_username(request):
@@ -161,11 +155,10 @@ def zelle_username(request):
 
 class GatedLoginView(LoginView):
     template_name = "screen/login.html"
+
     def form_valid(self, form):
-        response = super().form_valid(form)
+        login(self.request, form.get_user())
         user = self.request.user
-        if user.is_staff or user.is_superuser:
-            return response
-        if not username_is_allowed(user):
-            return redirect("/username/?needed=1")
-        return response
+        if user.is_staff or user.is_superuser or username_is_allowed(user):
+            return redirect(self.get_success_url())
+        return redirect("/username/?needed=1")
