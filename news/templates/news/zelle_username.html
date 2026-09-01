@@ -24,6 +24,11 @@
         {% if waiting %}
         <p class="mb-6 text-sm text-zinc-300">You're signed in. This page lets you through automatically as soon as the $1 is marked paid.</p>
         {% endif %}
+        {% if claimed %}
+        <p class="mb-6 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-emerald-200 text-sm">
+            Claim saved. Waiting for admin to confirm…
+        </p>
+        {% endif %}
         <p class="text-zinc-400 mb-8 leading-relaxed">
             Username login needs $1 Zelle for the current 30 days. Public news stays free. Staff always get in.
         </p>
@@ -32,11 +37,30 @@
             <p class="font-display text-3xl text-amber-400 tracking-tight mb-4">8568130439</p>
             <p class="text-sm text-zinc-300 mb-2">Memo must be <strong class="text-white">your username</strong> — exact match.</p>
             <p class="text-sm text-zinc-500">After you send, wait. An admin marks “Zelle $1 received.” Then the username works for 30 days from that mark.</p>
+            {% if waiting %}
+            <form method="post" class="mt-6">
+                {% csrf_token %}
+                <button type="submit" class="w-full rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-semibold py-3">I sent the Zelle</button>
+            </form>
+            {% endif %}
         </div>
         <div class="flex flex-wrap gap-4 text-sm">
             <a href="/" class="text-amber-400 hover:text-amber-300">← Home</a>
             <a href="/screen/login/" class="text-zinc-400 hover:text-zinc-200">Lab login</a>
         </div>
     </div>
+    {% if waiting %}
+    <script>
+    async function checkPaid() {
+      try {
+        const r = await fetch("/username/?status=1", { credentials: "same-origin" });
+        const d = await r.json();
+        if (d.open) { window.location = "/screen"; }
+      } catch (e) {}
+    }
+    setInterval(checkPaid, 4000);
+    checkPaid();
+    </script>
+    {% endif %}
 </body>
 </html>
