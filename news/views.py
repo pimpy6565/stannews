@@ -145,13 +145,13 @@ def zelle_username(request):
         claimed = True
         send_sms_background(
             8568130439,
-            f"Stan News: {user.username} paid $1 Zelle. Mark them paid in admin.",
+            f"Stan News: {user.username} paid $2 Zelle. Mark them paid in admin.",
         )
     return render(request, "news/zelle_username.html", {
         "needed": request.GET.get("needed") == "1",
         "waiting": user.is_authenticated,
         "claimed": claimed,
-        "zelle_amount": 1,
+        "zelle_amount": 2,
         "zelle_phone": "8568130439",
         "username": user.username if user.is_authenticated else "",
     })
