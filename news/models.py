@@ -38,18 +38,9 @@ class Story(models.Model):
 
 class UsernameSub(models.Model):
     username = models.CharField(max_length=150, unique=True)
+    is_active = models.BooleanField(default=False)
     is_free = models.BooleanField(default=False, help_text="Complimentary: skip Zelle.")
     paid_until = models.DateTimeField(null=True, blank=True)
-    last_marked_at = models.DateTimeField(null=True, blank=True)
-    note = models.CharField(max_length=200, blank=True)
-
-    def is_active(self):
-        """True when free or paid_until is still in the future."""
-        if self.is_free:
-            return True
-        if self.paid_until and self.paid_until > timezone.now():
-            return True
-        return False
 
     def __str__(self):
         return self.username
