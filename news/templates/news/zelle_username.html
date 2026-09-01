@@ -18,11 +18,11 @@
         <h1 class="font-display text-4xl font-semibold mb-4">Username access</h1>
         {% if needed %}
         <p class="mb-6 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-amber-200 text-sm">
-            That username is not paid for this month. Send $1 Zelle, then wait for admin to mark it received.
+            That username is not paid for this month. Send ${{ zelle_amount }} Zelle, then wait for admin to mark it received.
         </p>
         {% endif %}
         {% if waiting %}
-        <p class="mb-6 text-sm text-zinc-300">You're signed in. This page lets you through automatically as soon as the $1 is marked paid.</p>
+        <p class="mb-6 text-sm text-zinc-300">You're signed in. This page lets you through automatically as soon as the ${{ zelle_amount }} is marked paid.</p>
         {% endif %}
         {% if claimed %}
         <p class="mb-6 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-emerald-200 text-sm">
@@ -30,13 +30,13 @@
         </p>
         {% endif %}
         <p class="text-zinc-400 mb-8 leading-relaxed">
-            Username login needs $1 Zelle for the current 30 days. Public news stays free. Staff always get in.
+            Username login needs ${{ zelle_amount }} Zelle for the current 30 days. Public news stays free. Staff always get in.
         </p>
         <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 mb-8">
-            <p class="text-sm text-zinc-400 mb-2">Send <span class="text-white font-semibold">$1 / month</span> via Zelle</p>
+            <p class="text-sm text-zinc-400 mb-2">Send <span class="text-white font-semibold">${{ zelle_amount }} / month</span> via Zelle</p>
             <p class="font-display text-3xl text-amber-400 tracking-tight mb-4">8568130439</p>
             <p class="text-sm text-zinc-300 mb-2">Memo must be <strong class="text-white">your username</strong> — exact match.</p>
-            <p class="text-sm text-zinc-500">After you send, wait. An admin marks “Zelle $1 received.” Then the username works for 30 days from that mark.</p>
+            <p class="text-sm text-zinc-500">After you send, wait. An admin marks “Zelle ${{ zelle_amount }} received.” Then the username works for 30 days from that mark.</p>
             {% if waiting %}
             <form method="post" class="mt-6">
                 {% csrf_token %}
