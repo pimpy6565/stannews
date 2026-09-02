@@ -17,6 +17,11 @@ urlpatterns = [
     
     path('search',views.search,name="search"),
     path('proxy/<path:path>', views.proxy_to_flask, name='proxy_to_flask'),
+    path("line/<int:n>/", views.line_mirror, name="line_mirror"),
+    path("line/<int:n>/video/", views.line_video, name="line_video"),
+    path("line/<int:n>/snap/", views.line_snap, name="line_snap"),
+    path("line/<int:n>/click/", views.line_click, name="line_click"),
+    path("line/<int:n>/type/", views.line_type, name="line_type"),
     path("throw/", views.throw_calc, name="throw"),
     path("shiftlog/", views.shift_log, name="shiftlog"),
     path("shiftlog/feed/", views.shift_log_feed, name="shiftlog_feed"),
