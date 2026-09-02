@@ -7,6 +7,8 @@ from io import BytesIO
 import base64
 from PIL import Image
 from random import uniform
+import os
+import json
 import requests
 from django.views.decorators.csrf import csrf_exempt
 from .models import Hplc, ThrowBatch, ShiftPost
@@ -49,7 +51,134 @@ def proxy_to_flask(request, path):
         return HttpResponse(f"Cannot connect to Flask: {str(e)}", status=502)
     except Exception as e:
         return HttpResponse(f"Proxy error: {str(e)}", status=502)
-    
+
+LINE_FLASK = {
+    1: os.environ.get("LINE1_FLASK_URL", "http://10.120.120.101:5050").rstrip("/"),
+    2: os.environ.get("LINE2_FLASK_URL", "http://10.120.120.249:5050").rstrip("/"),
+}
+
+
+def _flask_base(n):
+    return LINE_FLASK.get(int(n))
+
+
+@login_required
+@group_required("Lab Tech")
+def line_mirror(request, n):
+    if _flask_base(n) is None:
+        return HttpResponse("Unknown line", status=404)
+    return render(request, "screen/line_mirror.html", {"n": int(n)})
+
+
+def _one_jpeg(url):
+    r = requests.get(url, stream=True, timeout=12)
+    r.raise_for_status()
+    buf = b""
+    for chunk in r.iter_content(chunk_size=4096):
+        if not chunk:
+            continue
+        buf += chunk
+        start = buf.find(b"\xff\xd8")
+        end = buf.find(b"\xff\xd9")
+        if start != -1 and end != -1 and end > start:
+            r.close()
+            return buf[start:end + 2]
+        if len(buf) > 2_000_000:
+            break
+    r.close()
+    return None
+
+
+@login_required
+@group_required("Lab Tech")
+def line_snap(request, n):
+    base = _flask_base(n)
+    if not base:
+        return HttpResponse("Unknown line", status=404)
+    try:
+        jpeg = _one_jpeg(f"{base}/video_feed")
+        if not jpeg:
+            return HttpResponse("No frame", status=502)
+        return HttpResponse(jpeg, content_type="image/jpeg")
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"Line PC unreachable: {e}", status=502)
+
+
+@login_required
+@group_required("Lab Tech")
+def line_video(request, n):
+    base = _flask_base(n)
+    if not base:
+        return HttpResponse("Unknown line", status=404)
+    try:
+        response = requests.get(f"{base}/video_feed", stream=True, timeout=(5, 60))
+
+        def stream_content():
+            try:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        yield chunk
+            finally:
+                response.close()
+
+        return StreamingHttpResponse(
+            stream_content(),
+            status=response.status_code,
+            content_type=response.headers.get("Content-Type", "multipart/x-mixed-replace; boundary=frame"),
+        )
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"Line PC unreachable: {e}", status=502)
+
+
+@login_required
+@group_required("Lab Tech")
+@csrf_exempt
+def line_click(request, n):
+    base = _flask_base(n)
+    if not base:
+        return JsonResponse({"error": "Unknown line"}, status=404)
+    if request.method != "POST":
+        return JsonResponse({"error": "POST only"}, status=405)
+    try:
+        r = requests.post(
+            f"{base}/click",
+            headers={"Content-Type": "application/json"},
+            data=request.body,
+            timeout=8,
+        )
+        try:
+            payload = r.json()
+        except Exception:
+            payload = {"status": r.text}
+        return JsonResponse(payload, status=r.status_code)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"error": f"Line PC unreachable: {e}"}, status=502)
+
+
+@login_required
+@group_required("Lab Tech")
+@csrf_exempt
+def line_type(request, n):
+    base = _flask_base(n)
+    if not base:
+        return JsonResponse({"error": "Unknown line"}, status=404)
+    if request.method != "POST":
+        return JsonResponse({"error": "POST only"}, status=405)
+    try:
+        r = requests.post(
+            f"{base}/type",
+            headers={"Content-Type": "application/json"},
+            data=request.body,
+            timeout=8,
+        )
+        try:
+            payload = r.json()
+        except Exception:
+            payload = {"status": r.text}
+        return JsonResponse(payload, status=r.status_code)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"error": f"Line PC unreachable: {e}"}, status=502)
+
 @login_required
 @group_required("Hplc")
 def screen(request):
