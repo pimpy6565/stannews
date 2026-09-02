@@ -489,14 +489,14 @@
             if (line1Btn) {
                 line1Btn.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
-                    openUp("http://10.120.120.101:5050");
+                    openUp("{% url 'line_mirror' 1 %}");
                 });
             }
 
             if (line2Btn) {
                 line2Btn.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
-                    openUp("http://10.120.120.249:5050");
+                    openUp("{% url 'line_mirror' 2 %}");
                 });
             }
 
@@ -531,7 +531,7 @@
             if (line1) {
                 // Lab Tech user
                 setActive(line1);
-                openUp("http://10.120.120.101:5050");
+                openUp("{% url 'line_mirror' 1 %}");
             } else if (hplc) {
                 // Regular HPLC / operator user
                 setActive(hplc);
