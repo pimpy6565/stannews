@@ -234,6 +234,13 @@
     <nav class="lab-tab-bar max-w-[1600px] mx-auto w-full" role="tablist">
         {% for group in user.groups.all %}
         {% if group.name == "Lab Tech" %}
+            <button id="syrup_tanks"
+                    class="lab-tab"
+                    role="tab"
+                    aria-selected="false">
+                <span class="tab-icon">🛢️</span>
+                <span>Syrup Tanks</span>
+            </button>
             <button id="line1" 
                     class="lab-tab"
                     role="tab"
@@ -494,6 +501,14 @@
             }
 
             // Lab Tech only listeners (only exist for those users)
+            const syrupTanksBtn = document.getElementById("syrup_tanks");
+            if (syrupTanksBtn) {
+                syrupTanksBtn.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("http://10.120.120.100:5050");
+                });
+            }
+
             if (line1Btn) {
                 line1Btn.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
