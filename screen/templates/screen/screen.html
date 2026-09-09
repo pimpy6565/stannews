@@ -273,6 +273,13 @@
             <span class="tab-icon">🥤</span>
             </span>Game</span>
         </button>
+            <button id="ionwake"
+                    class="lab-tab"
+                    role="tab"
+                    aria-selected="false">
+                <span class="tab-icon">🌌</span>
+                <span>IONWAKE</span>
+            </button>
         {% endif %}
         {% endfor %}
 
@@ -471,6 +478,7 @@
             const line1Btn = document.getElementById("line1");
             const line2Btn = document.getElementById("line2");
             const game = document.getElementById("game");
+            const ionwake = document.getElementById("ionwake");
             if (fixBtn) {
                 fixBtn.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
@@ -519,6 +527,12 @@
                 game.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
                     openUp("{% url 'game' %}");
+                });
+            }
+            if (ionwake) {
+                ionwake.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("https://cloud-apex-blend-spruce.grok.me");
                 });
             }
         }
