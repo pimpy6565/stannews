@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -554,13 +555,13 @@
 
         // Set correct initial state (Lab Tech vs regular operator)
         function setInitialState() {
-            const line1 = document.getElementById("line1");
+            const syrup = document.getElementById("syrup_tanks");
             const hplc = document.getElementById("hplc_search");
 
-            if (line1) {
-                // Lab Tech user
-                setActive(line1);
-                openUp("http://10.120.120.101:5050");
+            if (syrup) {
+                // Lab Tech user — default to Syrup Tanks
+                setActive(syrup);
+                openUp("http://10.120.120.100:5050");
             } else if (hplc) {
                 // Regular HPLC / operator user
                 setActive(hplc);
