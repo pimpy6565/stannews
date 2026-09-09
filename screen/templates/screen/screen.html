@@ -248,10 +248,23 @@
                 <span class="tab-icon">🥤</span>
                 <span><span class="hidden sm:inline">Blender </span>Line 2</span>
             </button>
-            <button id="throw" class="lab-tab" role="tab" aria-selected="false">
+
+            <button id="throw" 
+                    class="lab-tab"
+                    role="tab"
+                    aria-selected="false">
                 <span class="tab-icon">🧮</span>
                 <span><span class="hidden sm:inline">Throw </span>Calc</span>
             </button>
+
+            <button id="shiftlog" 
+                    class="lab-tab"
+                    role="tab"
+                    aria-selected="false">
+                <span class="tab-icon">📝</span>
+                <span>Shift log</span>
+            </button>
+
 
             <button id="game" 
             class="lab-tab"
@@ -428,8 +441,14 @@
                     const btn = document.getElementById('line2');
                     if (btn) btn.click();
                 }
+
                 if (e.key.toLowerCase() === 't') {
                     const btn = document.getElementById('throw');
+                    if (btn) btn.click();
+                }
+
+                if (e.key.toLowerCase() === 'l') {
+                    const btn = document.getElementById('shiftlog');
                     if (btn) btn.click();
                 }
                 if (e.key.toLowerCase() === 'h') {
@@ -448,7 +467,7 @@
 
             // Show hint once
             setTimeout(() => {
-                console.log('%c[Lab Ops] Keyboard shortcuts: 1 = Line1, 2 = Line2, H = HPLC, F = Fix, ⌘R = Refresh', 'color:#3f3f46');
+                console.log('%c[Lab Ops] Keyboard shortcuts: 1 = Line1, 2 = Line2, T = Throw Calc, L = Shift log, H = HPLC, F = Fix, ⌘R = Refresh', 'color:#3f3f46');
             }, 8000);
         }
 
@@ -458,7 +477,6 @@
             const hplcBtn = document.getElementById("hplc_search");
             const line1Btn = document.getElementById("line1");
             const line2Btn = document.getElementById("line2");
-            const throwBtn = document.getElementById("throw");
             const game = document.getElementById("game");
             const ionwake = document.getElementById("ionwake");
             if (fixBtn) {
@@ -489,10 +507,20 @@
                     openUp("http://10.120.120.249:5050");
                 });
             }
+
+            const throwBtn = document.getElementById("throw");
             if (throwBtn) {
                 throwBtn.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
                     openUp("{% url 'throw' %}");
+                });
+            }
+
+            const shiftlogBtn = document.getElementById("shiftlog");
+            if (shiftlogBtn) {
+                shiftlogBtn.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("{% url 'shiftlog' %}");
                 });
             }
             if (game) {
