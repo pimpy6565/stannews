@@ -288,6 +288,13 @@
                 <span class="tab-icon">🌌</span>
                 <span>IONWAKE</span>
             </button>
+            <button id="seam_check"
+                    class="lab-tab"
+                    role="tab"
+                    aria-selected="false">
+                <span class="tab-icon">📄</span>
+                <span>Seam Check</span>
+            </button>
         {% endif %}
         {% endfor %}
 
@@ -487,6 +494,7 @@
             const line2Btn = document.getElementById("line2");
             const game = document.getElementById("game");
             const ionwake = document.getElementById("ionwake");
+            const seamCheck = document.getElementById("seam_check");
             if (fixBtn) {
                 fixBtn.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
@@ -549,6 +557,12 @@
                 ionwake.addEventListener('click', (e) => {
                     setActive(e.currentTarget);
                     openUp("https://cloud-apex-blend-spruce.grok.me");
+                });
+            }
+            if (seamCheck) {
+                seamCheck.addEventListener('click', (e) => {
+                    setActive(e.currentTarget);
+                    openUp("{% url 'seam_check' %}");
                 });
             }
         }
