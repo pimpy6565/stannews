@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seam Check</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6">
+  <div class="max-w-3xl mx-auto space-y-4">
+    <h1 class="text-2xl font-semibold">2ND OP SEAM CHECK — 12 OZ 202</h1>
+    <p class="text-slate-300 text-sm">Pepsi Pennsauken Line 3. Quire keeps PDFs on your device — open the desk, then load this form.</p>
+    <div class="flex flex-wrap gap-3">
+      <a class="rounded bg-sky-600 px-4 py-2 font-medium hover:bg-sky-500"
+         href="https://finch-grove-cloud-zenith.grok.me/"
+         target="_blank" rel="noopener">Open Quire desk</a>
+      <a class="rounded bg-emerald-600 px-4 py-2 font-medium hover:bg-emerald-500"
+         href="{% static 'screen/seam-check.pdf' %}"
+         target="_blank" rel="noopener">Open seam-check.pdf</a>
+      <a class="rounded border border-slate-600 px-4 py-2 font-medium hover:bg-slate-800"
+         href="{% static 'screen/seam-check.pdf' %}"
+         download="seam-check.pdf">Download PDF</a>
+    </div>
+  </div>
+</body>
+</html>
