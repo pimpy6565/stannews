@@ -21,12 +21,6 @@ urlpatterns = [
     path("shiftlog/", views.shift_log, name="shiftlog"),
     path("shiftlog/feed/", views.shift_log_feed, name="shiftlog_feed"),
 
-    path(
-        "seam-check/",
-        TemplateView.as_view(template_name="screen/seam_check.html"),
-        name="seam_check",
-    ),
-
     # Catch-all for React (must be LAST)
     re_path(r'^.*$', TemplateView.as_view(template_name='screen/index.html')),
 
