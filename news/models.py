@@ -37,10 +37,44 @@ class Story(models.Model):
 
 
 class UsernameSub(models.Model):
+    ACCESS_NO = "no_access"
+    ACCESS_PHONE = "phone"
+    ACCESS_COMPUTER = "computer"
+    ACCESS_FULL = "full_lab_ops"
+    ACCESS_CHOICES = [
+        (ACCESS_NO, "No access"),
+        (ACCESS_PHONE, "Phone"),
+        (ACCESS_COMPUTER, "Computer"),
+        (ACCESS_FULL, "Full Lab Ops"),
+    ]
     username = models.CharField(max_length=150, unique=True)
     is_active = models.BooleanField(default=False)
     is_free = models.BooleanField(default=False, help_text="Complimentary: skip Zelle.")
     paid_until = models.DateTimeField(null=True, blank=True)
+    access_tier = models.CharField(
+        max_length=20,
+        choices=ACCESS_CHOICES,
+        default=ACCESS_NO,
+        help_text="Lab Ops device gate: no_access / phone / computer / full_lab_ops.",
+    )
 
     def __str__(self):
         return self.username
+
+    def is_paid_or_free(self):
+        if self.is_free:
+            return True
+        if self.paid_until is not None and self.paid_until > timezone.now():
+            return True
+        return bool(self.is_active)
+
+    def allows_device(self, is_phone: bool) -> bool:
+        if self.access_tier == self.ACCESS_NO:
+            return False
+        if self.access_tier == self.ACCESS_FULL:
+            return True
+        if self.access_tier == self.ACCESS_PHONE:
+            return bool(is_phone)
+        if self.access_tier == self.ACCESS_COMPUTER:
+            return not bool(is_phone)
+        return False

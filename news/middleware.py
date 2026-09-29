@@ -20,6 +20,6 @@ class UsernameSubMiddleware:
             if not (user.is_staff or user.is_superuser):
                 path = request.path or ""
                 if path.startswith("/screen") and not any(path.startswith(p) for p in ALLOW_PREFIXES):
-                    if not username_is_allowed(user):
+                    if not username_is_allowed(user, request):
                         return redirect("/username/?needed=1")
         return self.get_response(request)

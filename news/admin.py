@@ -17,10 +17,10 @@ class StoryAdmin(admin.ModelAdmin):
 
 @admin.register(UsernameSub)
 class UsernameSubAdmin(admin.ModelAdmin):
-    list_display = ("username", "is_active", "is_free", "paid_until")
-    list_filter = ("is_active", "is_free")
+    list_display = ("username", "access_tier", "is_active", "is_free", "paid_until")
+    list_filter = ("access_tier", "is_active", "is_free")
     search_fields = ("username",)
-    list_editable = ("is_free", "is_active")
+    list_editable = ("access_tier", "is_free", "is_active")
     actions = ["mark_zelle_received"]
 
     @admin.action(description="Mark Zelle received (30 days)")
@@ -29,9 +29,17 @@ class UsernameSubAdmin(admin.ModelAdmin):
         for row in queryset:
             if row.is_free:
                 row.is_active = True
-                row.save(update_fields=["is_active"])
+                if row.access_tier == UsernameSub.ACCESS_NO:
+                    row.access_tier = UsernameSub.ACCESS_FULL
+                    row.save(update_fields=["is_active", "access_tier"])
+                else:
+                    row.save(update_fields=["is_active"])
                 continue
             start = row.paid_until if row.paid_until and row.paid_until > now else now
             row.paid_until = start + timedelta(days=30)
             row.is_active = True
-            row.save(update_fields=["paid_until", "is_active"])
+            fields = ["paid_until", "is_active"]
+            if row.access_tier == UsernameSub.ACCESS_NO:
+                row.access_tier = UsernameSub.ACCESS_FULL
+                fields.append("access_tier")
+            row.save(update_fields=fields)
