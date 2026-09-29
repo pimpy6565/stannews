@@ -114,7 +114,41 @@ def illuminati(request):
     return render(request, 'news/illuminati.html')
 
 
-def username_is_allowed(user):
+def request_looks_like_phone(request) -> bool:
+    """Best-effort phone vs computer from Client Hints + User-Agent."""
+    if request is None:
+        return False
+    ch = (request.META.get("HTTP_SEC_CH_UA_MOBILE") or "").strip()
+    if ch == "?1":
+        return True
+    if ch == "?0":
+        return False
+    ua = (request.META.get("HTTP_USER_AGENT") or "").lower()
+    if not ua:
+        return False
+    phone_tokens = (
+        "iphone",
+        "ipod",
+        "android",
+        "mobile",
+        "windows phone",
+        "opera mini",
+        "opera mobi",
+        "blackberry",
+        "bb10",
+        "webos",
+        "iemobile",
+    )
+    # Android tablets usually omit "mobile"; treat those as computer.
+    if "android" in ua and "mobile" not in ua:
+        return False
+    if "ipad" in ua:
+        return False
+    return any(tok in ua for tok in phone_tokens)
+
+
+def username_is_allowed(user, request=None):
+    """Lab Ops /screen/ gate: staff skip; else access_tier + device."""
     if not user or not getattr(user, "is_authenticated", False):
         return False
     if user.is_staff or user.is_superuser:
@@ -125,11 +159,8 @@ def username_is_allowed(user):
         return False
     if not sub:
         return False
-    if sub.is_free:
-        return True
-    if sub.paid_until is not None and sub.paid_until > timezone.now():
-        return True
-    return bool(sub.is_active)
+    is_phone = request_looks_like_phone(request)
+    return sub.allows_device(is_phone)
 
 
 
@@ -137,8 +168,8 @@ def username_is_allowed(user):
 def zelle_username(request):
     user = request.user
     if request.GET.get("status") == "1":
-        return JsonResponse({"open": bool(user.is_authenticated and username_is_allowed(user))})
-    if user.is_authenticated and username_is_allowed(user):
+        return JsonResponse({"open": bool(user.is_authenticated and username_is_allowed(user, request))})
+    if user.is_authenticated and username_is_allowed(user, request):
         return redirect("/screen")
     claimed = False
     if request.method == "POST" and user.is_authenticated:
@@ -163,6 +194,6 @@ class GatedLoginView(LoginView):
     def form_valid(self, form):
         login(self.request, form.get_user())
         user = self.request.user
-        if user.is_staff or user.is_superuser or username_is_allowed(user):
+        if user.is_staff or user.is_superuser or username_is_allowed(user, self.request):
             return redirect(self.get_success_url())
         return redirect("/username/?needed=1")
