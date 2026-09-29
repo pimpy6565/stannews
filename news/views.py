@@ -148,7 +148,7 @@ def request_looks_like_phone(request) -> bool:
 
 
 def username_is_allowed(user, request=None):
-    """Lab Ops /screen/ gate: staff skip; else access_tier + device."""
+    """Lab Ops /screen/ gate: staff skip; else paid/free AND access_tier + device."""
     if not user or not getattr(user, "is_authenticated", False):
         return False
     if user.is_staff or user.is_superuser:
@@ -160,7 +160,7 @@ def username_is_allowed(user, request=None):
     if not sub:
         return False
     is_phone = request_looks_like_phone(request)
-    return sub.allows_device(is_phone)
+    return sub.is_paid_or_free() and sub.allows_device(is_phone)
 
 
 
