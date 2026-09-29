@@ -1,5 +1,5 @@
 from django.shortcuts import redirect
-from news.views import username_is_allowed
+from news.views import username_is_allowed, lab_ops_deny_redirect
 
 ALLOW_PREFIXES = (
     "/admin/",
@@ -21,5 +21,5 @@ class UsernameSubMiddleware:
                 path = request.path or ""
                 if path.startswith("/screen") and not any(path.startswith(p) for p in ALLOW_PREFIXES):
                     if not username_is_allowed(user, request):
-                        return redirect("/username/?needed=1")
+                        return redirect(lab_ops_deny_redirect(user, request))
         return self.get_response(request)
