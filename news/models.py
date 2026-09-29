@@ -1,6 +1,4 @@
 from django.db import models
-from django.utils import timezone
-
 # Create your models here.
 class chats(models.Model):
     text = models.TextField()
@@ -62,11 +60,8 @@ class UsernameSub(models.Model):
         return self.username
 
     def is_paid_or_free(self):
-        if self.is_free:
-            return True
-        if self.paid_until is not None and self.paid_until > timezone.now():
-            return True
-        return bool(self.is_active)
+        """Lab Ops paid gate: only admin Active or Free. paid_until alone is not enough."""
+        return bool(self.is_free) or bool(self.is_active)
 
     def allows_device(self, is_phone: bool) -> bool:
         if self.access_tier == self.ACCESS_NO:
