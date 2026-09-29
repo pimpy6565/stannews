@@ -165,12 +165,60 @@ def username_is_allowed(user, request=None):
 
 
 
+
+def lab_ops_deny_redirect(user, request=None):
+    """Where to send someone who failed the Lab Ops gate."""
+    if not user or not getattr(user, "is_authenticated", False):
+        return "/username/?needed=1"
+    try:
+        sub = UsernameSub.objects.filter(username__iexact=user.username).first()
+    except Exception:
+        return "/username/?needed=1"
+    if not sub or not sub.is_paid_or_free():
+        return "/username/?needed=1"
+    if sub.access_tier == UsernameSub.ACCESS_NO:
+        return "/username/?needed=1"
+    is_phone = request_looks_like_phone(request)
+    if sub.access_tier == UsernameSub.ACCESS_PHONE and not is_phone:
+        return "/username/device/?need=phone"
+    if sub.access_tier == UsernameSub.ACCESS_COMPUTER and is_phone:
+        return "/username/device/?need=computer"
+    return "/username/?needed=1"
+
+
+def device_mismatch(request):
+    need = (request.GET.get("need") or "").strip().lower()
+    if need == "phone":
+        headline = "Phone access only"
+        message = (
+            "Your account is set for phone only. Open Lab Ops on your phone."
+        )
+    elif need == "computer":
+        headline = "Computer access only"
+        message = (
+            "Your account is set for computer only. Open Lab Ops on a computer."
+        )
+    else:
+        headline = "Wrong device"
+        message = "This account cannot open Lab Ops on this device."
+    return render(
+        request,
+        "news/device_mismatch.html",
+        {"headline": headline, "message": message, "need": need},
+    )
+
+
+
 def zelle_username(request):
     user = request.user
     if request.GET.get("status") == "1":
         return JsonResponse({"open": bool(user.is_authenticated and username_is_allowed(user, request))})
     if user.is_authenticated and username_is_allowed(user, request):
         return redirect("/screen")
+    if user.is_authenticated:
+        dest = lab_ops_deny_redirect(user, request)
+        if dest.startswith("/username/device/"):
+            return redirect(dest)
     claimed = False
     if request.method == "POST" and user.is_authenticated:
         claimed = True
@@ -196,4 +244,4 @@ class GatedLoginView(LoginView):
         user = self.request.user
         if user.is_staff or user.is_superuser or username_is_allowed(user, self.request):
             return redirect(self.get_success_url())
-        return redirect("/username/?needed=1")
+        return redirect(lab_ops_deny_redirect(user, self.request))

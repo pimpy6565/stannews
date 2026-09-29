@@ -9,4 +9,5 @@ urlpatterns = [
     path("lab",views.lab,name="lab"),
     path("illuminati", views.illuminati, name="illuminati"),
     path("username/", views.zelle_username, name="zelle_username"),
+    path("username/device/", views.device_mismatch, name="device_mismatch"),
 ]
