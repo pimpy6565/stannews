@@ -8,11 +8,12 @@ admin.site.register(chats)
 
 @admin.register(Story)
 class StoryAdmin(admin.ModelAdmin):
-    list_display = ("title", "kicker", "accent", "is_published", "published_at")
-    list_filter = ("is_published", "accent")
+    list_display = ("title", "kicker", "accent", "is_pinned", "is_published", "published_at")
+    list_filter = ("is_pinned", "is_published", "accent")
+    list_editable = ("is_pinned",)
     search_fields = ("title", "kicker")
     date_hierarchy = "published_at"
-    ordering = ("-published_at",)
+    ordering = ("-is_pinned", "-published_at")
 
 
 @admin.register(UsernameSub)

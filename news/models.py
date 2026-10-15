@@ -21,17 +21,26 @@ class Story(models.Model):
     dek = models.TextField(blank=True, help_text="Subtitle under the headline")
     body = models.TextField(help_text="HTML below the dek. YouTube, galleries, Stan Tips ok.")
     hero_image_url = models.CharField(max_length=500, blank=True, help_text="Full http(s) URL or static path like news/pr_parade_hero.jpg")
+    hero_image = models.ImageField(upload_to="stories/", blank=True, null=True, help_text="Uploaded photo. Used instead of hero image URL when set.")
     hero_caption = models.CharField(max_length=300, blank=True)
     accent = models.CharField(max_length=20, choices=ACCENT_CHOICES, default=ACCENT_AMBER)
     is_published = models.BooleanField(default=True)
     published_at = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
+    is_pinned = models.BooleanField(default=False, help_text="Pin above other posts")
 
     class Meta:
-        ordering = ["-published_at"]
+        ordering = ["-is_pinned", "-published_at"]
 
     def __str__(self):
         return self.title
+
+    @property
+    def hero_src(self):
+        """Uploaded image URL if set, else raw hero_image_url (http URL or static path)."""
+        if self.hero_image:
+            return self.hero_image.url
+        return self.hero_image_url
 
 
 class UsernameSub(models.Model):

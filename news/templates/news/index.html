@@ -22,6 +22,7 @@ Home Page
     {% for story in stories %}
     {% if story.accent == "light" %}
 <div class="story-container" style="max-width: 800px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #222;">
+    {% if story.is_pinned %}<div style="display: inline-flex; align-items: center; background: #dc2626; color: white; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; margin: 0 6px 12px 0; letter-spacing: 0.5px;">📌 PINNED</div>{% endif %}
     {% if story.kicker %}
     <div style="display: inline-flex; align-items: center; background: #0033a0; color: white; font-size: 14px; font-weight: 700; padding: 6px 18px; border-radius: 9999px; margin-bottom: 12px; letter-spacing: 0.5px;">{{ story.kicker }}</div>
     {% endif %}
@@ -31,7 +32,9 @@ Home Page
         {{ story.dek }}
     </p>
     {% endif %}
-    {% if story.hero_image_url %}
+    {% if story.hero_image %}
+    <img src="{{ story.hero_image.url }}" alt="{{ story.title }}" style="width: 100%; height: auto; border-radius: 12px; margin: 0 0 8px;">
+    {% elif story.hero_image_url %}
     {% if story.hero_image_url|slice:":4" == "http" %}
     <img src="{{ story.hero_image_url }}" alt="{{ story.title }}" style="width: 100%; height: auto; border-radius: 12px; margin: 0 0 8px;">
     {% else %}
@@ -48,6 +51,7 @@ Home Page
         <div style="max-width: 900px; margin:20px; font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.7; color: #e0e0e0; background: {% if story.accent == 'pr' %}linear-gradient(180deg, #0a1628 0%, #1a2744 100%){% else %}linear-gradient(180deg, #0f172a 0%, #1e2937 100%){% endif %}; padding: 30px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4); overflow: hidden; border-top: 5px solid {% if story.accent == 'pr' %}#ed1c24{% else %}#f59e0b{% endif %};">
 
             <div style="text-align: center; margin-bottom: 25px;">
+                {% if story.is_pinned %}<div style="display: inline-flex; align-items: center; background: #dc2626; color: white; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; margin: 0 6px 12px 0; letter-spacing: 0.5px;">📌 PINNED</div>{% endif %}
                 {% if story.kicker %}
                 <div style="display: inline-flex; align-items: center; {% if story.accent == 'pr' %}background: linear-gradient(90deg, #ed1c24, #0050f0); color: white;{% else %}background: #f59e0b; color: #0f172a;{% endif %} font-size: 14px; font-weight: 700; padding: 6px 18px; border-radius: 9999px; margin-bottom: 12px; letter-spacing: 0.5px;">{{ story.kicker }}</div>
                 {% endif %}
@@ -57,7 +61,9 @@ Home Page
                 {% endif %}
             </div>
 
-            {% if story.hero_image_url %}
+            {% if story.hero_image %}
+            <img src="{{ story.hero_image.url }}" alt="{{ story.title }}" style="width: 100%; height: auto; border-radius: 16px; margin: 0 0 8px; box-shadow: {% if story.accent == 'pr' %}0 10px 30px -10px rgba(237,28,36,0.5){% else %}0 10px 30px -10px rgba(245,158,11,0.5){% endif %};">
+            {% elif story.hero_image_url %}
             {% if story.hero_image_url|slice:":4" == "http" %}
             <img src="{{ story.hero_image_url }}" alt="{{ story.title }}" style="width: 100%; height: auto; border-radius: 16px; margin: 0 0 8px; box-shadow: {% if story.accent == 'pr' %}0 10px 30px -10px rgba(237,28,36,0.5){% else %}0 10px 30px -10px rgba(245,158,11,0.5){% endif %};">
             {% else %}
