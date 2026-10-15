@@ -145,6 +145,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Uploaded media (story photos). On Render the persistent disk is mounted at
+# /var/data (same disk as the SQLite DB), so default media there in production.
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.environ.get(
+    "MEDIA_ROOT",
+    str(BASE_DIR / 'media') if DEBUG else "/var/data/media",
+)
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

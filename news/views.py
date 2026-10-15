@@ -59,7 +59,7 @@ def msg(request):
 
 
 def index(request):
-    stories = Story.objects.filter(is_published=True).order_by("-published_at")
+    stories = Story.objects.filter(is_published=True).order_by("-is_pinned", "-published_at")
     return render(request, "news/index.html", {"stories": stories})
 
 
